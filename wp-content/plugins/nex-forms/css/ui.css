@@ -1,13 +1,30 @@
-
+#nex-forms{display:block !important;}
 #nex-forms input[name="_name"],
-#nex-forms input[name="surname"]{
+#nex-forms input[name="surname"],
+span[data-field-name="_name"],
+span[data-field-name="surname"]{
 	text-transform:capitalize !important;
 }
-
+#nex-forms input[type="password"].form-control {
+    border-color: #ddd;
+}
 #nex-forms, .nf-sticky-contact-form{
 	display:block !important;
 }
-
+#nex-forms .html_image .ui-wrapper {
+    width: auto !important;
+}
+#nex-forms .html_image .align_center {
+    display: flex;
+    justify-content: center;
+}
+#nex-forms img.html-image-obj {
+    width: auto !important;
+    max-width: 100% !important;
+}
+#nex-forms .html_image .align_right .the-image-container {
+    float: right;
+}
 #nex-forms .btn,  #nex-forms p, #nex-forms div, #nex-forms label{
     font-family: sans-serif;
 }
@@ -51,9 +68,7 @@
 #nex-forms .math_result {
     word-wrap: normal;
 }
-.bootstrap-datetimepicker-widget td {
-    color: #444 !important;
-}
+
 #nex-forms .fa {
     /*font-family: "Fontawesome" !important;*/
 }
@@ -135,30 +150,18 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     display: none;
 }
 #nex-forms div.text_counter_holder .text_counter {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    font-family: Arial,Helvetica,sans-serif;
     font-size: 11px;
-    font-weight: bold;
-    margin-bottom: -1px;
-    margin-left: auto;
-    margin-right: auto;
-    min-width: 51px;
-    padding: 0 10px;
-    text-align: center;
-    white-space: nowrap;
-    width: 13%;
-	display:none !important;
 }
 #nex-forms div.text_counter_holder {
     position: absolute;
-    bottom: -18px;
+    bottom: -16px;
     z-index: 1000;
-    width: 93%;
-    text-align: center !important;
+    width: 100%;
+    text-align: right !important;
+	left: 0;
 }
 #nex-forms .form_field.has_max_lenght {
-    margin-bottom: 25px !important;
+    /*margin-bottom: 25px !important;*/
 }
 
 .nex_forms_modal {
@@ -299,7 +302,7 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 #nex-forms .star-rating span:before {
     content: none !important;
 }
-#nex-forms .star-rating .input_container  .fa:hover {
+/*#nex-forms .star-rating .input_container  .fa:hover {
     color: #ec971f !important;
     transition: all 250ms  !important;
 }
@@ -309,8 +312,8 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     margin-left: -7px  !important;
     color: #bbb  !important;
     transition: all 100ms  !important;
-}
-#nex-forms .star-rating .input_container .fa-star {
+}*/
+/*#nex-forms .star-rating .input_container .fa-star {
    color: #ffc107 !important;
     text-shadow: 5px 5px 1px #e5e5e5;
     transform: scale(1.17) !important;
@@ -318,7 +321,7 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 #nex-forms .star-rating .input_container  .fa-star-half-o, #nex-forms .star-rating .input_container  .fa-star-half {
     color: #f0ad4e  !important;
     transform: scale(1.07)  !important;
-}
+}*/
 /*#nex-forms .error_msg {
     color: #a94442;
     padding-top: 5px;
@@ -423,6 +426,11 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 #nex-forms .panel-body.the-panel-body{
     background: #fff;
 }
+
+#nex-forms .is_panel  .panel {
+    box-shadow: none !important;
+}
+
 #nex-forms .single-image-select-group .prettyradio a, #nex-forms .multi-image-select-group .prettycheckbox a {
     border: 1px solid #cccccc;
     border-radius: 15px;
@@ -726,7 +734,10 @@ span.img-thumbnail-small.img-thumbnail {
     border-bottom-width: 1px !important;
 }
 #nex-forms input.check, #nex-forms input.radio {
-    display: none !important;
+   top: 1px;
+   left: 5px;
+   /*opacity:1 !important;
+   z-index:1000000000 !important;*/
 }
 /*#nex-forms .full_width {width: 100% !important;}*/
 
@@ -826,8 +837,13 @@ span.img-thumbnail-small.img-thumbnail {
 #nex-forms .ui-nex-forms-container .upload-single .input-group{width:100%;}
 #nex-forms  div.fileinput a {position: relative;z-index: 100 !important;}
 #nex-forms .timepicker-picker a.btn span {text-align: center;width: 40px;}
-#nex-forms .bootstrap-datetimepicker-widget td span {height: 25px !important;line-height: 25px !important;}
 #nex-forms .align_right{text-align:right !important; right:0;}
+#nex-forms select.align_right{text-align:right !important; direction:rtl;}
+
+#nex-forms .bootstrap-datetimepicker-widget td span {
+    
+}
+
 #nex-forms .align_left{text-align:left !important;}
 #nex-forms .align_center{text-align:center !important; text-align-last:center !important; text-align-first:center !important;}
 #nex-forms .align_justify{text-align:justify !important;}
@@ -836,9 +852,20 @@ span.img-thumbnail-small.img-thumbnail {
 #nex-forms .submit-button small {width: 100% !important;display: block !important;clear: both !important;margin-top: 7px !important;}
 
 
+
 #nex-forms input[name="company_url"]{position:absolute !important;z-index:-1 !important;top:-100000px !important; width:1px !important;}
 
-#nex-forms hr{border-color:#dddddd;margin:0 !important;}
+#nex-forms hr {
+    border-color: #dddddd;
+    margin: 0 !important;
+    box-shadow: none !important;
+    text-shadow: none;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+	border-bottom-style: solid;
+}
 #nex-forms p {background: none !important;}
 #nex-forms .submit-button span.fa-spinner {}
 #nex-forms .panel-heading.btn-lg, 
@@ -924,10 +951,10 @@ button.text-right {
 #nex-forms .pill.form_field .form-control {
     padding-left: 20px;
 }
-#nex-forms .pill .form-control, #nex-forms .pill .selectpicker, #nex-forms .pill .btn {
+#nex-forms .pill .form-control, #nex-forms .pill .selectpicker, #nex-forms .pill .input_container .btn {
     border-radius: 22px !important;
 }
-#nex-forms .pill.button_fields .btn {
+#nex-forms .pill.button_fields .input_container .btn {
     padding: 10px 16px !important;
 }
 
@@ -946,20 +973,20 @@ button.text-right {
 
 
 
-#nex-forms.nex-forms .pill .input-group .input-group-addon.postfix {
+#nex-forms .pill .input-group .input-group-addon.postfix {
     border-top-right-radius: 22px !important;
     border-bottom-right-radius: 22px !important;
 }
-#nex-forms.nex-forms .pill .input-group .input-group-addon.prefix {
+#nex-forms .pill .input-group .input-group-addon.prefix {
     border-top-left-radius: 22px !important;
     border-bottom-left-radius: 22px !important;
 }
-#nex-forms.nex-forms .pill.has_postfix_icon .form-control {
+#nex-forms .pill.has_postfix_icon .form-control {
     border-top-right-radius: 0px !important;
     border-bottom-right-radius: 0px !important;
 	 padding-left: 10px !important;
 }
-#nex-forms.nex-forms .pill.has_prefix_icon .form-control {
+#nex-forms .pill.has_prefix_icon:not(.is_grid) .form-control {
     border-top-left-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 	 padding-left: 10px !important;
@@ -1053,6 +1080,12 @@ button.text-right {
 }
 #nex-forms .the-radios .col-sm-12 {padding-left: 0;}
 
+.icon-select-group .input_container.col-sm-12 {
+    padding-left: 17px;
+}
+.icon-select-group .label_container.col-sm-12 {
+    padding-bottom: 4px;
+}
 
 
 #nex-forms .slider.ui-slider {
@@ -1081,6 +1114,7 @@ button.text-right {
 .success_icon .fa {
     color: #fff;
     font-size: 32px;
+
 }
 .success_icon {
    background: #8bc34a none repeat scroll 0 0;
@@ -1128,7 +1162,22 @@ button.text-right {
 	margin-bottom: 42px;
 }
 
-
+#nex-forms .form_field button.btn {
+    box-shadow: 4px 4px 20px rgba(0,0,0,0.06);
+	transition:all 0.2s;
+}
+#nex-forms .form_field button.btn:hover {
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+#nex-forms.nf_popups_holder .form_field button.btn:hover {
+    box-shadow: none;
+}
+ 
+#nex-forms .form_field button.btn:active {
+    box-shadow: inset 6px 6px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
 
 .nf-loader{
 	position: absolute;
@@ -1227,7 +1276,7 @@ button.text-right {
 }
 .bootstrap-datetimepicker-widget{ display:none; }
 .bootstrap-datetimepicker-widget.dropdown-menu {
-    box-shadow: 1px 1px 12px #ccc;
+    box-shadow: 2px 2px 18px 0px rgba(0,0,0,0.15);
 	z-index:1000000 !important;
 }
 
@@ -1245,7 +1294,8 @@ button.text-right {
     margin: 0 !important;
 }
 #datetimepicker .dropdown-menu {
-    min-width: 320px !important;
+    min-width: 220px;
+	/*max-width: 500px;*/
 }
 
 #nex-forms .text-primary{color:#337ab7}
@@ -1296,25 +1346,40 @@ button.text-right {
 .text-gray { color: #9e9e9e !important; }
 .text-blue-gray { color: #607d8b !important;}
 
-.btn-red { background: #f44336; color:#fff; }
-.btn-pink { background: #e91e63; color:#fff; }
-.btn-purple { background: #9c27b0; color:#fff; }
-.btn-deep-purple { background: #673ab7; color:#fff; }
-.btn-indigo { background: #3f51b5; color:#fff; }
-.btn-blue { background: #2979FF; color:#fff; }
-.btn-light-blue { background: #40C4FF; color:#fff; }
-.btn-cyan { background: #00bcd4; color:#fff; }
-.btn-teal { background: #009688; color:#fff; }
-.btn-green { background: #4caf50; color:#fff; }
-.btn-light-green { background: #8bc34a; color:#fff; }
-.btn-lime { background: #cddc39; color:#fff; }
+
+.btn-nf-555 { background: #555 !important; color:#eee}
+.btn-nf-333 { background: #333 !important; color:#eee}
+.btn-nf-000 { background: #000 !important; color:#eee}
+
+.btn-nf-default { background: #fff !important; color:#666 !important; border:1px solid #ddd !important;}
+.btn-red { background: #f44336; color:#fff !important; }
+.btn-pink { background: #e91e63; color:#fff !important; }
+.btn-purple { background: #9c27b0; color:#fff !important; }
+.btn-deep-purple { background: #673ab7; color:#fff !important; }
+.btn-indigo { background: #3f51b5; color:#fff !important; }
+.btn-blue { background: #2979FF; color:#fff !important; }
+.btn-light-blue { background: #40C4FF; color:#fff !important; }
+.btn-cyan { background: #00bcd4; color:#fff !important; }
+.btn-teal { background: #009688; color:#fff !important; }
+.btn-green { background: #4caf50; color:#fff !important; }
+.btn-light-green { background: #8bc34a; color:#fff !important; }
+.btn-lime { background: #cddc39; color:#fff !important; }
 .btn-yellow { background: #ffeb3b; }
 .btn-amber { background: #ffc107; }
-.btn-orange { background: #ff9800; color:#fff;}
-.btn-brown { background: #795548; color:#fff;}
-.btn-gray { background: #9e9e9e; color:#fff;}
-.btn-blue-gray { background: #607d8b; color:#fff;}
+.btn-orange { background: #ff9800; color:#fff !important;}
+.btn-brown { background: #795548; color:#fff !important;}
+.btn-gray { background: #9e9e9e; color:#fff !important;}
+.btn-blue-gray { background: #607d8b; color:#fff !important;}
+.btn-primary { background: #337ab7; color:#fff !important; }
+.btn-success { background: #5cb85c; color:#fff !important; }
+.btn-info { background: #5bc0de; color:#fff !important; }
+.btn-warning { background: #f0ad4e; color:#fff !important; }
+.btn-danger { background: #d9534f; color:#fff !important; }
 
+.btn-nf-default:hover { background: #fff !important; color:#666 !important; border:1px solid #ddd !important;}
+.btn-nf-555:hover { background: #555 !important; color:#eee !important;}
+.btn-nf-333:hover { background: #333 !important; color:#eee !important;}
+.btn-nf-000:hover { background: #000 !important; color:#eee !important;}
 .btn-red:hover { background: #f44336; color:#fff !important; }
 .btn-pink:hover { background: #e91e63; color:#fff  !important; }
 .btn-purple:hover { background: #9c27b0; color:#fff !important; }
@@ -1333,8 +1398,16 @@ button.text-right {
 .btn-brown:hover { background: #795548; color:#fff !important;}
 .btn-gray:hover { background: #9e9e9e; color:#fff !important;}
 .btn-blue-gray:hover { background: #607d8b; color:#fff !important;}
+.btn-primary:hover { background: #337ab7; color:#fff !important; }
+.btn-success:hover { background: #5cb85c; color:#fff !important; }
+.btn-info:hover { background: #5bc0de; color:#fff !important; }
+.btn-warning:hover { background: #f0ad4e; color:#fff !important; }
+.btn-danger:hover { background: #d9534f; color:#fff !important; }
 
-
+.btn-nf-default:active { background: #fff !important; color:#666 !important; border:1px solid #ddd !important;}
+.btn-nf-555:active { background: #555 !important; color:#eee !important;}
+.btn-nf-333:active { background: #333 !important; color:#eee !important;}
+.btn-nf-000:active { background: #000 !important; color:#eee !important;}
 .btn-red:active { background: #f44336; color:#fff !important; }
 .btn-pink:active { background: #e91e63; color:#fff  !important; }
 .btn-purple:active { background: #9c27b0; color:#fff !important; }
@@ -1353,11 +1426,17 @@ button.text-right {
 .btn-brown:active { background: #795548; color:#fff !important;}
 .btn-gray:active { background: #9e9e9e; color:#fff !important;}
 .btn-blue-gray:active { background: #607d8b; color:#fff !important;}
+.btn-primary:active { background: #337ab7; color:#fff !important; }
+.btn-success:active { background: #5cb85c; color:#fff !important;}
+.btn-info:active { background: #5bc0de; color:#fff !important; }
+.btn-warning:active { background: #f0ad4e; color:#fff !important; }
+.btn-danger:active { background: #d9534f; color:#fff !important; }
 
 
-
-
-
+.btn-nf-default:focus { background: #fff !important; color:#666 !important; border:1px solid #ddd !important; }
+.btn-nf-555:focus { background: #555 !important; color:#eee !important;}
+.btn-nf-333:focus { background: #333 !important; color:#eee !important;}
+.btn-nf-000:focus { background: #000 !important; color:#eee !important;}
 .btn-red:focus { background: #f44336; color:#fff !important; }
 .btn-pink:focus { background: #e91e63; color:#fff  !important; }
 .btn-purple:focus { background: #9c27b0; color:#fff !important; }
@@ -1376,6 +1455,11 @@ button.text-right {
 .btn-brown:focus { background: #795548; color:#fff !important;}
 .btn-gray:focus { background: #9e9e9e; color:#fff !important;}
 .btn-blue-gray:focus { background: #607d8b; color:#fff !important;}
+.btn-primary:focus { background: #337ab7; color:#fff !important; }
+.btn-success:focus { background: #5cb85c; color:#fff !important; }
+.btn-info:focus { background: #5bc0de; color:#fff !important; }
+.btn-warning:focus { background: #f0ad4e; color:#fff !important; }
+.btn-danger:focus { background: #d9534f; color:#fff !important; }
 
 .hiddendiv{
 	display:none !important;
@@ -1556,12 +1640,16 @@ top:3px;
     color: #fff !important;
 }
 
-#nex-forms .form_field.submit-button .col-sm-12,
-#nex-forms .form_field.nex-step .col-sm-12,
-#nex-forms .form_field.prev-step .col-sm-12{
+#nex-forms .form_field.submit-button .input_container.col-sm-12,
+#nex-forms .form_field.nex-step .input_container.col-sm-12,
+#nex-forms .form_field.prev-step .input_container.col-sm-12{
 	padding:0 !important;
 }
-
+#nex-forms .form_field.submit-button #field_container .row,
+#nex-forms .form_field.nex-step #field_container .row,
+#nex-forms .form_field.prev-step #field_container .row {
+    margin: 0 -15px !important;
+}
 
 #nex-forms #md_label {
     display: block;
@@ -1706,7 +1794,7 @@ Basic Style
 
 @media only screen and (max-width: 400px) {
 	#nex-forms .cd-breadcrumb{
-		display:none !important;	
+		/*display:none !important;*/	
 	}
 }
   	
@@ -1927,6 +2015,7 @@ Multi steps indicator
     left: 50% !important;
     /* 40px is the <li> right margin value */
     width: calc(100% + 40px) !important;
+
   }
   #nex-forms .cd-multi-steps.text-top li > *::before, #nex-forms .cd-multi-steps.text-bottom li > *::before {
     /* this is the spot indicator */
@@ -2986,6 +3075,7 @@ Add a counter to the multi-steps indicator
 }
 #nex-forms .cd-breadcrumb.triangle a:hover {
 	color: #ffffff !important;
+
 	background-color: #607d8b !important;
 	border-color: #607d8b !important;
 }
@@ -3558,6 +3648,16 @@ Add a counter to the multi-steps indicator
     opacity: 1 !important;
 	background: #f8f8f8 !important;
 }
+
+#nex-forms .form_field button[disabled],
+#nex-forms .form_field button:disabled {
+    border-color: #ddd !important;
+    opacity: 1 !important;
+	background: #f8f8f8 !important;
+	cursor:not-allowed !important;
+	color:#ccc !important;
+}
+
 #nex-forms .date .bootstrap-datetimepicker-widget.dropdown-menu {
     left: 8px !important;
 }
@@ -3566,9 +3666,12 @@ Add a counter to the multi-steps indicator
     min-width: 130px !important;
     left: 8px !important;
 }
-#nex-forms .time .bootstrap-datetimepicker-widget table {
-    width: 20px !important;
-    background: #fff !important;
+#nex-forms .time .input_container:not(.align_center) .bootstrap-datetimepicker-widget table {
+    margin-left: -9px !important;
+}
+
+#nex-forms .form_canvas .time .bootstrap-datetimepicker-widget table {
+    margin-top: -7px !important;
 }
 #nex-forms .time .bootstrap-datetimepicker-widget table td {
     line-height: 1px !important;
@@ -3577,9 +3680,10 @@ Add a counter to the multi-steps indicator
     width: 0px !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: #fff !important;
 }
-
+#nex-forms .time .bootstrap-datetimepicker-widget.ui-widget-content{
+	background:none;
+}
 
 #nex-forms .material_field label.nf_title span.the_label {
     margin-left: -16px !important;
@@ -3596,8 +3700,8 @@ Add a counter to the multi-steps indicator
 }
 
 #nex-forms .material_field.selection_fields.form_field {
-    margin-bottom: 0px !important;
-    margin-top: 25px !important;
+    margin-bottom: 0px;
+    margin-top: 25px;
 }
 
 #nex-forms .input-label.ui-checkboxradio-label {
@@ -3710,6 +3814,12 @@ Add a counter to the multi-steps indicator
 
 #nex-forms .ui-nex-forms-container .v7_container .dropdown-content.select-dropdown li > a, #nex-forms .ui-nex-forms-container .v7_container .dropdown-content.select-dropdown li > span {
     color: #666 !important;
+}
+
+#nex-forms .ui-nex-forms-container .v7_container{
+	border-style:solid;
+	border-width:0;
+	border-color:rgba(255,255,255,0);
 }
 
 #nex-forms .character-counter {
@@ -3825,14 +3935,17 @@ Add a counter to the multi-steps indicator
 .nex_forms_modal .modal-body {
     overflow-y: auto !important;
 }
+.nex_forms_modal .modal-content{
+	background:transparent;
+}
 #nex-forms select {
     -moz-appearance: menulist !important;
 }
 #nex-forms .math_result {
     overflow-wrap: normal;
 }
-.bootstrap-datetimepicker-widget td {
-    color: #444 !important;
+#nex-forms .modal.nex_forms_modal.no_shadow {
+    box-shadow: none !important;
 }
 #nex-forms .fa {
 }
@@ -3907,32 +4020,8 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 #nex-forms .digital-signature-data {
     display: none;
 }
-#nex-forms div.text_counter_holder .text_counter {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    display: none !important;
-    font-family: Arial,Helvetica,sans-serif;
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: -1px;
-    margin-left: auto;
-    margin-right: auto;
-    min-width: 51px;
-    padding: 0 10px;
-    text-align: center;
-    white-space: nowrap;
-    width: 13%;
-}
-#nex-forms div.text_counter_holder {
-    bottom: -18px;
-    position: absolute;
-    text-align: center !important;
-    width: 93%;
-    z-index: 1000;
-}
-#nex-forms .form_field.has_max_lenght {
-    margin-bottom: 25px !important;
-}
+
+
 .nex_forms_modal {
 }
 #nex-forms .input-group-btn .btn .fa {
@@ -4029,6 +4118,22 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     opacity: 0.7;
     top: -32px !important;
 }
+.tooltip_bs{position:absolute;z-index:1070;display:block;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:12px;font-style:normal;font-weight:400;line-height:1.42857143;text-align:left;text-align:start;text-decoration:none;text-shadow:none;text-transform:none;letter-spacing:normal;word-break:normal;word-spacing:normal;word-wrap:normal;white-space:normal;filter:alpha(opacity=0);opacity:0;line-break:auto}
+.tooltip_bs.in{filter:alpha(opacity=90);opacity:.9}
+.tooltip_bs.top{padding:5px 0;margin-top:-3px}
+.tooltip_bs.right{padding:0 5px;margin-left:3px}
+.tooltip_bs.bottom{padding:5px 0;margin-top:3px}
+.tooltip_bs.left{padding:0 5px;margin-left:-3px}
+.tooltip_bs-inner{max-width:200px;padding:3px 8px;color:#fff;text-align:center;background-color:#000;border-radius:4px}
+.tooltip_bs-arrow{position:absolute;width:0;height:0;border-color:transparent;border-style:solid}
+.tooltip_bs.top .tooltip_bs-arrow{bottom:0;left:50%;margin-left:-5px;border-width:5px 5px 0;border-top-color:#000}
+.tooltip_bs.top-left .tooltip_bs-arrow{right:5px;bottom:0;margin-bottom:-5px;border-width:5px 5px 0;border-top-color:#000}
+.tooltip_bs.top-right .tooltip_bs-arrow{bottom:0;left:5px;margin-bottom:-5px;border-width:5px 5px 0;border-top-color:#000}
+.tooltip_bs.right .tooltip_bs-arrow{top:50%;left:0;margin-top:-5px;border-width:5px 5px 5px 0;border-right-color:#000}
+.tooltip_bs.left .tooltip_bs-arrow{top:50%;right:0;margin-top:-5px;border-width:5px 0 5px 5px;border-left-color:#000}
+.tooltip_bs.bottom .tooltip_bs-arrow{top:0;left:50%;margin-left:-5px;border-width:0 5px 5px;border-bottom-color:#000}
+.tooltip_bs.bottom-left .tooltip_bs-arrow{top:0;right:5px;margin-top:-5px;border-width:0 5px 5px;border-bottom-color:#000}
+.tooltip_bs.bottom-right .tooltip_bs-arrow{top:0;left:5px;margin-top:-5px;border-width:0 5px 5px;border-bottom-color:#000}
 #nex-forms .star-rating span {
     position: unset;
 }
@@ -4039,26 +4144,26 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     content: none !important;
 }
 #nex-forms .star-rating .input_container .fa:hover {
-   	color: #ffc107 !important;
-    text-shadow: 5px 5px 1px rgba(0,0,0,0.2);
-    transform: scale(1.05) !important;
+   	/*color: #ffc107 !important;*/
+    text-shadow: 5px 5px 30px rgba(0,0,0,0.4);
+    /*transform: scale(1.05) !important;*/
 }
-#nex-forms .star-rating .input_container .fa {
-    color: #bbb !important;
-    font-size: 25px !important;
-    margin-left: -4px !important;
+#nex-forms .star-rating .input_container i {
+    /* color: #bbb !important; */
+    font-size: 25px;
+    margin: -10px 0 0 0;
     padding: 0 !important;
-    transition: all 100ms ease 0s !important;
+    /*transition: all 100ms ease 0s !important;*/
 }
-#nex-forms .star-rating .input_container .fa-star {
+/*#nex-forms .star-rating .input_container i {
     color: #ffc107 !important;
     text-shadow: 5px 5px 1px rgba(0,0,0,0.2);
     transform: scale(1.05) !important;
-}
-#nex-forms .star-rating .input_container .fa-star-half-o, #nex-forms .star-rating .input_container .fa-star-half {
+}*/
+/*#nex-forms .star-rating .input_container i, #nex-forms .star-rating .input_container i {
     color: #f0ad4e !important;
     transform: scale(1.07) !important;
-}
+}*/
 #nex-forms .form_field {
     position: relative;
 }
@@ -4077,12 +4182,33 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     text-align: left !important;
 }
 .error_msg {
-    bottom: -18px;
+    bottom: -15px;
     color: #f44336;
     font-size: 11px !important;
     position: absolute;
-    right: 0;
+    right: 15px;
     visibility: visible !important;
+}
+.error_left .error_msg {
+    right: unset !important;
+    left: 15px;
+}
+.survey_fields .error_msg {
+    bottom: 0px !important;
+}
+.single-image-select-group .error_msg,
+.multi-image-select-group .error_msg {
+    bottom: -4px !important;
+}
+.upload_fields .error_msg {
+    bottom: -10px !important;
+}
+.upload_fields.upload-image .error_msg {
+    bottom: 22px !important;
+}
+.radio-group .error_msg,
+.check-group .error_msg {
+    bottom: -9px !important;
 }
 #nex-forms .ui-nex-forms-container .material_field.has_error .with-gap[type="radio"] + label::before, #nex-forms .ui-nex-forms-container .material_field.has_error [type="checkbox"] + label::before {
     border-color: #f44336 !important;
@@ -4148,6 +4274,7 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     position: absolute;
     top: 1px;
     width: 100%;
+	object-fit:cover;
 }
 #nex-forms .radio-label.img-thumbnail, .check-label.img-thumbnail {
     overflow: hidden;
@@ -4205,7 +4332,7 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     padding-bottom: 0 !important;
 }
 #nex-forms div.ui-nex-forms-container .form_field {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 .div.ui-nex-forms-container {
     display: none;
@@ -4239,9 +4366,7 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 #nex-forms .btn.selectpicker, .btn.ui-slider-handle {
     border-bottom-width: 1px !important;
 }
-#nex-forms input.check, #nex-forms input.radio {
-    display: none !important;
-}
+
 #nex-forms label.nexf_title.align_left {
     margin-bottom: 0 !important;
 }
@@ -4250,6 +4375,11 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 }
 #nex-forms .the_label {
     color: #9e9e9e;
+	display:block;
+}
+#nex-forms .sub-text {
+    color: #9e9e9e;
+	display:block;
 }
 #nex-forms .ui-widget-content .the_label {
     color: inherit;
@@ -4360,10 +4490,7 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
     text-align: center;
     width: 40px;
 }
-#nex-forms .bootstrap-datetimepicker-widget td span {
-    height: 25px !important;
-    line-height: 25px !important;
-}
+
 #nex-forms .align_right {
     right: 0;
     text-align: right !important;
@@ -4378,6 +4505,21 @@ div.bootstrap-datetimepicker-widget.dropdown-menu td, div.bootstrap-datetimepick
 #nex-forms .align_justify {
     text-align: justify !important;
 }
+
+#nex-forms .form_field .input_container .btn.align_right {
+    text-align: right;
+    text-align-last: right;
+}
+#nex-forms .form_field .input_container .btn.align_center {
+    text-align: center;
+    text-align-last: center;
+}
+#nex-forms .form_field .input_container .btn.align_left {
+    text-align: left;
+    text-align-last: left;
+}
+
+
 #nex-forms div.form_field .help-block.input-lg, #nex-forms div.form_field .help-block.input-sm {
     height: auto;
     padding: 0;
@@ -4465,10 +4607,10 @@ button.text-right {
 #nex-forms .pill.form_field .form-control {
     padding-left: 20px;
 }
-#nex-forms .pill .form-control, #nex-forms .pill .selectpicker, #nex-forms .pill .btn {
+#nex-forms .pill .form-control, #nex-forms .pill .selectpicker, #nex-forms .pill .input_container .btn {
     border-radius: 22px !important;
 }
-#nex-forms .pill.button_fields .btn {
+#nex-forms .pill.button_fields .input_container .btn {
     padding: 10px 16px !important;
 }
 #nex-forms .pill.form_field.touch_spinner .input-group .bootstrap-touchspin-up {
@@ -4483,20 +4625,20 @@ button.text-right {
     border-radius: 0 !important;
     padding-left: 10px !important;
 }
-#nex-forms.nex-forms .pill .input-group .input-group-addon.postfix {
+#nex-forms .pill .input-group .input-group-addon.postfix {
     border-bottom-right-radius: 22px !important;
     border-top-right-radius: 22px !important;
 }
-#nex-forms.nex-forms .pill .input-group .input-group-addon.prefix {
+#nex-forms .pill .input-group .input-group-addon.prefix {
     border-bottom-left-radius: 22px !important;
     border-top-left-radius: 22px !important;
 }
-#nex-forms.nex-forms .pill.has_postfix_icon .form-control {
+#nex-forms .pill.has_postfix_icon:not(.is_grid) .form-control {
     border-bottom-right-radius: 0 !important;
     border-top-right-radius: 0 !important;
     padding-left: 10px !important;
 }
-#nex-forms.nex-forms .pill.has_prefix_icon .form-control {
+#nex-forms .pill.has_prefix_icon:not(.is_grid) .form-control {
     border-bottom-left-radius: 0 !important;
     border-top-left-radius: 0 !important;
     padding-left: 10px !important;
@@ -4516,28 +4658,38 @@ button.text-right {
     margin-right: 5px;
     overflow: visible;
     text-align: left;
+	background:#fff;
 }
 #nex-forms .ui-slider .ui-slider-handle::before, #nex-forms .ui-slider .ui-slider-handle::after {
     background-clip: unset !important;
     background-color: transparent !important;
     border: medium none !important;
 }
-#nex-forms .ui-slider .ui-slider-handle {
+#nex-forms .ui-slider .ui-slider-handle,
+#nex-forms .ui-slider .ui-slider-handle:focus {
     border: 1px solid #ddd;
     cursor: pointer !important;
-    font-size: 12px !important;
     height: auto !important;
     opacity: 1 !important;
-    outline: medium none;
-    padding: 5px;
+    outline: medium none !important;
+    padding: 3px 6px !important;
     text-decoration: none !important;
-    top: -10px !important;
+    top: -11px !important;
     width: auto !important;
+	min-width:28px !important;
+	height:28px !important;
+    color: #777;
+    text-align: right;
+    border-radius: 20px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2) !important;
 }
-.ui-slider-handle {
-    background: #fcfcfc none repeat scroll 0 0;
-    border-radius: 3px;
+#nex-forms .ui-slider .ui-slider-handle:hover{
+    box-shadow: 5px 5px 13px rgba(0,0,0,0.2)!!important;
 }
+#nex-forms .ui-slider .ui-slider-handle:active {
+    box-shadow: inset 3px 3px 7px rgba(0,0,0,0.12) !important;
+}
+
 #nex-forms .md-slider .ui-slider-range {
     border-radius: 4px !important;
 }
@@ -4551,6 +4703,7 @@ button.text-right {
     text-decoration: none !important;
     top: -15px !important;
     width: 30px !important;
+    box-shadow: none !important;
 }
 #nex-forms .material_field .ui-slider.slider .ui-slider-range {
     border-bottom-left-radius: 7px !important;
@@ -4726,7 +4879,7 @@ button.text-right {
     margin: 0 !important;
 }
 #datetimepicker .dropdown-menu {
-    min-width: 320px !important;
+   /* min-width: 320px !important;*/
 }
 #nex-forms .text-primary {
     color: #337ab7;
@@ -5048,6 +5201,8 @@ input.the_input_element.ui-widget {
 }
 #nex-forms #spinner {
     min-height: 34px;
+    border-left: none;
+    border-right: none;
 }
 .theme_material .bootstrap-tagsinput {
     border-left: 0 none !important;
@@ -5091,7 +5246,7 @@ div.jq_radio_check {
 .ui-checkboxradio-checked, .ui-checkboxradio-label:active {
     color: #fff !important;
 }
-#nex-forms .form_field.submit-button .col-sm-12, #nex-forms .form_field.nex-step .col-sm-12, #nex-forms .form_field.prev-step .col-sm-12 {
+#nex-forms .form_field.submit-button .input_container.col-sm-12, #nex-forms .form_field.nex-step .input_container.col-sm-12, #nex-forms .form_field.prev-step .input_container.col-sm-12 {
     padding: 0 !important;
 }
 #nex-forms #md_label {
@@ -6039,7 +6194,9 @@ div.jq_radio_check {
 .dtp-buttons .btn {
     margin-left: 10px;
     opacity: 0.7;
-    padding: 8px !important;
+    padding: 5px !important;
+    width: 40px;
+    color: #fff;
 }
 #nex-forms .ui-nex-forms-container .material_select li span {
     font-size: 13px !important;
@@ -6070,11 +6227,31 @@ div.jq_radio_check {
     text-align: left;
 }
 #nex-forms .ui-slider .ui-slider-handle {
-    cursor: default;
-    height: 1.2em;
-    position: absolute;
-    width: 1.2em;
-    z-index: 2;
+    border: 1px solid #ddd;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    /* height: auto !important; */
+    opacity: 1 !important;
+    outline: medium none;
+    padding: 4px 6px;
+    text-decoration: none !important;
+    top: -11px !important;
+    width: auto !important;
+    color: #777;
+    min-width: 28px;
+    height: 28px !important;
+    text-align: right;
+    display: flex !important;
+    border-radius: 20px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+    justify-content: center !important;
+    align-items: center !important;
+}
+#nex-forms span.count-text {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #nex-forms .ui-slider .ui-slider-range {
     background: #f2f2f2 none repeat scroll 0 0;
@@ -6084,6 +6261,7 @@ div.jq_radio_check {
     font-size: 0.7em;
     position: absolute;
     z-index: 1;
+    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.05);
 }
 #nex-forms .ui-slider.ui-state-disabled .ui-slider-handle, #nex-forms .ui-slider.ui-state-disabled .ui-slider-range {
     filter: inherit;
@@ -6096,8 +6274,9 @@ div.jq_radio_check {
     top: -0.3em;
 }
 #nex-forms .ui-slider-horizontal .ui-slider-range {
-    height: 100%;
-    top: 0;
+    height: calc(100% + 2px);
+    top: -1px;
+    left: -3px !important;
 }
 #nex-forms .md-slider .ui-slider-horizontal .ui-slider-range-min {
     height: 9px;
@@ -6184,9 +6363,23 @@ div.jq_radio_check {
     font-size: 13px !important;
     opacity: 0.7;
     position: absolute !important;
-    right: -5px !important;
+    right: 22px !important;
     transform: scale(1);
     z-index: 10000;
+    bottom: 11px;
+}
+
+#nex-forms .error_left .error_msg.modern,
+#nex-forms .has_postfix_icon .error_msg.modern{
+	right: unset !important;
+	left:-6px;
+}
+
+.has_postfix_icon .error_msg.modern {
+    right: 60px !important;
+}
+.select .error_msg.modern{
+	right: 25px !important;
 }
 #nex-forms .has_error.star-rating #star .fa.fa-fw {
     color: #f44336 !important;
@@ -6223,10 +6416,10 @@ div.jq_radio_check {
 .error_msg.modern.input_large, .success_msg.modern.input_large {
     bottom: 12px;
 }
-#nex-forms .selection_fields .modern {
+/*#nex-forms .selection_fields .modern {
     bottom: 9px;
     right: 40px;
-}
+}*/
 #nex-forms .upload-multi .modern, #nex-forms .upload-single .modern {
     right: 125px !important;
     top: 12px;
@@ -6316,17 +6509,16 @@ div.jq_radio_check {
     width: 100px !important;
 }
 #nex-forms .time .bootstrap-datetimepicker-widget table {
-    background: #fff none repeat scroll 0 0 !important;
     width: 20px !important;
 }
 #nex-forms .time .bootstrap-datetimepicker-widget table td {
-    background: #fff none repeat scroll 0 0 !important;
     height: 10px !important;
     line-height: 1px !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 0 !important;
 }
+
 #nex-forms .material_field label.nf_title span.the_label {
     margin-left: -16px !important;
 }
@@ -6339,10 +6531,7 @@ div.jq_radio_check {
 #nex-forms .survey_fields .tooltip.top {
     top: -42px !important;
 }
-#nex-forms .material_field.selection_fields.form_field {
-    margin-bottom: 0 !important;
-    margin-top: 25px !important;
-}
+
 #nex-forms .input-label.ui-checkboxradio-label {
     line-height: 18px;
     margin-bottom: 0;
@@ -6417,12 +6606,119 @@ div.jq_radio_check {
     background: #f7f7f7 none repeat scroll 0 0;
 }
 #nex-forms .multi-select select {
-    min-height: 110px !important;
+    min-height: 126px !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0;
+}
+
+
+#nex-forms .multi-select select[multiple] option:checked {
+  background: linear-gradient( #f1f1f1, #e7e7e7);
+}
+#nex-forms .multi-select select[multiple]:focus option:checked {
+  background: linear-gradient( #80BFFF, #80BFFF);
+}
+#nex-forms .multi-select select[multiple]:focus option {
+  color:#666 !important;
+}
+#nex-forms .multi-select select[multiple]:active option {
+  color:#666 !important;
 }
 #nex-forms .ui-nex-forms-container select option {
-    border-bottom: 1px solid #f5f5f5;
-    padding: 5px;
+    border-bottom: 1px solid #e2e2e2;
+    padding: 7px;
 }
+#nex-forms .ui-nex-forms-container select option:last-child {
+    border-bottom: none;
+}
+
+#nex-forms .ui-nex-forms-container .has_prefix_icon select option {
+    border-left: 1px solid #ddd;
+}
+#nex-forms .ui-nex-forms-container .has_postfix_icon select option {
+    border-right: 1px solid #ddd;
+}
+
+#nex-forms .ui-nex-forms-container .has_prefix_icon select[multiple]:focus option:checked {
+    border-left: 1px solid #80BFFF;
+}
+#nex-forms .ui-nex-forms-container .has_postfix_icon select[multiple]:focus option:checked {
+    border-right: 1px solid #80BFFF;
+}
+
+
+#nex-forms .ui-nex-forms-container select[multiple] option:before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0c8";
+    display: inline-block;
+    padding-right: 9px;
+    vertical-align: middle;
+    font-weight: normal;
+    color: #ddd;
+    font-size: 15px;
+}
+
+#nex-forms .ui-nex-forms-container  select[multiple] option:checked:before {
+   font-family: "Font Awesome 5 Free";
+   content: "\f00c";
+   display: inline-block;
+   padding-right: 9px;
+   vertical-align: middle;
+   font-weight: 900;
+   color:#8bc34a;
+   font-size: 15px;
+}
+
+
+#nex-forms .ui-nex-forms-container select[multiple]:focus option:checked:before{
+	font-family: "Font Awesome 5 Free";
+   content: "\f00c";
+   display: inline-block;
+   padding-right: 9px;
+   vertical-align: middle;
+   font-weight: 900;
+   color:#fff;
+   font-size: 15px;
+}
+
+#nex-forms .ui-nex-forms-container select[multiple] option:first-child:before {
+    content: "" !important;
+}
+
+#nex-forms .ui-nex-forms-container select[multiple] option[value="0"]{
+	background: linear-gradient( #fff, #fff);
+}
+
+
+
+/* width */
+#nex-forms ::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+#nex-forms ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+#nex-forms ::-webkit-scrollbar-thumb {
+  background: #ddd;
+  /*border-radius:5px;*/
+}
+
+/* Handle on hover */
+#nex-forms ::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+
+
+
+
+
+
 #nex-forms .align_center p {
     text-align: center;
 }
@@ -6438,7 +6734,7 @@ div.jq_radio_check {
 #nex-forms .character-counter {
     bottom: 0;
     position: absolute;
-    right: 0;
+    right: 15px;
 }
 #nex-forms div.icon-holder {
     cursor: pointer;
@@ -6953,8 +7249,13 @@ div.jq_radio_check {
     visibility: visible !important;
 }
 
-.the-icon-option-container input {
-    display: none !important;
+.icon-holder  input {
+    /*top:1px;
+	left:1px;
+	z-index:100000 !important;
+	position:absolute !important;
+	opacity:1 !important;;
+	    display: block !important;*/
 }
 
 
@@ -7023,37 +7324,38 @@ div.jq_radio_check {
   }
 }
 
-.nex_forms_modal .modal-content {
+#nex-forms .nex_forms_modal .modal-content {
     border: medium none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     overflow-y: auto;
-    /*height: calc(100% - 79px);*/
+    overflow-x: hidden;
 }
-.nex_forms_modal .modal-header {
+#nex-forms .nex_forms_modal .modal-header {
     background: #40c4ff none repeat scroll 0 0 !important;
+	display:none;
 }
-.nex_forms_modal h4 {
+#nex-forms .nex_forms_modal h4 {
     color: #fff !important;
     text-align: left;
 }
-#nex-forms .modal .modal-close{
+#nex-forms .nex_forms_modal .modal .modal-close{
 	color:#666 !important;
 }
-#nex-forms .modal .modal-header {
+#nex-forms .nex_forms_modal .modal .modal-header {
     background: #f2f2f2 none repeat scroll 0 0;
     border-bottom: 1px solid #ddd;
     padding: 14px 11px 4px 20px;
     display: none !important;
 }
 
-#nex-forms .modal.nex_forms_modal {
+#nex-forms .nex_forms_modal .modal.nex_forms_modal {
 
-    height: 510px !important;
+    /*height: 510px !important;*/
 }
 
 
-#nex-forms .modal.nex_forms_modal .modal-close {
+#nex-forms .nex_forms_modal .modal.nex_forms_modal .modal-close {
     right: 10px !important;
     top: 10px !important;
     position: absolute;
@@ -7090,4 +7392,540 @@ div.jq_radio_check {
 }
 .grid-replication-container.limited .recreate-grid {
     display: none;
+}
+
+
+
+/* CONVERSATIONAL FORMS */
+.cf_dummy_field{
+	opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+}
+.form_type_conversational .form_field {
+    opacity: 0.4;
+}
+.form_type_conversational .form_field.active {
+    opacity: 1;
+	
+}
+.bootstrap .form_type_conversational .form_field.active {
+    opacity: 1;
+	transform:scale(1.03);
+	transition:all 0.3s ease 0.1s;
+	
+}
+.bootstrap .form_type_conversational .form_field.radio-group.active,
+.bootstrap .form_type_conversational .form_field.check-group.active,
+.bootstrap .form_type_conversational .form_field.icon-select-group.active{
+	transform:scale(1);
+}
+.bootstrap .form_type_conversational .form_field.check-group.active .radio-group label,
+.bootstrap .form_type_conversational .form_field.icon-select-group.active .icon-container .icon-holder{
+	opacity:0.4;
+}
+.bootstrap .form_type_conversational .form_field.check-group.active .radio-group label.check_on_focus,
+.bootstrap .form_type_conversational .form_field.icon-select-group.active .icon-container .icon-holder.check_on_focus {
+   /* border-bottom: 1px dashed rgba(0,0,0,0.3);*/
+   opacity:1;
+   transform:scale(1.1) !important;
+	transition:all 0.3s ease 0.1s !important;
+}
+.bootstrap .form_type_conversational .form_field.check-group.active label a {
+  box-shadow:0px 0px 0px rgba(0,0,0,0) !important;
+}
+.bootstrap .form_type_conversational .form_field.check-group.active label.check_on_focus a {
+   transform:scale(1.2) !important;
+   box-shadow:8px 9px 15px rgba(0,0,0,0.1) !important;
+   transition:all 0.3s ease 0.1s !important;
+}
+
+#nex-forms .bootstrap .form_type_conversational .form_field input.form-control,
+#nex-forms .bootstrap .form_type_conversational .form_field select.form-control,
+#nex-forms .bootstrap .form_type_conversational .form_field textarea.form-control,
+#nex-forms .bootstrap .form_type_conversational .form_field button{
+	box-shadow:0px 0px 0px rgba(0,0,0,0) !important;
+	/*transition:all 0.5s ease 0.1s;*/
+}
+#nex-forms .bootstrap .form_type_conversational .form_field.active input.form-control,
+#nex-forms .bootstrap .form_type_conversational .form_field.active select.form-control,
+#nex-forms .bootstrap .form_type_conversational .form_field.active textarea.form-control,
+#nex-forms .bootstrap .form_type_conversational .form_field button{
+	box-shadow:8px 9px 15px rgba(0,0,0,0.1) !important;
+	transition:all 0.5s ease 0s !important;
+}
+/*#nex-forms .form_type_conversational .form_field .modern i {
+	text-shadow:0px 0px 0px rgba(0,0,0,0) !important;
+}
+#nex-forms .form_type_conversational .form_field.active .modern i {
+	text-shadow:8px 9px 15px rgba(0,0,0,0.1) !important;
+	transition:all 0.5s ease 0s !important;
+}*/
+
+ @-webkit-keyframes autofill-md {
+      to {
+        color: #666;
+        background:transparent;
+      }
+    }
+    
+.m_design input:-webkit-autofill {
+  -webkit-animation-name: autofill-md;
+  -webkit-animation-fill-mode: both;
+}
+
+@-webkit-keyframes autofill-bs {
+      to {
+        color: #666;
+        background:#fff;
+      }
+    }
+    
+.bootstrap input:-webkit-autofill {
+  -webkit-animation-name: autofill-bs;
+  -webkit-animation-fill-mode: both;
+}
+.m_design input:focus,
+.m_design textarea:focus,
+.m_design select:focus,
+.m_design input,
+.m_design textarea,
+.m_design select{
+	background:transparent !important;
+}
+#nex-forms .radio-group .check-icon.fa.fa-circle {
+    font-size: 9px;
+   /* text-shadow: 2px 2px 4px rgba(0,0,0,0.2);*/
+}
+#nex-forms .check-icon.checked .fa, 
+#nex-forms .check-icon.checked .fas, 
+#nex-forms .check-icon.checked .far, 
+#nex-forms .check-icon.checked .fab{
+   /* text-shadow: 2px 2px 4px rgba(0,0,0,0.2);*/
+}
+#nex-forms .form_field.classic_field .input-label {
+    margin-left: 10px;
+    position: relative;
+    top: 0px;
+}
+
+
+
+#nex-forms .form_field.classic_field input[type="radio"],
+#nex-forms .form_field.classic_field input[type="check"] {
+    opacity: 1 !important;
+    margin-right: 20;
+    margin-right: ;
+}
+
+
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field) .input-group-addon.prefix,
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field) .input-group-addon.postfix {
+    background: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-radius: 0 !important;
+    padding-left: 3px;
+	padding-right: 3px;
+	transition: all 0.2s ease 0s;
+}
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field) .form-control {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+}
+#nex-forms .m_design .form_field:not(.material_field).name .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).surname .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).email .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).phone_number .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).url .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).text .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).textarea .label_container.col-sm-12 span.the_label,
+#nex-forms .m_design .form_field:not(.material_field).Query .label_container.col-sm-12 span.the_label{
+	position: relative;
+    top: 32px;
+	transition: all 0.2s ease 0s;
+}
+#nex-forms .m_design .form_field:not(.material_field).has_prefix_icon .label_container.col-sm-12 span.the_label{
+	left:32px;
+}
+#nex-forms .m_design .form_field:not(.material_field).has_postfix_icon .label_container.col-sm-12 span.the_label.align_right {
+    left: unset;
+    right: 32px;
+}
+
+#nex-forms .m_design .form_field:not(.material_field).is_focused .label_container.col-sm-12 span.the_label.align_right{
+	top:5px;
+	right:0;
+	transition: all 0.2s ease 0s;
+}
+#nex-forms .m_design .form_field:not(.material_field).is_focused .label_container.col-sm-12 span.the_label{
+	top:5px;
+	left:0;
+	transition: all 0.2s ease 0s;
+}
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field) .form-control,
+ {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 0;
+}
+#nex-forms .ui-nex-forms-container .form_field.touch_spinner  .form-control{
+	border-radius:0 !important;	
+}
+
+#nex-forms .ui-nex-forms-container.neumorphism button.btn.bootstrap-touchspin-down{
+	border-radius:0px !important;
+	border-top-left-radius: 7px !important;
+	border-bottom-left-radius: 7px !important;
+	border-right:none !important;
+	background:rgba(255,255,255,0.5) !important;
+}
+#nex-forms .ui-nex-forms-container.neumorphism button.btn.bootstrap-touchspin-up{
+	border-radius:0px !important;
+	border-top-right-radius: 7px !important;
+	border-bottom-right-radius: 7px !important;
+	border-left:none !important;
+	background:rgba(255,255,255,0.5) !important;
+}
+#nex-forms .ui-nex-forms-container button.btn.bootstrap-touchspin-down, 
+#nex-forms .ui-nex-forms-container button.btn.bootstrap-touchspin-up {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 0 !important;
+    font-size: 12px !important;
+    border-color: #ddd;
+	color: #777;
+	background:#fff;
+}
+
+#nex-forms .ui-nex-forms-container.m_design a.checked{
+	border-width:2px !important;
+	border-style:solid !important;
+	background:transparent !important;
+}
+
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field) textarea.form-control{
+	padding: 9px;
+}
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field).has_prefix_icon .form-control,
+#nex-forms .ui-nex-forms-container.m_design .form_field:not(.material_field).has_postfix_icon .form-control{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+
+/* NEUMORPHISM */
+#nex-forms .ui-nex-forms-container.neumorphism .form_field .form-control {
+    border: 2px solid #f3f4f7 !important;
+    box-shadow: 2px 2px 3px rgba(55, 84, 170, .15), inset 0px 0px 4px rgba(255, 255, 255, 0), inset 7px 7px 15px rgba(55, 84, 170, .15), inset -7px -7px 20px rgba(255, 255, 255, 1), 0px 0px 4px rgba(255, 255, 255, .2) !important;
+    background:transparent;
+	border-radius:7px;
+}
+
+#nex-forms .ui-nex-forms-container.neumorphism .form_field.has_prefix_icon .form-control{
+	border-radius:0px;
+	border-top-right-radius: 7px;
+	border-bottom-right-radius: 7px;
+	border-right:none !important;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .form_field.has_postfix_icon .form-control{
+	border-radius:0px;
+	border-top-left-radius: 7px;
+	border-bottom-left-radius: 7px;
+	border-left:none !important;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .form_field.has_prefix_icon.has_postfix_icon .form-control{
+	border-left:none !important;
+    border-right: none !important;
+	border-radius:0 !important;
+}
+
+#nex-forms .ui-nex-forms-container.neumorphism .form_field .input-group-addon.prefix,
+#nex-forms .ui-nex-forms-container.neumorphism button.btn.bootstrap-touchspin-down,
+#nex-forms .ui-nex-forms-container.neumorphism button.btn.bootstrap-touchspin-up {
+    box-shadow: 
+	2px 2px 3px rgba(55, 84, 170, .15), 
+	inset 0px 0px 4px rgba(255, 255, 255, 0), 
+	inset 7px 7px 15px rgba(55, 84, 170, .15), 
+	inset -7px -7px 20px rgba(255, 255, 255, 1), 
+	0px 0px 4px rgba(255, 255, 255, .2) !important;
+	
+    border: 2px solid #f3f4f7 !important;
+    border-right: none !important;
+	border-top-left-radius: 7px;
+	border-bottom-left-radius: 7px;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .form_field .input-group-addon.postfix {
+    box-shadow: 2px 2px 3px rgba(55, 84, 170, .15), inset 0px 0px 4px rgba(255, 255, 255, 0), inset 7px 7px 15px rgba(55, 84, 170, .15), inset -7px -7px 20px rgba(255, 255, 255, 1), 0px 0px 4px rgba(255, 255, 255, .2) !important;
+    border: 2px solid #f3f4f7 !important;
+    border-left: none !important;
+	border-top-right-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+
+
+#nex-forms .ui-nex-forms-container.neumorphism .slider.ui-slider {
+    margin-bottom: 9px;
+    margin-top: 9px;
+    box-shadow: 2px 2px 3px rgba(55, 84, 170, .15), inset 0px 0px 4px rgba(255, 255, 255, 0), inset 7px 7px 15px rgba(55, 84, 170, .15), inset -7px -7px 20px rgba(255, 255, 255, 1), 0px 0px 4px rgba(255, 255, 255, .2) !important;
+    border: 2px solid #f3f4f7 !important;
+    padding: 5px;
+}
+
+#nex-forms .ui-nex-forms-container.neumorphism .ui-slider .ui-slider-handle {
+    border: none !important;
+    box-shadow: 7px 7px 15px rgba(55, 84, 170, .15), 0px 0px 15px rgba(55, 84, 170, .3) !important;
+    border-radius: 20px !important;
+    min-width: 29px !important;
+    text-align: center !important;
+	top:-8px !important;
+	background:transparent;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .ui-slider .ui-slider-handle.ui-state-active{
+box-shadow:7px 7px 15px rgba(55, 84, 170, .15),
+              -7px -7px 20px rgba(255, 255, 255, 0.1),
+              inset 0px 0px 4px rgba(255, 255, 255, 0),
+              inset 7px 7px 15px rgba(55, 84, 170, .15),
+              inset -7px -7px 20px rgba(255, 255, 255, 1),
+              0px 0px 4px rgba(255, 255, 255, .2) !important;
+}
+
+#nex-forms .ui-nex-forms-container.neumorphism .prettyradio a, #nex-forms .ui-nex-forms-container.neumorphism .prettycheckbox a {
+    background: rgba(255,255,255,0.2) none repeat scroll 0 0;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 30px !important;
+    width: 30px !important;
+    color: #fff;
+    box-shadow: 7px 7px 15px rgba(55, 84, 170, .15), -7px -7px 20px rgba(255, 255, 255, 1), inset 0px 0px 4px rgba(255, 255, 255, .2), inset 7px 7px 15px rgba(55, 84, 170, 0), inset -7px -7px 20px rgba(255, 255, 255, 0), 0px 0px 4px rgba(255, 255, 255, 0) !important;
+	transition:all 0s ease 0s !important;
+	cursor:pointer !important;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .prettyradio>a.checked, 
+#nex-forms .ui-nex-forms-container.neumorphism .prettycheckbox>a.checked, 
+#nex-forms .ui-nex-forms-container.neumorphism label.radio-inline:hover a.checked, 
+#nex-forms .ui-nex-forms-container.neumorphism .prettyradio>a.checked:hover, 
+#nex-forms .ui-nex-forms-container.neumorphism .prettycheckbox>a.checked:hover, 
+#nex-forms .ui-nex-forms-container.neumorphism label.radio-inline:hover a.checked:hover{
+	box-shadow:7px 7px 15px rgba(55, 84, 170, .15),
+              -7px -7px 20px rgba(255, 255, 255, 0.1),
+              inset 0px 0px 4px rgba(255, 255, 255, 0),
+              inset 7px 7px 15px rgba(55, 84, 170, .15),
+              inset -7px -7px 20px rgba(255, 255, 255, 1),
+              0px 0px 4px rgba(255, 255, 255, .2) !important;
+	border: none !important;	
+	background-color: #fff !important;  
+	transition:all 0s ease 0s !important;
+	cursor:pointer !important;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .input-label:not(.image-choices-choice-text) {
+    color: #999;
+    display: block;
+    margin-top: -13px;
+    padding-left: 21px;
+    cursor: pointer !important;
+}
+#nex-forms .ui-nex-forms-container.neumorphism .check-icon{
+    height: 30px;
+    width: 30px;
+	color:#999 !important;
+	cursor:pointer !important;
+	font-size:14px;
+}
+
+#nex-forms .ui-nex-forms-container.neumorphism .radio-group .check-icon.fa-circle {
+    font-size: 12px;
+}
+#nex-forms .ui-nex-forms-container.neumorphism button.btn{
+  border: none;
+  /*padding: 10px 40px;*/
+  border-radius: 7px;
+  color: #6D7587;
+  background-color: transparent;
+  box-shadow: 7px 7px 15px rgba(55, 84, 170, .15),
+              -7px -7px 20px rgba(255, 255, 255, 0.1),
+              inset 0px 0px 4px rgba(255, 255, 255, .2),
+              inset 7px 7px 15px rgba(55, 84, 170, 0),
+              inset -7px -7px 20px rgba(255, 255, 255, 0),
+              0px 0px 4px rgba(255, 255, 255, 0) !important;
+  transition: box-shadow .25s ease !important;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+#nex-forms .ui-nex-forms-container.neumorphism button.btn:active {  
+  /*box-shadow: 7px 7px 15px rgba(55, 84, 170, .15),
+              -7px -7px 20px rgba(255, 255, 255, 1),
+              inset 0px 0px 4px rgba(255, 255, 255, 0),
+              inset 7px 7px 15px rgba(55, 84, 170, .15),
+              inset -7px -7px 20px rgba(255, 255, 255, 1),
+              0px 0px 4px rgba(255, 255, 255, .2) !important;*/
+	border: 1px solid rgba(0,0,0,0);
+}
+
+/*JQUERY UI*/
+#nex-forms .ui-nex-forms-container.jquery_ui div.radio-group label.radio-inline, 
+#nex-forms .ui-nex-forms-container.jquery_ui div.radio-group label.checkbox-inline, 
+#nex-forms .ui-nex-forms-container.jquery_ui div.checkbox-group label {
+    line-height: 18px;
+    padding-bottom: 10px;
+    padding-left: 18px;
+    padding-right: 5px;
+    position: relative;
+    cursor: default !important;
+    /* opacity: 0.7; */
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 6px 12px 6px 19px;
+    margin-top: -3px;
+}
+
+#nex-forms .ui-nex-forms-container.jquery_ui div.radio-group label a, 
+#nex-forms .ui-nex-forms-container.jquery_ui div.checkbox-group label a {
+    position: absolute;
+    top: 7px;
+    left: 6px;
+    text-decoration: none;
+	background: #fff !important;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2) !important;
+}
+#nex-forms .ui-nex-forms-container.jquery_ui .prettyradio a, 
+#nex-forms .ui-nex-forms-container.jquery_ui .prettycheckbox a {
+    height: 17px !important;
+    line-height: 17px;
+    width: 17px !important;
+    font-size: 12px;
+}
+#nex-forms .ui-nex-forms-container.jquery_ui .check-icon.fa {
+    height: 17px !important;
+    left: 6px !important;
+    top: 7px !important;
+    width: 17px !important;
+	color:#333 !important;
+}
+#nex-forms .ui-nex-forms-container.jquery_ui .prettyradio>a.checked,
+#nex-forms .ui-nex-forms-container.jquery_ui .prettycheckbox>a.checked, 
+#nex-forms .ui-nex-forms-container.jquery_ui label.radio-inline:hover a.checked, 
+#nex-forms .ui-nex-forms-container.jquery_ui .prettyradio>a.checked:hover, 
+#nex-forms .ui-nex-forms-container.jquery_ui .prettycheckbox>a.checked:hover, 
+#nex-forms .ui-nex-forms-container.jquery_ui label.radio-inline:hover a.checked:hover{
+	 box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1) !important;
+}
+#nex-forms .nex_forms_modal.modal.v_center {
+    /* margin-top: 15%;
+     margin-bottom: 15%;*/
+}
+#nex-forms .nex_forms_modal.modal.h_center {
+   	margin-left: auto !important;
+    margin-right: auto !important;
+   
+}
+#nex-forms .modal.nex_forms_modal.v_bottom {
+    top: unset !important;
+    bottom: 0px !important;
+}
+#nex-forms .modal.nex_forms_modal.v_top {
+    top: 0px !important;
+	bottom:unset;
+}
+
+.nex_forms_modal.h_left {
+	right:unset !important;
+    left: 0px !important;
+}
+.nex_forms_modal.h_right {
+	left:unset !important;
+    right: 0px !important;
+}
+
+@media only screen and (max-width: 800px){
+#nex-forms .modal.nex_forms_modal {
+    width: 90% !important;
+    top: 0% !important;
+    height: 95vh !important;
+    left: 0 !important;
+    margin: 10px;
+    max-width: 357px;
+}
+
+#nex-forms div.ui-nex-forms-container .form_field {
+    margin: 15px 0 !important;
+}
+#nex-forms div.ui-nex-forms-container .form_field.html_fields {
+    margin: 15px 15px !important;
+}
+}
+.nex_forms_modal .set_form_theme, 
+.nex_forms_modal #nex-forms, 
+.nex_forms_modal .modal-content, 
+.nex_forms_modal .ui-nex-forms-container,
+.nex_forms_modal .v7_container{
+	overflow: auto;
+}
+.nex_forms_modal .set_form_theme, 
+.nex_forms_modal #nex-forms, 
+.nex_forms_modal .modal-content, 
+.nex_forms_modal .ui-nex-forms-container, 
+.nex_forms_modal .v7_container {
+    height: 100%;
+    
+}
+.nex_forms_modal #nex-forms .ui-nex-forms-container .v7_container {
+    border-style: solid;
+    border-width: 0;
+    border-color: rgba(255,255,255,0);
+    /* width: 94% !important; */
+    /* height: 94% !important; */
+    /* margin-left: 2%; */
+    /* margin-top: 2%; */
+    overflow-x: hidden;
+}
+
+#nex-forms .nex_forms_modal.modal {
+    border-style: solid;
+    border-width: 0;
+}
+
+
+.out_of_focus {
+    display: none !important;
+}
+.form_type_chat .paragraph div#field_container,
+.form_type_chat .headings div#field_container {
+    display: inline !important;
+    width: auto !important;
+	float:left;
+}
+
+#nex-forms div.ui-nex-forms-container .v7_container.form_type_chat {
+    padding-bottom: 200px !important;
+}
+#nex-forms div.ui-nex-forms-container .form_type_chat .form_field.chat_question {
+    position: absolute;
+    bottom: -190px;
+}
+.chat_answered #field_container {
+    display: none;
+}
+.user_answer {
+    background: #4c4e4f;
+    display: inline;
+    float: right;
+    padding: 15px 35px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+#nex-forms .ui-nex-forms-container .prefix, #nex-forms .ui-nex-forms-container .postfix {
+    opacity: 1 !important;
 }

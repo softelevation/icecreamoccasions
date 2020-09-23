@@ -4730,7 +4730,7 @@ html {
   }
 }
 
-.tooltip {
+#nex-forms .tooltip {
   padding: 10px 8px;
   font-size: 1rem;
   z-index: 2000;
@@ -5263,9 +5263,8 @@ html {
   z-index: -1;
 }
 
-#nex-forms .modal{
-	background-color: #fafafa;
-    border-radius: 2px;
+#nex-forms .modal {
+    background-color: #fafafa;
     display: none;
     left: 0;
     margin: auto;
@@ -5273,10 +5272,10 @@ html {
     padding: 0;
     position: fixed;
     right: 0;
-    top: 20%;
-    width: 55%;
-    will-change: top, opacity;
-	}
+    overflow-y: auto;
+	opacity:1 !important;
+	/*transform:scale(1) !important;*/
+}
 @media only screen and (max-width: 992px){
 	#nex-forms .modal{width:80%}
 	}
@@ -5303,55 +5302,58 @@ background: #f2f2f2 none repeat scroll 0 0;
     width: 87%;
 	}
 
-#nex-forms .modal .modal-close { 
-	    border-radius: 50%;
-    color: #fff;
-    display: block;
+#nex-forms .nex_forms_modal.modal .modal-close {
+    border-radius: 50%;
+    color: rgba(158, 158, 158, 0.5);
+    display: flex;
     float: right;
-    font-size: 11px;
+    font-size: 12px;
     height: 25px;
-    line-height: 25px;
     margin-left: 0px;
-    text-align: center;
     transition: all 0.4s ease-in-out 0s;
     width: 25px;
-    margin-right: -3px;
-    margin-top: -2px;
+    right: 10px;
+    position: absolute;
+    top: 10px;
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    background: rgba(158, 158, 158, 0.1);
+    border: 1px solid rgba(158, 158, 158, 0.2);
 }
 
 #nex-forms .modal .modal-header span .material-icons{	font-size:20px;}
 
 #nex-forms .nex_forms_modal .modal-close {
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
 }
 #nex-forms .nex_forms_modal .modal-close .fa {
     font-size: 12px !important;
     position: relative;
-    top: -1px;
 }
 
-#nex-forms .modal  .modal-close:hover {	transform:rotate(180deg);	transition: all 0.3s ease-in-out 0s;	cursor:pointer;	opacity:1;} 
+#nex-forms .nex_forms_modal.modal  .modal-close:hover {	transform:rotate(180deg);	transition: all 0.3s ease-in-out 0s;	cursor:pointer;	opacity:1;} 
 
-#nex-forms .modal .modal-content{padding:24px} 
 
-#nex-forms .modal .modal-close{cursor:pointer}
 
-#nex-forms .modal .modal-footer{border-radius:0 0 2px 2px;background-color:#fafafa;padding:4px 6px;height:56px;width:100%}
+#nex-forms .nex_forms_modal.modal .modal-close{cursor:pointer}
 
-#nex-forms .modal .modal-footer .mb-btn,
-#nex-forms .modal .modal-footer .mb-btn-large,
-#nex-forms .modal .modal-footer .mb-btn-flat{
+#nex-forms .nex_forms_modal.modal .modal-footer{border-radius:0 0 2px 2px;background-color:#fafafa;padding:4px 6px;height:56px;width:100%}
+
+#nex-forms .nex_forms_modal.modal .modal-footer .mb-btn,
+#nex-forms .nex_forms_modal.modal .modal-footer .mb-btn-large,
+#nex-forms .nex_forms_modal.modal .modal-footer .mb-btn-flat{
 	float:right;margin:6px 0
 	}
 
 
-#nex-forms .modal {
+#nex-forms .nex_forms_modal.modal {
     z-index: 999999999  !important;
 }
 
 .modal-overlay {
   position: fixed;
-  z-index: 100000001 !important;
+  z-index: 1000000 !important;
   top: -25%;
   left: 0;
   bottom: 0;
@@ -6343,16 +6345,16 @@ form p:last-child {
 
 #nex-forms .material_design_field.input-field input[type=checkbox]:checked:not(:disabled) ~ .lever:active::before,
 #nex-forms .material_design_field.input-field input[type=checkbox]:checked:not(:disabled).tabbed:focus ~ .lever::before {
-  -webkit-transform: scale(2.4);
+ /* -webkit-transform: scale(2.4);
           transform: scale(2.4);
-  background-color: rgba(38, 166, 154, 0.15);
+  background-color: rgba(38, 166, 154, 0.15);*/
 }
 
 #nex-forms .material_design_field.input-field input[type=checkbox]:not(:disabled) ~ .lever:active:before,
 #nex-forms .material_design_field.input-field input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::before {
-  -webkit-transform: scale(2.4);
+ /* -webkit-transform: scale(2.4);
           transform: scale(2.4);
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: rgba(0, 0, 0, 0.08);*/
 }
 
 #nex-forms .switch .material_design_field.input-field input[type=checkbox][disabled] + .lever {
@@ -7744,8 +7746,8 @@ form p:last-child {
 
 #nex-forms .tap-target-wrapper.open .tap-target-wave::after {
   visibility: visible;
-  -webkit-animation: pulse-animation 1s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-          animation: pulse-animation 1s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  -webkit-animation: pulse-animation 1s cubic-bezier(0.24, 0, 0.38, 1);
+          animation: pulse-animation 1s cubic-bezier(0.24, 0, 0.38, 1);
   -webkit-transition: opacity .3s, visibility 0s 1s, -webkit-transform .3s;
   transition: opacity .3s, visibility 0s 1s, -webkit-transform .3s;
   transition: opacity .3s, transform .3s, visibility 0s 1s;
@@ -7849,8 +7851,8 @@ form p:last-child {
   transition: opacity .3s, -webkit-transform .3s;
   transition: opacity .3s, transform .3s;
   transition: opacity .3s, transform .3s, -webkit-transform .3s;
-  -webkit-animation: pulse-animation 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-          animation: pulse-animation 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  -webkit-animation: pulse-animation 1.5s cubic-bezier(0.24, 0, 0.38, 1) ;
+          animation: pulse-animation 1.5s cubic-bezier(0.24, 0, 0.38, 1) ;
   z-index: -1;
 }
 

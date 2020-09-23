@@ -155,8 +155,12 @@ class ThemesController_bwg {
     }
     else {
       global $wpdb;
-      $where = ($all ? '' : ' WHERE id=' . $id);
-      $delete = $wpdb->query('DELETE FROM `' . $wpdb->prefix . 'bwg_theme`' . $where);
+      $where = ($all ? '' : ' WHERE id=%d');
+      if( $where != '' ) {
+          $delete = $wpdb->query($wpdb->prepare('DELETE FROM `' . $wpdb->prefix . 'bwg_theme`' . $where, $id));
+      } else {
+          $delete = $wpdb->query('DELETE FROM `' . $wpdb->prefix . 'bwg_theme`' . $where);
+      }
       if ( $delete ) {
         $message = 3;
       }
@@ -206,30 +210,6 @@ class ThemesController_bwg {
                                                   'message' => $message,
                                                 ), admin_url('admin.php')));
     }
-  }
-
-  /**
-   * Set default.
-   *
-   * @param      $id
-   * @param bool $bulk
-   * @param bool $all
-   */
-  public function setdefault( $id, $bulk = FALSE, $all = FALSE ) {
-    $this->model->update( array( 'default_theme' => 0 ), array( 'default_theme' => 1 ) );
-    $save = $this->model->update( array( 'default_theme' => 1 ), array( 'id' => $id ) );
-    if ( $save !== FALSE ) {
-      $message = 7;
-    }
-    else {
-      $message = 2;
-    }
-    $page = WDWLibrary::get('page');
-    WDWLibrary::redirect(add_query_arg(array(
-                                                'page' => $page,
-                                                'task' => 'display',
-                                                'message' => $message,
-                                              ), admin_url('admin.php')));
   }
 
   /**
@@ -398,52 +378,5 @@ class ThemesController_bwg {
                                  'message' => $data['msg'],
                                ), $query_url);
     WDWLibrary::spider_redirect($query_url);
-  }
-
-  /**
-   * Save db by id.
-   *
-   * @param  int $id
-   *
-   * @return int $message_id
-   */
-	public function save_db( $id = 0 ) {
-		global $wpdb;
-    $row = new WD_BWG_Theme($id);
-    $theme_name = WDWLibrary::get('name', 'Theme');
-    foreach ($row as $name => $value) {
-      $name_var = $name;
-      if ( WD_BWG_Theme::font_style($name) ) {
-        if ( $_POST[WD_BWG_Theme::font_style($name)] != '1' ) {
-          $name_var = $name . '_default';
-        }
-      }
-      $post_name = WDWLibrary::get($name_var);
-      if ( !in_array($name, array('id', 'name', 'default_theme')) && !empty($post_name) ) {
-        $row->$name = $post_name;
-      }
-    }
-    $themes = json_encode($row);
-
-    if ( $id == 0 ) {
-      $save = $wpdb->insert($wpdb->prefix . 'bwg_theme', array(
-        'name' => $theme_name,
-        'options' => $themes,
-        'default_theme' => 0,
-      ));
-      $id = $wpdb->insert_id;
-    }
-    else {
-      $save = $wpdb->update($wpdb->prefix . 'bwg_theme', array(
-        'name' => $theme_name,
-        'options' => $themes,
-      ), array( 'id' => $id ));
-    }
-    $message_id = 2;
-    if ( $save !== FALSE ) {
-      $message_id = 1;
-    }
-
-    return array( 'id' => $id, 'msg' => $message_id );
   }
 }

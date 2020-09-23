@@ -74,11 +74,18 @@ function()
 	jQuery(document).on('click','.conditional-logic-btn',
 		function()
 			{
-			jQuery('.conditional_logic_wrapper').addClass('opened');
-			jQuery(this).addClass('active');
-			jQuery('.form_canvas').addClass('conditional-logic-opened');
-			jQuery('.overall-settings-column #close-settings').trigger('click');
-			jQuery('.field-settings-column #close-settings').trigger('click');
+			if(jQuery(this).hasClass('active'))
+				{
+				jQuery('.conditional_logic_wrapper #close-settings').trigger('click');	
+				}
+			else
+				{	
+				jQuery('.conditional_logic_wrapper').addClass('opened');
+				jQuery('.conditional-logic-btn').addClass('active');
+				jQuery('.form_canvas').addClass('conditional-logic-opened');
+				jQuery('.overall-settings-column #close-settings').trigger('click');
+				jQuery('.field-settings-column #close-settings').trigger('click');
+				}
 			}
 		);
 	
@@ -332,6 +339,19 @@ function set_c_logic_fields(the_select){
 		);	
 	set_current_fields_conditional_logic += '</optgroup>';
 	
+	
+	set_current_fields_conditional_logic += '<optgroup label="Math Fields">';
+	jQuery('div.nex-forms-container div.form_field input.set_math_result').each(
+		function()
+			{
+			if(jQuery(this).attr('name')!='undefined')
+				{
+				set_current_fields_conditional_logic += '<option data-field-id="'+ jQuery(this).closest('.form_field').attr('id') +'" data-field-name="'+ format_illegal_chars(jQuery(this).attr('name'))  +'" data-field-type="hidden"  value="'+ jQuery(this).closest('.form_field').attr('id') +'**text##'+ format_illegal_chars(jQuery(this).attr('name'))  +'">'+ unformat_name(jQuery(this).attr('name')) +'</option>';
+				}
+			}
+		);	
+	set_current_fields_conditional_logic += '</optgroup>';
+	
 	set_current_action_fields_conditional_logic += '<optgroup label="Buttons">';
 	jQuery('div.nex-forms-container div.form_field.button_fields').each(
 		function()
@@ -363,6 +383,17 @@ function set_c_logic_fields(the_select){
 		);	
 	set_current_action_fields_conditional_logic += '</optgroup>';
 	
+	set_current_action_fields_conditional_logic += '<optgroup label="Images">';
+	jQuery('div.nex-forms-container div.form_field.html_image').each(
+		function()
+			{
+			var image = jQuery(this).find('img');
+			if(image.length>0 && image.attr('alt'))
+				set_current_action_fields_conditional_logic += '<option data-field-id="'+ jQuery(this).closest('.form_field').attr('id') +'" data-field-name="html" data-field-type="html"  value="'+ jQuery(this).attr('id') +'**image##html">'+ short_str(jQuery(this).find('img').attr('alt')) +'</option>';
+			}
+		);	
+	set_current_action_fields_conditional_logic += '</optgroup>';
+	
 	set_current_action_fields_conditional_logic += '<optgroup label="HTML/Paragraphs">';
 	jQuery('div.nex-forms-container div.form_field.html').each(
 		function()
@@ -378,7 +409,9 @@ function set_c_logic_fields(the_select){
 		);	
 	set_current_action_fields_conditional_logic += '</optgroup>';
 
-
+	
+	
+	
 	
 	
 	set_current_action_fields_conditional_logic += '<optgroup label="Steps">';

@@ -1,11 +1,11 @@
-jQuery(window).load(function(){
+jQuery(window).on('load',function(){
   window.bwgDocumentReady = true;
   if (window.bwgTinymceRendered) {
     jQuery(document).trigger("onUploadImg");
   }
 });
 
-jQuery(document).ready(function() {
+jQuery(function() {
   bwg_shortcode_ready();
 });
 jQuery(window).resize(function() {

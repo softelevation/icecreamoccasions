@@ -193,18 +193,18 @@ function load_nf_dashboard(){
 		//alert('test');
 		
 		/* FIRST RUN */
-/*var special_run = new Tour({
-		  name: "new-year-special-03",
+var special_run = new Tour({
+		  name: "july-special-02",
 		  onStart: function(){ },
 		  onEnd: function(){ },
 		  steps: [
 		  {
 			orphan: true,
-			title: "NEW YEAR SPECIAL!",
-			content: "<div class='new_tut'>Buy NEX-Forms NOW and get <strong>ALL ADD-ONS FREE</strong>!!! <br><br><strong>SAVE $96</strong>!</div></div>",
-			//content: "<div class='new_tut'>This is to inform you that NEX-Forms is currently at a 50% discount. If you need to renew support or get your hands on another license then now is your chance.</div></div>",
-			//template: "<div class='popover tour tutorial-step-1 animated fadeInUp'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><br><div class='popover-navigation'><a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button' style='display:block;'><span class='start-border'>BUY NOW</span><span class='start-border-2 pulsate_1'></a></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button><em>Offer ends 3 December!</em><span class='tip'><strong>TIP:</strong> I would not renew support for 6 months but simply rather buy another license, this way I get 6 months support plus an extra license to use...maybe thats just me, the choice is yours ;)</span></div>",
-			template: "<div class='popover tour tutorial-step-1 animated fadeInUp'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><br><div class='popover-navigation'><a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button' style='display:block;'><span class='start-border'>BUY NOW</span><span class='start-border-2 pulsate_1'></a></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button><em>Offer valid for a limited time only!</em></div>",
+			title: "<strong>SPECIAL NOW ON!</strong>",
+			content: "<div class='new_tut'>Buy NEX-Forms NOW and get <strong>ALL ADD-ONS FREE</strong>!!! <br><strong>SAVE $210</strong>!</div></div>",
+			//content: "<div class='new_tut'>This is to inform you that NEX-Forms ADD-ONS are currently FREE with a purchase of a NEX-Forms License! If you need to get your hands on another license then now is your chance!</div></div>",
+			template: "<div class='popover tour tutorial-step-1 animated fadeInUp'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><br><div class='popover-navigation'><a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button' style='display:block;'><span class='start-border'>BUY NOW</span><span class='start-border-2 pulsate_1'></a></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button><em>Offer valid for a limited time only!</em><span class='tip'><strong>FREE Add-ons Include:<br></strong>PayPal PRO &bull; PDF Creator &bull; Digital Signatures &bull; Form Themes &bull; Form to Post/Page &bull; Conditional Content Blocks &bull; Shorcode Processor &bull; PayPal Classic &bull; Super Select Form Fields &bull; MailChimp &bull; MailPoet &bull; Mailster &bull; GetResponse<br><br></span></div>",
+			//template: "<div class='popover tour tutorial-step-1 animated fadeInUp'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><br><div class='popover-navigation'><a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button' style='display:block;'><span class='start-border'>BUY NOW</span><span class='start-border-2 pulsate_1'></a></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button><em>Offer valid for a limited time only!</em></div>",
 			placement: 'bottom',
 			backdrop: true,
 			backdropContainer: 'body',
@@ -215,9 +215,10 @@ function load_nf_dashboard(){
 
 special_run.init();
 // Start the tour
-special_run.start();*/
+special_run.start();
 		
-		
+if(jQuery('#currently_viewing').text()=="backend")
+	special_run.restart();	
 		
 		
 		
@@ -733,6 +734,7 @@ special_run.start();*/
 					{
 					action	 						: 'nf_populate_form_entry_dashboard',
 					form_entry_Id					: record_id,
+					load_entry						: jQuery('#load_entry').text(),
 					edit_entry						: 0
 					};	
 				if(row.hasClass('edit_form_entry'))

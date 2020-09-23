@@ -62,8 +62,8 @@
       mousewheel: true,
       buttondown_class: 'btn btn-default',
       buttonup_class: 'btn btn-default',
-      buttondown_txt: '-',
-      buttonup_txt: '+'
+      buttondown_txt: '<span class="fa fa-minus"></span>',
+      buttonup_txt: '<span class="fa fa-plus"></span>'
     };
 
     var attributeMap = {

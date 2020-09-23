@@ -98,7 +98,8 @@
 		   
 		   for (i = 0; i < checks.length; i++) {
 				var the_check = this.parent().find('input[value="'+ checks[i] +'"]');
-				the_check.closest('label').find('a').trigger('click');
+				setTimeout(function(){ the_check.closest('label').trigger('click'); }, 100); 
+				//the_check.closest('label').find('a').trigger('click');
 				
 				var the_super_check = this.closest('.icon-container').find('input[value="'+ checks[i] +'"]');
 				the_super_check.prop('checked',true);
@@ -117,8 +118,9 @@
 		else if(type && type == "radio"){
 		  this.prop('checked',false);
           var the_radio = this.parent().find('input[value="'+ previousSet +'"]');
-		 
-		  the_radio.closest('label').find('a').trigger('click');
+	
+		  setTimeout(function(){ the_radio.closest('label').trigger('click'); }, 100); 
+
 		  the_radio.closest('.icon-holder').trigger('click');
 		  
 		  

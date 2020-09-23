@@ -3,6 +3,8 @@
 jQuery(document).ready(
 function()
 	{
+	jQuery('.change_image').remove();
+	
 	create_droppable(jQuery('div.nex-forms-container'));
 	jQuery(document).on('click', '.draggable_object', 
 		function()
@@ -10,7 +12,7 @@ function()
 			nf_form_modified('drop');
 			var animation_class = 'flipInX';
 			var clone_element = jQuery(this).closest('.form_field ').clone();
-			
+
 			if(jQuery('.nex-forms-container .active_step').attr('class') && !clone_element.hasClass('step'))
 				{
 				if(jQuery('div.nex-forms-container .active_step').find('.nex_prev_steps').attr('class'))
@@ -35,36 +37,105 @@ function()
 				reset_field_theme(jQuery('select[name="set_form_theme"]').val(),clone_element);
 			
 			
-			if(clone_element.hasClass('step'))
+			
+			
+				
+					/*var form_height = 0;
+					
+					clone_element.prevAll('.form_field').each(
+						function()
+							{
+							console.log(jQuery(this).outerHeight());
+							form_height += jQuery(this).outerHeight()
+							}
+						);
+					
+					jQuery('.form_canvas .form_field:not(.step)').each(
+						function()
+							{
+							if(jQuery(this).is(':visible'))
+								{
+								
+								if(!jQuery(this).parents().hasClass('step'))
+									{
+									form_height += jQuery(this).outerHeight()
+									}
+								}*/
+							//console.log(jQuery(this).outerHeight());
+							
+							/*jQuery(this).parents('.form_field').each(
+								function()	
+									{
+									if(jQuery(this).hasClass('step'))
+										console.log('in step')
+									else
+										console.log(jQuery(this).attr('class'));	
+									}
+								);*/
+								
+						/*	}
+						);*/
+					
+					//setTimeout(function() {
+						
+				if(clone_element.hasClass('step'))
 				{
-				clone_element.find('.form_field').each(
+					
+					clone_element.find('.form_field').each(
 					function()
 						{
 						jQuery(this).attr('id','_' + Math.round(Math.random()*99999));	
 						}
 					);	
-				var total_steps = nf_count_multi_steps();
-				jQuery('.multi-step-tools ul li:eq('+ total_steps +')').find('a').trigger('click');
-				jQuery('#ms-css-settings').show();
-				jQuery('.show_all_steps').show();
-				}
-			else
-				{
-				var the_offset = clone_element.offset();
+					var total_steps = nf_count_multi_steps();
+					jQuery('.multi-step-tools ul li:eq('+ total_steps +')').find('a').trigger('click');
+					jQuery('#ms-css-settings').show();
+					jQuery('.show_all_steps').show();
+						
+					
+					//nf_count_multi_steps();
+					
+					nf_setup_grid(clone_element.find('.nex_prev_steps'))
+					
+				}		
+				else
+					{		
+					
+					var the_offset = clone_element.offset();
 					setTimeout(function(){jQuery(".form_canvas").animate(
 							{
 							scrollTop:30000
 							},100
 						);
-					},100);
-				}
+					},100);	
+						
+					//},100);
+				
+				/*jQuery(".form_canvas").animate(
+							{
+							scrollTop:form_height + (clone_element.outerHeight()*2)
+							},350
+						);*/
+					}
 			}
 		);
 	});
 
 function reset_zindex(obj){
-	if(obj)
-		obj.attr('style','');
+	//if(obj)
+		//{
+			setTimeout(function()
+				{
+				obj.css('width','');
+				obj.css('right','');
+				obj.css('height','');
+				obj.css('bottom','');
+				obj.css('left',''); 
+				//obj.css('position','');
+				obj.css('z-index','');
+				},20
+			);
+		//}
 }
 Number.prototype.format = function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
@@ -79,9 +150,14 @@ function create_droppable(obj){
 	//Drag
    the_draggable.draggable(
 		{
-		drag: function( event, ui ) {  the_droppable.addClass('placing-field'); ui.helper.addClass('moving'); nf_form_modified('drag'); },//ui.helper.addClass('moving');
-		stop: function( event, ui ) {  the_droppable.removeClass('placing-field'); ui.helper.removeClass('moving'); 
-		},
+		drag: function( event, ui ) {  jQuery('.nex-forms-container').addClass('dragging'); the_droppable.addClass('placing-field'); ui.helper.addClass('moving'); nf_form_modified('drag'); },//ui.helper.addClass('moving');
+		stop: function( event, ui ) {  jQuery('.nex-forms-container').removeClass('dragging');  jQuery('.field_settings').removeClass('parent-over-field');
+			jQuery('.field_settings').removeClass('over-field');the_droppable.removeClass('placing-field'); ui.helper.removeClass('moving'); 
+			
+			//if(obj.hasClass('step'))
+		
+			
+			},
 		stack  : '.draggable',
 		revert : 'invalid', 
 		tolerance: 'pointer',
@@ -98,7 +174,10 @@ function create_droppable(obj){
 						setup_form_element(ui.draggable);
 						reset_zindex(ui.draggable);
 						jQuery(this).removeClass('over');
-						nf_form_modified('drop');				
+						nf_form_modified('drop');
+						
+						
+										
 						},
 		over        : function(){jQuery(this).addClass('over')},
 		out         : function(){jQuery(this).removeClass('over')},	  
@@ -109,7 +188,9 @@ function create_droppable(obj){
 		{
 		start : function(event, ui)
 			{ 
-			//the_droppable.addClass('placing-field');
+			jQuery('.nex-forms-container').addClass('dragging');
+			jQuery('.field_settings').removeClass('parent-over-field');
+			jQuery('.field_settings').removeClass('over-field')
 			ui.helper.removeClass('field');
 			ui.helper.addClass('moving');			
 			}, 
@@ -119,12 +200,18 @@ function create_droppable(obj){
 				{
 				setTimeout(function() {nf_save_nex_form('','preview', '') },300);
 				}
-			
-			nf_reset_multi_steps();
-			nf_count_multi_steps();
-			
+			jQuery('.nex-forms-container').removeClass('dragging');
+			jQuery('.field_settings').removeClass('parent-over-field');
+			jQuery('.field_settings').removeClass('over-field')
+			//nf_reset_multi_steps();
+			//nf_count_multi_steps();
+			if(ui.item.hasClass('step'))
+				nf_count_multi_steps()
+				
 			the_droppable.removeClass('placing-field');
-			jQuery('.moving').removeClass('moving'); nf_form_modified('sort'); },           
+			jQuery('.moving').removeClass('moving'); nf_form_modified('sort'); 
+			
+			},           
 			placeholder: 'place-holder',
 			forcePlaceholderSize : true,
 			connectWith:'.panel-body'
@@ -151,13 +238,73 @@ function setup_form_element(obj){
 	jQuery('div.nex-forms-container').find('div.form_field').removeClass('field');
 
 	obj.removeClass('field');
+	
+	if(obj.find('.input-group-addon.prefix').length>0)
+		obj.addClass('has_prefix_icon');
+	else
+		obj.removeClass('has_prefix_icon');
+		
+		
+	if(obj.find('.input-group-addon.postfix').length>0)
+		obj.addClass('has_postfix_icon');
+	else
+		obj.removeClass('has_postfix_icon');
+	
+	
+	
+		
+	if(obj.hasClass('html_image'))
+		{	
 
+		var image = obj.find('.the-image-container');
+		var width_display = obj.find('.show-width');
+		var height_display = obj.find('.show-height');
+		//obj.find('.change_image').wrap('<div class="change_image"></div>');
+		//if(obj.find('.change_image2').attr('class')=='')
+		obj.find('.the-image-container').append('<div class="change_image2"><button class="btn md-btn btn-light-blue ">Change</button></div>');
+		
+		obj.find('.the-image-container img').resizable({
+		  minHeight: 20,
+		  minWidth: 20,
+		  resize: function( event, ui ) {
+			  image.addClass('resizing');
+			  image.css('width',ui.size['width']+'px');
+			  image.css('height',ui.size['height']+'px');
+			  width_display.text(ui.size['width']+'px');
+			  height_display.text(ui.size['height']+'px');
+			  
+			  if(obj.hasClass('currently_editing'))
+			  	{
+				
+				jQuery('#set_image_width').val(ui.size['width']);
+				jQuery('#set_image_height').val(ui.size['height']);
+				}
+			  
+			  },
+		  stop: function( event, ui ){
+			  image.removeClass('resizing');
+		  }
+		});
+		}
+	
 
 	/*if(obj.hasClass('grid-system'))
 		{
 		obj.resizableGrid();
 		console.log('test');
 		}*/
+	
+	if(obj.hasClass('field_spacer'))
+		{	
+		 obj.resizable({
+		  handles: "s",
+		  minHeight: 1,
+		  resize: function( event, ui ) {
+			  obj.find('.total_px').text(ui.size['height']);
+			  }
+		});
+		}
+	
 	if(obj.hasClass('jq-datepicker'))
 		{	
 		 obj.find('#datetimepicker input').datepicker();
@@ -227,22 +374,61 @@ function setup_form_element(obj){
 		}
 	if(obj.hasClass('date'))
 		{
+		var enabled_days = obj.find('#datetimepicker').attr('data-enabled-days');
+		if(enabled_days)
+			var enabled_days_array = enabled_days.split(',')
+		
+		var disabled_dates = obj.find('#datetimepicker').attr('data-disabled-dates');
+		if(disabled_dates)
+			var disabled_dates_array = disabled_dates.split(',')
 		obj.find('#datetimepicker').datetimepicker( 
-				{ 
+				{
+				useCurrent:false,
+				disabledDates: (disabled_dates_array) ? disabled_dates_array : [],
+				keepOpen:(obj.find('#datetimepicker').attr('data-keep-open')=='true') ? true : false,
+				widgetPositioning: {vertical: (obj.find('#datetimepicker').attr('data-position')) ? obj.find('#datetimepicker').attr('data-position') : 'bottom', horizontal:'auto'},
+				inline:(obj.find('#datetimepicker').attr('data-inline')=='true') ? true : false,
 				minDate: (obj.find('#datetimepicker').attr('data-disable-past-dates')=='1') ? new Date() : false,
 				format: (obj.find('#datetimepicker').attr('data-format')) ? obj.find('#datetimepicker').attr('data-format') : 'MM/DD/YYYY',
-				locale: (obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en'
+				locale: (obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en',
+				defaultDate: (obj.find('input').attr('data-value'))=='now' ? 'now' : '',
+				viewMode: (obj.find('#datetimepicker').attr('data-viewMode')) ? obj.find('#datetimepicker').attr('data-viewMode') : 'days',
+				daysOfWeekDisabled: (enabled_days_array) ? enabled_days_array : []
 				} 
 			);	
 		}	
 	if(obj.hasClass('time'))
 		{
-		obj.find('#datetimepicker').datetimepicker( 
-				{ 
-				format: (obj.find('#datetimepicker').attr('data-format')) ? obj.find('#datetimepicker').attr('data-format') : 'HH:mm',
-				locale:(obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en'
-				} 
-			);	
+		var enabled_hours = obj.find('#datetimepicker').attr('data-enabled-hours');
+		if(enabled_hours)
+			var enabled_hours_array = enabled_hours.split(',')
+		
+		
+		var date = '';
+		if(obj.find('input').attr('data-value'))
+			{
+			var dateString = '00-00-00 '+(obj.find('input').attr('data-value')),
+			dateTimeParts = dateString.split(' '),
+			timeParts = dateTimeParts[1].split(':'),
+			dateParts = dateTimeParts[0].split('-');
+			date = new Date(dateParts[2], parseInt(dateParts[1], 10) - 1, dateParts[0], timeParts[0], timeParts[1]);
+			}
+		if(obj.find('input').attr('data-value')=='now')
+			date = 'now';	
+			
+		obj.find('#datetimepicker').datetimepicker(
+				{
+				useCurrent:false,
+				viewDate: false,
+				widgetPositioning: {vertical: (obj.find('#datetimepicker').attr('data-position')) ? obj.find('#datetimepicker').attr('data-position') : 'bottom', horizontal:'auto'},
+				inline:(obj.find('#datetimepicker').attr('data-inline')=='true') ? true : false,
+				format:'HH:mm',
+				//defaultDate: date,
+				locale:(obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en',
+				stepping: (obj.find('#datetimepicker').attr('data-stepping')) ? obj.find('#datetimepicker').attr('data-stepping') : 5,
+				enabledHours: (enabled_hours_array) ? enabled_hours_array : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0]
+				}
+			);
 		}
 	
 	if(obj.hasClass('jq-datepicker'))
@@ -280,6 +466,8 @@ function setup_form_element(obj){
 			buttondown_class:  'btn ' + the_spinner.attr('data-down-class'),
 			buttonup_class: 'btn ' + the_spinner.attr('data-up-class')
 		});
+		
+		
 		}
 	if(obj.hasClass('color_pallet'))
 		{
@@ -328,7 +516,8 @@ function setup_form_element(obj){
 			the_slider.find('.ui-widget-content').css('border-color',the_slider.attr('data-slider-border-color'));
 			//Slider background color
 			//Slider fill color
-			the_slider.find('.ui-slider-range:first-child').css('background',the_slider.attr('data-fill-color'));
+			the_slider.find('.ui-slider-range:first-child').css('background',(the_slider.attr('data-fill-color')) == '#f2f2f2' ? '#ddd' : the_slider.attr('data-fill-color'));
+
 			the_slider.find('.ui-slider-range:last-child').css('background',the_slider.attr('data-background-color'));
 		}	
 	
@@ -373,19 +562,38 @@ function setup_form_element(obj){
 		obj.find('#star').raty({
 		  number   : parseInt(obj.find('#star').attr('data-total-stars')),
 		  scoreName: format_illegal_chars(obj.find('.the_label').text()),
-		  half: (obj.find('#star').attr('data-enable-half')=='false') ? false : true 
+		  half: (obj.find('#star').attr('data-enable-half')=='false') ? false : true,
+		  starHalf      : (obj.find('#star').attr('data-starHalf')) ? obj.find('#star').attr('data-starHalf') : 'fa fa-star-half',
+		  starOff       : (obj.find('#star').attr('data-starOff')) ? obj.find('#star').attr('data-starOff') : 'fa fa-star-o',
+		  starOn        : (obj.find('#star').attr('data-starOn')) ? obj.find('#star').attr('data-starOn') : 'fa fa-star', 
+		  styleHalf     : (obj.find('#star').attr('data-stylehalf')) ? obj.find('#star').attr('data-stylehalf') : '#ec971f',
+		  styleOff      : (obj.find('#star').attr('data-styleoff')) ? obj.find('#star').attr('data-styleoff') : '#bbb',
+		  styleOn       : (obj.find('#star').attr('data-styleon')) ? obj.find('#star').attr('data-styleon') : '#ec971f',
+		  size        	: (obj.find('#star').attr('data-size')) ? obj.find('#star').attr('data-size') : '25'
 		});
 		obj.find('#star input').addClass('the_input_element').addClass('hidden');
 		obj.find('#star input').prop('type','text');
 		}
-		if(obj.hasClass('select'))
-			{	
-			obj.find('select.jq_select').selectmenu();
-			}
+	if(obj.hasClass('select'))
+		{	
+		//obj.find('select.jq_select').selectmenu();
+		}
 	
 	if(obj.hasClass('tags'))
 		{	
-		var the_tag_input = obj.find('input#tags');
+		
+		if(obj.find('.input-group').attr('class'))
+			{
+			var the_tag_input = obj.find('input#tags');
+			var the_tag_input_clone = the_tag_input.detach();
+			if(obj.find('.input-group-addon').hasClass('postfix'))
+				the_tag_input.insertBefore(obj.find('.input-group-addon.postfix'));
+			else
+				the_tag_input.insertAfter(obj.find('.input-group-addon.prefix'));
+			}
+		else
+			var the_tag_input = obj.find('input#tags');
+		
 		 the_tag_input.tagsinput( {maxTags: (the_tag_input.attr('data-max-tags')) ? the_tag_input.attr('data-max-tags') : '' });
 		 
 		obj.find('.bootstrap-tagsinput input').css('color',the_tag_input.attr('data-text-color'));
@@ -395,6 +603,9 @@ function setup_form_element(obj){
 		obj.find(".bootstrap-tagsinput").attr('data-placement',the_tag_input.attr('data-placement'));
 		obj.find(".bootstrap-tagsinput").attr('data-error-class',the_tag_input.attr('data-error-class'));
 		obj.find(".bootstrap-tagsinput").attr('data-content',the_tag_input.attr('data-content'));
+		obj.find('.bootstrap-tagsinput').addClass('form-control');
+		obj.find('input').removeClass('the_input_element');
+		
 		}
 		
 		
@@ -406,12 +617,23 @@ function setup_form_element(obj){
 		source: items
 		});	
 		}	
-
+	
+	
+	if(obj.hasClass('image-choices-field'))
+		{
+	//	obj.find('input[type="radio"]').nexchecks();
+		}
+	
+	
+	
+	
 	if(obj.hasClass('single-image-select-group'))
 		{
 		obj.find('input[type="radio"]').nexchecks();
 		obj.find('input[type="radio"]').closest('label').find('.input-label').addClass('img-thumbnail');
 		}
+	
+	
 	
 	if(obj.hasClass('multi-image-select-group'))
 		{
@@ -433,8 +655,9 @@ function setup_form_element(obj){
 		}
 	
 	if(obj.hasClass('grid-system'))
-		obj.removeClass('ui-widget-content')
-		
+		{
+		obj.removeClass('ui-widget-content');
+		}
 
 	if(!obj.hasClass('dropped'))
 		{
@@ -442,10 +665,32 @@ function setup_form_element(obj){
 		obj.attr('id',set_Id);	
 		obj.addClass('dropped');
 		}
+	/*if(obj.hasClass('step'))
+		{
+		obj.find('.grid-system').each(
+			function()
+				{
+				nf_setup_grid(jQuery(this));
+				}
+			);
+		}*/
+	if(obj.hasClass('grid-system'))
+		{
+		nf_setup_grid(obj);
+		}
 		
-	if(obj.hasClass('heading') || obj.hasClass('html') || obj.hasClass('math_logic') || obj.hasClass('paragraph') || obj.hasClass('divider'))
+	/*if(obj.hasClass('heading') || obj.hasClass('html') || obj.hasClass('math_logic') || obj.hasClass('paragraph') || obj.hasClass('divider'))
 		{
 		obj.find('.field_settings').html('<div class="btn btn-default waves-effect waves-light btn-xs move_field"><i class="fa fa-arrows"></i></div><div class="btn btn-default waves-effect waves-light btn-xs edit" title="Edit Field Attributes"><i class="fa fa-edit"></i></div><div class="btn btn-default waves-effect waves-light btn-xs duplicate_field" title="Duplicate Field"><i class="fa fa-files-o"></i></div><div class="btn btn-default waves-effect waves-light btn-xs delete" title="Delete field"><i class="fa fa-close"></i></div>');
 		obj.removeClass('material_field');
-		}
+		}*/
+	obj.find('.field_settings').removeAttr('style');
+	
+	obj.find('.field_settings .btn').removeClass('waves-effect');
+	obj.find('.field_settings .btn').removeClass('waves-light');
+	obj.find('.field_settings .waves-ripple').remove();
+	//obj.find('.field_settings .fa-close').addClass('far');
+	//obj.find('.field_settings .fa-close').removeClass('fa');
+	//obj.find('.field_settings .fa-close').removeClass('fa-close');
+	
 }

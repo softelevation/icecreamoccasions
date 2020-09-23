@@ -58,23 +58,37 @@ if(!class_exists('NEXForms_Database_Actions'))
 	class NEXForms_Database_Actions{
 
 /* INSERT */
+		public $client_info;
 		
 		public function checkout()
 			{
+			$theme = wp_get_theme();
+			if($theme->Name=='NEX-Forms Demo')
+				return true;
 			$api_params = array( 'check_key' => 1,'ins_data'=>get_option('7103891'));
-			$response = wp_remote_post( 'http://basixonline.net/activate-license-new-api-v2', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );
+			$response = wp_remote_post( 'https://basixonline.net/activate-license-new-api-v3', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );
 			
-			if($response['body']!='true')
+			if(is_array($response->errors))
 				{
-				$this->deactivate_license();	
+				return false;		
+				}
+			else
+				{
+				$get_response = json_decode($response['body'],1);
+				$this->client_info = $get_response['client_info'];
+				if($get_response['ver']!='true')
+					{
+					$this->deactivate_license();	
+					}
+				return ($get_response['ver']=='true') ? true : false;
 				}
 			
-			return ($response['body']=='true') ? true : false;	
 			}
 		
 		public function insert_record(){
 			global $wpdb;
-			
+			ini_set('display_errors', '0');
+			error_reporting(0);
 			$db_table = sanitize_text_field($_POST['table']);
 			
 			$fields 	= $wpdb->get_results("SHOW FIELDS FROM " . $wpdb->prefix .filter_var($db_table,FILTER_SANITIZE_STRING));
@@ -132,6 +146,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 						$field_array[$field->Field] = $_POST[$field->Field];
 					}	
 				}
+				
 			$update = $wpdb->update ( $wpdb->prefix . filter_var($db_table,FILTER_SANITIZE_STRING), $field_array, array(	'Id' => filter_var($edit_id,FILTER_SANITIZE_NUMBER_INT)) );
 			echo filter_var($edit_id,FILTER_SANITIZE_NUMBER_INT);
 			die();
@@ -280,8 +295,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 							
 							
 							
-		if ( !is_plugin_active( 'nex-forms-paypal-add-on7/main.php' ) && !is_plugin_active( 'nex-forms-paypal-advanced/main.php' ) ) {
-				$output .= '<div class="alert alert-success">You need the "<strong><em>PayPal for NEX-forms</em></strong>" Add-on to use PayPal integration and receive online payments! <br>&nbsp;<a class="btn btn-success btn-large form-control" target="_blank" href="https://codecanyon.net/item/paypal-for-nexforms/12311864?ref=Basix">Buy Now</a></div>';
+		if ( !function_exists('nf_get_paypal_payment') && !function_exists('nf_not_found_notice_pp') ) {
+				$output .= '<div class="alert alert-success">You need the "<strong><em>PayPal for NEX-forms</em></strong>" Add-on to use PayPal integration and receive online payments! <br>&nbsp;<a class="btn btn-success btn-large form-control" target="_blank" href="https://codecanyon.net/item/paypal-pro-for-nexforms/22449576?ref=Basix">Buy Now</a></div>';
 		}
 		return $output;
 		
@@ -334,7 +349,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 										
 										
 								
-								if(is_plugin_active( 'nex-forms-paypal-advanced/main.php' ))
+								if(function_exists('nf_get_paypal_payment'))
 									{
 									$output .=  '<div class="row">';
 									$output .= '<div class="col-sm-4 integration_form_label ">Client ID</div><div class="col-sm-8 integration_form_field zero_padding tour_paypal_setup_3"><input type="text" placeholder="Enter your PayPal Client ID" value="'.$form->paypal_client_Id.'" name="paypal_client_Id" class="form-control"></div>';
@@ -386,7 +401,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 												</select></div>';
 								$output .= '</div>';
 								
-								if(is_plugin_active( 'nex-forms-paypal-advanced/main.php' ))
+								if(function_exists('nf_get_paypal_payment'))
 									{
 									$output .=  '<div class="row">';
 										$output .= '<div class="col-sm-4 integration_form_label label_textarea ">Success Message</div><div class="col-sm-8 tour_paypal_setup_6 integration_form_field zero_padding"><textarea type="text" placeholder="Enter Message for a successful payment" value="Payment Successful" name="payment_success_msg" class="form-control">'.(($form->payment_success_msg) ? $form->payment_success_msg : 'Payment Successful').'</textarea></div>';
@@ -534,8 +549,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 		public function NEXForms_get_data(){
 				$api_params = array( 
 					'verify-2' 		=> 1, //'',
-					'license' 		=> filter_var($_POST['pc'],FILTER_SANITIZE_STRING), //'9236b4a8-2b16-437c-a1e4-6251028b5687',
-					'user_name' 	=> filter_var($_POST['eu'],FILTER_SANITIZE_STRING), //'', 
+					'license' 		=> filter_var($_POST['pc'],FILTER_SANITIZE_STRING), 
+					'user_name' 	=> filter_var($_POST['eu'],FILTER_SANITIZE_STRING), 
 					'item_code' 	=> '7103891',
 					'email_address' => get_option('admin_email'),
 					'for_site' 		=> get_option('siteurl'),
@@ -544,7 +559,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 				);
 				
 				// Call the custom API.
-				$response = wp_remote_post( 'http://basixonline.net/activate-license-new-api-v2', array(
+				$response = wp_remote_post( 'https://basixonline.net/activate-license-new-api-v3', array(
 					'timeout'   => 30,
 					'sslverify' => false,
 					'body'      => $api_params
@@ -558,11 +573,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 				$license_data = json_decode($response['body'],true);
 				if($license_data['error']<=0)
 					{
-					
-					update_option( '1983017'.$license_data['key'] , array( $license_data['pc']));	
-						
-					//$myFunction = create_function('$foo', $license_data['code']);
-					//$myFunction('bar');
+					update_option( '1983017'.$license_data['key'] , array( $license_data['pc']));
 					}
 				
 				echo $license_data['message'];
@@ -631,6 +642,10 @@ if(!class_exists('NEXForms_Database_Actions'))
 		
 	   public function get_forms(){
 		global $wpdb;
+		
+		
+		$db_actions = new NEXForms_Database_Actions();
+		
 		$output = '';
 		if($_POST['get_templates']=='1')
 			{
@@ -642,6 +657,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 			$get_forms = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'wap_nex_forms WHERE is_template<>1 AND is_form<>"preview" AND is_form<>"draft" ORDER BY Id DESC','');
 			$is_template = '';
 			}
+
 		
 		$forms = $wpdb->get_results($get_forms);
 		if($forms)
@@ -692,7 +708,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 						$output .= '</td>';*/	
 					
 						$output .= '<td class="open_form" style="cursor:pointer">';
-							$output .= NEXForms_Database_Actions::get_total_records('wap_nex_forms_entries','',$form->Id);
+							$output .= $db_actions->get_total_records('wap_nex_forms_entries','',$form->Id);
 						$output .= '</td>';	
 						}
 					
@@ -856,6 +872,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 													$output .= '<option value="not_equal_to">Not Equal To</option>';
 													$output .= '<option value="less_than">Less Than</option>';
 													$output .= '<option value="greater_than">Greater Than</option>';
+													$output .= '<option value="less_equal">Less or Equal</option>';
+													$output .= '<option value="greater_equal">Greater or Equal</option>';
 													/*$output .= '<option value="contains">Contains</option>';
 													$output .= '<option value="not_contians">Does not Contain</option>';
 													$output .= '<option value="is_empty">Is Empty</option>';*/
@@ -920,6 +938,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 									$output .= '<option value="not_equal_to">Not Equal To</option>';
 									$output .= '<option value="less_than">Less Than</option>';
 									$output .= '<option value="greater_than">Greater Than</option>';
+									$output .= '<option value="less_equal">Less or Equal</option>';
+									$output .= '<option value="greater_equal">Greater or Equal</option>';
 									/*$output .= '<option value="contains">Contains</option>';
 									$output .= '<option value="not_contians">Does not Contain</option>';
 									$output .= '<option value="is_empty">Is Empty</option>';*/
@@ -1035,6 +1055,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 									$output .= '<option '.(($get_the_condition=='not_equal_to') ? 'selected="selected"' : '').' value="not_equal_to">Not Equal To</option>';
 									$output .= '<option '.(($get_the_condition=='less_than') ? 'selected="selected"' : '').' 	value="less_than">Less Than</option>';
 									$output .= '<option '.(($get_the_condition=='greater_than') ? 'selected="selected"' : '').' value="greater_than">Greater Than</option>';
+									$output .= '<option '.(($get_the_condition=='less_equal') ? 'selected="selected"' : '').' value="less_equal">Less or Equal</option>';
+									$output .= '<option '.(($get_the_condition=='greater_equal') ? 'selected="selected"' : '').' value="greater_equal">Greater or Equal</option>';
 									/*$output .= '<option '.(($get_the_condition=='contains') ? 'selected="selected"' : '').' 	value="contains">Contains</option>';
 									$output .= '<option '.(($get_the_condition=='not_contians') ? 'selected="selected"' : '').' value="not_contians">Does not Contain</option>';
 									$output .= '<option '.(($get_the_condition=='is_empty') ? 'selected="selected"' : '').' 	value="is_empty">Is Empty</option>';
@@ -1204,6 +1226,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 													$output .= '<option value="not_equal_to">Not Equal To</option>';
 													$output .= '<option value="less_than">Less Than</option>';
 													$output .= '<option value="greater_than">Greater Than</option>';
+													$output .= '<option value="less_equal">Less or Equal</option>';
+													$output .= '<option  value="greater_equal">Greater or Equal</option>';
 													/*$output .= '<option value="contains">Contains</option>';
 													$output .= '<option value="not_contians">Does not Contain</option>';
 													$output .= '<option value="is_empty">Is Empty</option>';*/
@@ -1270,6 +1294,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 									$output .= '<option value="not_equal_to">Not Equal To</option>';
 									$output .= '<option value="less_than">Less Than</option>';
 									$output .= '<option value="greater_than">Greater Than</option>';
+									$output .= '<option value="less_equal">Less or Equal</option>';
+									$output .= '<option value="greater_equal">Greater or Equal</option>';
 									/*$output .= '<option value="contains">Contains</option>';
 									$output .= '<option value="not_contians">Does not Contain</option>';
 									$output .= '<option value="is_empty">Is Empty</option>';*/
@@ -1345,6 +1371,8 @@ if(!class_exists('NEXForms_Database_Actions'))
 											$output .= '<option '.(($get_the_condition=='not_equal_to') ? 'selected="selected"' : '').' value="not_equal_to">Not Equal To</option>';
 											$output .= '<option '.(($get_the_condition=='less_than') ? 'selected="selected"' : '').' 	value="less_than">Less Than</option>';
 											$output .= '<option '.(($get_the_condition=='greater_than') ? 'selected="selected"' : '').' value="greater_than">Greater Than</option>';
+											$output .= '<option '.(($get_the_condition=='less_equal') ? 'selected="selected"' : '').' value="less_equal">Less or Equal</option>';
+											$output .= '<option '.(($get_the_condition=='greater_equal') ? 'selected="selected"' : '').' value="greater_equal">Greater or Equal</option>';
 											/*$output .= '<option '.(($get_the_condition=='contains') ? 'selected="selected"' : '').' 	value="contains">Contains</option>';
 											$output .= '<option '.(($get_the_condition=='not_contians') ? 'selected="selected"' : '').' value="not_contians">Does not Contain</option>';
 											$output .= '<option '.(($get_the_condition=='is_empty') ? 'selected="selected"' : '').' 	value="is_empty">Is Empty</option>';
@@ -1558,7 +1586,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 								
 								
 			
-			if ( is_plugin_active( 'nex-forms-export-to-pdf7/main.php' ) ) {
+			if ( function_exists('NEXForms_export_to_PDF') ) {
 					
 					$pdf_attach = explode(',',$form->attach_pdf_to_email);
 					$output .= '<div class="row">';
@@ -1932,7 +1960,9 @@ if(!class_exists('NEXForms_Database_Actions'))
 			$plugin_alias = sanitize_text_field($_POST['plugin_alias']);
 			$orderby = sanitize_text_field($_POST['orderby']);
 			$current_page = sanitize_text_field($_POST['current_page']);
-				
+			
+			$nf_functions 		= new NEXForms_Functions();	
+			$db_actions 		= new NEXForms_Database_Actions();
 			
 			$additional_params = json_decode(str_replace('\\','',$post_additional_params),true);
 			
@@ -1978,19 +2008,19 @@ if(!class_exists('NEXForms_Database_Actions'))
 					foreach($headings as $heading)	
 						{
 						
-						$heading = NEXForms_Functions::format_name($heading);
+						$heading = $nf_functions->format_name($heading);
 						$heading = str_replace('_id','_Id',$heading);
 						
 						if($heading=='user_Id')
 							{
-							$val = NEXForms_Database_Actions::get_username($data->$heading);	
+							$val = $db_actions->get_username($data->$heading);	
 							}
 						else
 							{
-							$val = (strstr($heading,'Id')) ? NEXForms_Database_Actions::get_title($data->$heading,'wap_'.str_replace('_Id','',$heading)) : $data->$heading;
+							$val = (strstr($heading,'Id')) ? $db_actions->get_title($data->$heading,'wap_'.str_replace('_Id','',$heading)) : $data->$heading;
 							
 							
-							$val = str_replace('\\', '', NEXForms_Functions::view_excerpt($val,25));
+							$val = str_replace('\\', '', $db_actions->view_excerpt($val,25));
 							}
 						
 						$output .= '<td class="manage-column column-'.$heading.'">'.(($k==1) ? '<strong>'.$val.'</strong>' : $val).'';
@@ -1999,7 +2029,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 					
 					$output .= '<td width="16%" align="right" class="view_export_del">';
 					
-					if ( is_plugin_active( 'nex-forms-export-to-pdf7/main.php' ) )
+					if ( function_exists('NEXForms_export_to_PDF') )
 						$output .= '<a target="_blank" title="PDF [new window]" href="'.WP_PLUGIN_URL . '/nex-forms-export-to-pdf/examples/main.php?entry_ID='.$data->Id.'" class="nf-button"><span class="fa fa-file-pdf-o"></span> PDF</div></a>&nbsp;';
 					else
 						$output .= '<a target="_blank" title="Get export to PDF add-on" href="http://codecanyon.net/item/export-to-pdf-for-nexforms/11220942?ref=Basix" class="nf-button buy">PDF</a>&nbsp;';
@@ -2033,6 +2063,9 @@ if(!class_exists('NEXForms_Database_Actions'))
 			
 			$edit_entry = 0;
 			
+			$db_actions = new NEXForms_Database_Actions();
+			$nf_functions 		= new NEXForms_Functions();
+			
 			if($_POST['edit_entry'])
 				$edit_entry = sanitize_text_field($_POST['edit_entry']);
 			
@@ -2044,9 +2077,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 			
 			$form_data = json_decode($form_entry->form_data);
 			
-			$database = new NEXForms_Database_Actions();
-			$checkout = $database->checkout();
-			
+			$checkout = (isset($_POST['load_entry']) ? $_POST['load_entry'] : false);
 			$output = '';
 			
 			if($checkout)
@@ -2055,12 +2086,12 @@ if(!class_exists('NEXForms_Database_Actions'))
 					 $output .= '<div class="entry_wrapper">';
 						 $output .= '<div class="additional_entry_details hidden">';
 							$output .= '<div class="entry_id">#<strong>'.$form_entry->Id.'</strong></div>';
-							$output .= '<div class="the_form">Form: <strong>'.NEXForms_Database_Actions::get_title($form_entry->nex_forms_Id,'wap_nex_forms').'</strong></div>';
+							$output .= '<div class="the_form">Form: <strong>'.$db_actions->get_title($form_entry->nex_forms_Id,'wap_nex_forms').'</strong></div>';
 							$output .= '<div class="page">Page: <strong>'.$form_entry->page.'</strong></div>';
 							$output .= '<div class="date_time">Date: <strong>'.$form_entry->date_time.'</strong></div>';
 							$output .= '<div class="user_ip">User IP: <strong>'.$form_entry->ip.'</strong></div>';
 							if($form_entry->user_Id)
-								$output .= '<div class="user_id">Username: <strong>'.NEXForms_Database_Actions::get_username($form_entry->user_Id).'</strong></div>';
+								$output .= '<div class="user_id">Username: <strong>'.$db_actions->get_username($form_entry->user_Id).'</strong></div>';
 							/*$output .= '<table class="highlight">';
 								$output .= '<tbody>';
 									$output .= '<tr>';
@@ -2103,7 +2134,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 								if($data->field_name!='math_result' && $data->field_name!='paypal_invoice'){
 									$output .= '<tr>';
 										$output .= '<td valign="top" style="vertical-align:top !important; width:200px;"><strong>';
-											$output .= NEXForms_Functions::unformat_name($data->field_name);
+											$output .= $nf_functions->unformat_name($data->field_name);
 										$output .= '</strong></td>';
 										$output .= '<td valign="top" style="vertical-align:top !important;">';
 										
@@ -2124,7 +2155,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 																foreach($val as $innerkey=>$innervalue)
 																	{
 																	if(!strstr($innerkey,'real_val__'))	
-																		$output .= '<td style="border-bottom:1px solid #ddd;border-right:1px solid #ddd;"><strong>'.NEXForms_Functions::unformat_name($innerkey).'</strong></td>';
+																		$output .= '<td style="border-bottom:1px solid #ddd;border-right:1px solid #ddd;"><strong>'.$nf_functions->unformat_name($innerkey).'</strong></td>';
 																	}
 																$output .= '</tr>';
 																}
@@ -2149,7 +2180,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 																		}
 																	else
 																		{
-																		if(in_array(NEXForms_Functions::get_ext($innervalue),$img_ext_array))
+																		if(in_array($nf_functions->get_ext($innervalue),$img_ext_array))
 																			$output .= '<td style="border-right:1px solid #ddd;border-bottom:1px solid #eee;"><img class="materialboxed" src="'.rtrim($innervalue,', ').'" /></td>';
 																		else
 																			$output .= '<td style="border-right:1px solid #ddd;border-bottom:1px solid #eee;">'.rtrim($innervalue,', ').'</td>';
@@ -2198,9 +2229,9 @@ if(!class_exists('NEXForms_Database_Actions'))
 													$is_array = explode(',',$data->field_value);
 													foreach($is_array as $item)
 														{
-														if(in_array(NEXForms_Functions::get_ext($item),$img_ext_array))
+														if(in_array($nf_functions->get_ext($item),$img_ext_array))
 															$output .= '<div class="col-xs-6" style="margin-bottom:15px;"><img class="materialboxed" width="100%" src="'.$item.'"></div>
-	';													else if(in_array(NEXForms_Functions::get_ext($item),$file_ext_array))
+	';													else if(in_array($nf_functions->get_ext($item),$file_ext_array))
 															$output .= '<div class="col-xs-6" style="margin-bottom:15px;"><a class="file_ext_data" href="'.$item.'" target="_blank">'.$item.'</a></div>';
 														else
 															$output .= $item;
@@ -2209,7 +2240,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 													}
 												else if(strstr($data->field_value,'data:image'))
 													$output .= '<img src="'.$data->field_value.'"><input type="hidden" name="'.$data->field_name.'" value="'.$data->field_value.'">';
-												else if(in_array(NEXForms_Functions::get_ext($data->field_value),$img_ext_array))
+												else if(in_array($nf_functions->get_ext($data->field_value),$img_ext_array))
 													$output .= '<div class="col-xs-6"><img class="materialboxed" width="100%" src="'.$data->field_value.'" style="margin-bottom:15px;"></div><input type="hidden" name="'.$data->field_name.'" value="'.$data->field_value.'">';
 												else
 													{
@@ -2251,6 +2282,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 										
 										$output .= '<td valign="top" style="vertical-align:top !important;">';
 											if($form_entry->payment_status=='payed')
+
 												$output .= 'Payed';
 											elseif($form_entry->payment_status=='pending')
 												$output .= 'Pending';
@@ -2302,7 +2334,9 @@ if(!class_exists('NEXForms_Database_Actions'))
 		}
 	
 	public function load_pagination($table='',$form_Id='',$echo=false,$additional_params=array(), $search_params=array(), $search_term=''){
-
+			
+			$db_actions = new NEXForms_Database_Actions();
+			
 			if($_POST['form_Id'])
 				$form_Id = sanitize_text_field($_POST['form_Id']);
 			
@@ -2321,7 +2355,7 @@ if(!class_exists('NEXForms_Database_Actions'))
 			if($_POST['search_term'])
 				$search_term = sanitize_text_field($_POST['search_term']);
 			
-			$total_records = NEXForms_Database_Actions::get_total_records($table,$additional_params,$form_Id,$search_params, $search_term, $echo);
+			$total_records = $db_actions->get_total_records($table,$additional_params,$form_Id,$search_params, $search_term, $echo);
 			
 			$total_pages = ((is_float($total_records/10)) ? (floor($total_records/10))+1 : $total_records/10);
 			
@@ -2603,15 +2637,19 @@ if(!class_exists('NEXForms_Database_Actions'))
 	}
 	
 	function deactivate_license(){
+		$theme = wp_get_theme();
+		if($theme->Name!='NEX-Forms Demo')
+			{
+			global $wpdb;
+			
+			$delete = $wpdb->query('DELETE FROM '.$wpdb->prefix.'options WHERE option_name LIKE "1983017%"');
+			
+			$api_params = array( 'client_deactivate_license' => 1,'key'=>get_option('7103891'));
+			delete_option('7103891');
 		
-		global $wpdb;
-		
-		$delete = $wpdb->query('DELETE FROM '.$wpdb->prefix.'options WHERE option_name LIKE "1983017%"');
-		
-		$api_params = array( 'client_deactivate_license' => 1,'key'=>get_option('7103891'));
-		delete_option('7103891');
-		$response = wp_remote_post( 'http://basixonline.net/activate-license-new-api-v2', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );
-		
+			$response = wp_remote_post( 'https://basixonline.net/activate-license-new-api-v3', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );
+			}
+			
 	}
 
 	
@@ -2621,8 +2659,11 @@ if(!class_exists('NEXForms_Database_Actions'))
 		
 
 		$nf_functions = new NEXForms_Functions();
-
-		$url = plugins_url( '/templates/'.$_POST['template'].'.txt',dirname(dirname(__FILE__)));
+		$template  = $_POST['template'];
+		
+		$template = str_replace(' ','%20',$template);
+		
+		$url = plugins_url( '/templates/'.$template.'.txt',dirname(dirname(__FILE__)));
 		
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
@@ -2635,13 +2676,11 @@ if(!class_exists('NEXForms_Database_Actions'))
 		
 		if(!$file_content)
 			$file_content = $data;
-		
+
 		$get_form_data = json_decode($file_content,true);
 		
 		$import_record = $wpdb->insert($wpdb->prefix.'wap_nex_forms',$get_form_data);
-		
-		//$wpdb->show_errors(); 
-		//$wpdb->print_error(); 
+
 		$insert_id = $wpdb->insert_id;	
 		echo $insert_id;
 		
@@ -2676,84 +2715,45 @@ if(!class_exists('NEXForms_Database_Actions'))
 		
 		
 		
-		foreach($_FILES as $key=>$file)
+		if($_POST['import_type']=='manual')
 			{
-			$uploadedfile = $_FILES[$key];
-			$upload_overrides = array( 'test_form' => false );
-			$movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
-			//
-		//print_r($movefile);
-			if ( $movefile ) {
-				
-					if($movefile['file'])
-						{
-						$set_file_name = str_replace(ABSPATH,'',$movefile['file']);
-						$_POST['image_path'] = $movefile['url'];
-						$_POST['image_name'] = $file['name'];
-						$_POST['image_size'] = $file['size'];
+			$get_form_data = str_replace('\\"','"',$_POST['form_content']);
+			$get_form_data = str_replace('\\\\','\\',$get_form_data);
+			$get_data= json_decode($get_form_data,true);
+			
+			$import_record = $wpdb->insert($wpdb->prefix.'wap_nex_forms',$get_data);
+			$insert_id = $wpdb->insert_id;	
+			echo $insert_id;	
+			}
+		else
+			{
 
-						$url = $movefile['url'];
-						
-						$curl = curl_init();
-						curl_setopt($curl, CURLOPT_URL, $url);
-						curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-						curl_setopt($curl, CURLOPT_HEADER, false);
-						
-						$data = curl_exec($curl);
-						
-						$file_content = file_get_contents($url);
-						
-						if(!$file_content)
-							$file_content = $data;
-						
-						//$file_content = mysql_real_escape_string($file_content);
-						
-						//$file_content_utf8 = mb_convert_encoding($file_content, 'UTF-8',mb_detect_encoding($file_content, 'UTF-8, ISO-8859-1', true));
-						
-						//echo $file_content;
-						//$import_form  = 'INSERT INTO `'.$wpdb->prefix.'wap_nex_forms`';
-						//$import_form .= preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $file_content);
-						
-						
-						//echo $import_form;
-						//$do_form_import = $wpdb->prepare($import_form);
-						//$wpdb->query($import_form);
-						//echo $wpdb->insert_id;
-						//echo file_get_contents($url);
-						
-						$get_form_data = json_decode($file_content,true);
-						
-						//print_r($get_form_data);
-						
-						$import_record = $wpdb->insert($wpdb->prefix.'wap_nex_forms',$get_form_data);
-						
-						//$wpdb->show_errors(); 
-						//$wpdb->print_error(); 
-						$insert_id = $wpdb->insert_id;	
-						echo $insert_id;
-						
-						$theme = wp_get_theme();
-							if($theme->Name=='NEX-Forms Demo')
-								{
-								$post_id = wp_insert_post(
-									array(
-										'comment_status'	=>	'closed',
-										'ping_status'		=>	'closed',
-										'post_author'		=>	1,
-										'post_name'			=>	'user-test-form-'.$insert_id,
-										'post_title'		=>	'User Test Form '.$insert_id,
-										'post_status'		=>	'publish',
-										'post_type'			=>	'page',
-										'post_content'		=>	'[NEXForms id="'.$insert_id.'"]',
-										'post_parent'		=>  '11',
-									)
-								);
-								}
-						
-						
-						curl_close($curl);
-						}
-				} 
+			if($_FILES['form_html']['type'] == 'text/plain')
+				{
+				$import_form = file_get_contents($_FILES['form_html']['tmp_name']);
+				$get_form_data = json_decode($import_form,true);
+				$import_record = $wpdb->insert($wpdb->prefix.'wap_nex_forms',$get_form_data);
+				$insert_id = $wpdb->insert_id;	
+				echo $insert_id;
+				
+				$theme = wp_get_theme();
+					if($theme->Name=='NEX-Forms Demo')
+						{
+						$post_id = wp_insert_post(
+							array(
+								'comment_status'	=>	'closed',
+								'ping_status'		=>	'closed',
+								'post_author'		=>	1,
+								'post_name'			=>	'user-test-form-'.$insert_id,
+								'post_title'		=>	'User Test Form '.$insert_id,
+								'post_status'		=>	'publish',
+								'post_type'			=>	'page',
+								'post_content'		=>	'[NEXForms id="'.$insert_id.'"]',
+								'post_parent'		=>  '11',
+							)
+						);
+					}
+				}		
 			}
 		die();
 	}
@@ -2853,7 +2853,7 @@ You are using '.$email_config['email_method'].' as your emailing method';
 						'user_email' => 0,
 						'is_html'=> ($email_config['email_content']=='pt') ? 0 : 1
 					);
-					$response = wp_remote_post( 'http://basixonline.net/mail-api/', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );
+					$response = wp_remote_post( 'https://basixonline.net/mail-api/', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );
 					//echo $response['body'];
 				}
 			else if($email_config['email_method']=='smtp' || $email_config['email_method']=='php_mailer')

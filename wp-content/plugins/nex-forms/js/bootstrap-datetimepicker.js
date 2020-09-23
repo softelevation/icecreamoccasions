@@ -211,22 +211,22 @@
 
                 return [
                     $('<div>').addClass('datepicker-days')
-                        .append($('<table>').addClass('table-condensed')
+                        .append($('<table>').addClass('table-condensed').addClass('ui-widget-content')
                             .append(headTemplate)
                             .append($('<tbody>'))
                             ),
                     $('<div>').addClass('datepicker-months')
-                        .append($('<table>').addClass('table-condensed')
+                        .append($('<table>').addClass('table-condensed').addClass('ui-widget-content')
                             .append(headTemplate.clone())
                             .append(contTemplate.clone())
                             ),
                     $('<div>').addClass('datepicker-years')
-                        .append($('<table>').addClass('table-condensed')
+                        .append($('<table>').addClass('table-condensed').addClass('ui-widget-content')
                             .append(headTemplate.clone())
                             .append(contTemplate.clone())
                             ),
                     $('<div>').addClass('datepicker-decades')
-                        .append($('<table>').addClass('table-condensed')
+                        .append($('<table>').addClass('table-condensed').addClass('ui-widget-content')
                             .append(headTemplate.clone())
                             .append(contTemplate.clone())
                             )
@@ -329,7 +329,7 @@
             },
 
             getTemplate = function () {
-                var template = $('<div>').addClass('bootstrap-datetimepicker-widget dropdown-menu'),
+                var template = $('<div>').addClass('bootstrap-datetimepicker-widget dropdown-menu ui-widget-content'),
                     dateView = $('<div>').addClass('datepicker').append(getDatePickerTemplate()),
                     timeView = $('<div>').addClass('timepicker').append(getTimePickerTemplate()),
                     content = $('<ul>').addClass('list-unstyled'),
@@ -465,20 +465,28 @@
                 if (parent.length === 0) {
                     throw new Error('datetimepicker component should be placed within a non-static positioned container');
                 }
-
+				var popup_width = parent.outerWidth()-1;
+				if(!viewDate && !options.inline)
+					popup_width = 'auto';
+					
+				if(parent.find('#datetimepicker').hasClass('no-icon'))
+					popup_width = parent.find('#datetimepicker').outerWidth();
+					
+					
                 widget.css({
                     top: vertical === 'top' ? 'auto' : position.top + element.outerHeight(),
                     bottom: vertical === 'top' ? parent.outerHeight() - (parent === element ? 0 : position.top) : 'auto',
                     left: horizontal === 'left' ? (parent === element ? 0 : position.left) : 'auto',
-                    right: horizontal === 'left' ? 'auto' : parent.outerWidth() - element.outerWidth() - (parent === element ? 0 : position.left)
+                    right: horizontal === 'left' ? 'auto' : parent.outerWidth() - element.outerWidth() - (parent === element ? 0 : position.left),
+					width: popup_width
                 });
             },
 
             notifyEvent = function (e) {
-                if (e.type === 'dp.change' && ((e.date && e.date.isSame(e.oldDate)) || (!e.date && !e.oldDate))) {
-                    return;
-                }
-                element.trigger(e);
+               // if (e.type === 'dp.change' && ((e.date && e.date.isSame(e.oldDate)) || (!e.date && !e.oldDate))) {
+               //     return;
+               // }
+               // element.trigger(e);
             },
 
             viewUpdate = function (e) {
@@ -487,7 +495,7 @@
                 }
                 notifyEvent({
                     type: 'dp.update',
-                    change: e,
+                    //change: e,
                     viewDate: viewDate.clone()
                 });
             },
@@ -605,8 +613,15 @@
                 }
 
                 months.removeClass('active');
-                if (date.isSame(viewDate, 'y') && !unset) {
+				months.removeClass('ui-state-active');
+                if (date.isSame(viewDate, 'm') && !unset) {
                     months.eq(date.month()).addClass('active');
+					months.eq(date.month()).addClass('ui-state-active');
+                }
+				if (date.isSame(viewDate, 'm') && unset) {
+					months.eq(date.month()).addClass('active');
+					months.eq(date.month()).addClass('ui-state-active');
+                    months.eq(date.month()).addClass('is-current');
                 }
 
                 months.each(function (index) {
@@ -640,7 +655,7 @@
                 }
 
                 while (!startYear.isAfter(endYear, 'y')) {
-                    html += '<span data-action="selectYear" class="year' + (startYear.isSame(date, 'y') && !unset ? ' active' : '') + (!isValid(startYear, 'y') ? ' disabled' : '') + '">' + startYear.year() + '</span>';
+                    html += '<span data-action="selectYear" class="year' + (startYear.isSame(date, 'y') && unset ? ' active ui-state-active is-current' : '') + (startYear.isSame(date, 'y') && !unset ? ' active ui-state-active' : '') + (!isValid(startYear, 'y') ? ' disabled' : '') + '">' + startYear.year() + '</span>';
                     startYear.add(1, 'y');
                 }
 
@@ -677,11 +692,11 @@
                     endDecadeYear = startDecade.year() + 12;
                     minDateDecade = options.minDate && options.minDate.isAfter(startDecade, 'y') && options.minDate.year() <= endDecadeYear;
                     maxDateDecade = options.maxDate && options.maxDate.isAfter(startDecade, 'y') && options.maxDate.year() <= endDecadeYear;
-                    html += '<span data-action="selectDecade" class="decade' + (date.isAfter(startDecade) && date.year() <= endDecadeYear ? ' active' : '') +
+                    html += '<span data-action="selectDecade" class="decade' + (date.isAfter(startDecade) && date.year() <= endDecadeYear ? ' active ui-state-active' : '') +
                         (!isValid(startDecade, 'y') && !minDateDecade && !maxDateDecade ? ' disabled' : '') + '" data-selection="' + (startDecade.year() + 6) + '">' + (startDecade.year() + 1) + ' - ' + (startDecade.year() + 12) + '</span>';
                     startDecade.add(12, 'y');
                 }
-                html += '<span></span><span></span><span></span>'; //push the dangling block over, at least this way it's even
+                //html += '<span></span><span></span><span></span>'; //push the dangling block over, at least this way it's even
 
                 decadesView.find('td').html(html);
                 decadesViewHeader.eq(1).text((startedAt.year() + 1) + '-' + (startDecade.year()));
@@ -694,6 +709,7 @@
                     html = [],
                     row,
                     clsNames = [],
+					clsNames2 = [],
                     i;
 
                 if (!hasDate()) {
@@ -733,6 +749,10 @@
                     }
                     if (currentDate.isSame(date, 'd') && !unset) {
                         clsNames.push('active');
+						//clsNames.push('ui-state-active');
+						clsNames2.push('animated');
+						clsNames2.push('zoomInFast');
+						clsNames2.push('pulse');
                     }
                     if (!isValid(currentDate, 'd')) {
                         clsNames.push('disabled');
@@ -748,7 +768,7 @@
                         date: currentDate,
                         classNames: clsNames
                     });
-                    row.append('<td data-action="selectDay" data-day="' + currentDate.format('L') + '" class="' + clsNames.join(' ') + '">' + currentDate.date() + '</td>');
+                    row.append('<td data-action="selectDay" data-day="' + currentDate.format('L') + '" class="' + clsNames.join(' ') + '"><div class="the-day">' + currentDate.date() + '</div><div class="selection-placer"><div class="the-selection ' + clsNames2.join(' ') + '"></div></div></td>');
                     currentDate.add(1, 'd');
                 }
 
@@ -858,7 +878,7 @@ use24Hours = true;
                     input.val('');
                     element.data('date', '');
                     notifyEvent({
-                        type: 'dp.change',
+                       // type: 'dp.change',
                         date: false,
                         oldDate: oldDate
                     });
@@ -887,8 +907,9 @@ use24Hours = true;
                     element.data('date', date.format(actualFormat));
                     unset = false;
                     update();
-                    notifyEvent({
-                        type: 'dp.change',
+					input.trigger('change');
+                   notifyEvent({
+                       // type: 'dp.change',
                         date: date.clone(),
                         oldDate: oldDate
                     });
@@ -897,7 +918,7 @@ use24Hours = true;
                         input.val(unset ? '' : date.format(actualFormat));
                     } else {
                         notifyEvent({
-                            type: 'dp.change',
+                           // type: 'dp.change',
                             date: targetMoment,
                             oldDate: oldDate
                         });
@@ -933,7 +954,18 @@ use24Hours = true;
                 if (component && component.hasClass('btn')) {
                     component.toggleClass('active');
                 }
-                widget.hide();
+				
+				if(!options.inline)
+					{
+					//widget.addClass('animated').addClass('fadeIn');
+                	widget.slideUp();
+					}
+				else
+					{
+					widget.hide();
+					}
+				
+                
 
                 $(window).off('resize', place);
                 widget.off('click', '[data-action]');
@@ -947,7 +979,7 @@ use24Hours = true;
                     date: date.clone()
                 });
 
-                input.blur();
+               // input.blur();
 
                 viewDate = date.clone();
 
@@ -1040,6 +1072,7 @@ use24Hours = true;
                 },
 
                 selectDay: function (e) {
+					//e.target.blur;
                     var day = viewDate.clone();
                     if ($(e.target).is('.old')) {
                         day.subtract(1, 'M');
@@ -1048,7 +1081,11 @@ use24Hours = true;
                         day.add(1, 'M');
                     }
                     setValue(day.date(parseInt($(e.target).text(), 10)));
-                    if (!hasTime() && !options.keepOpen && !options.inline) {
+                   
+				   	//notifyEvent({
+					//	type: 'dp.change'
+					//});
+				    if (!hasTime() && !options.keepOpen && !options.inline) {
                         hide();
                     }
                 },
@@ -1056,42 +1093,69 @@ use24Hours = true;
                 incrementHours: function () {
                     var newDate = date.clone().add(1, 'h');
                     if (isValid(newDate, 'h')) {
-                        setValue(newDate);
+						flip_time('h','up');
+                         setTimeout(function(){
+							 setValue(newDate)
+						
+						 },220);
                     }
                 },
 
                 incrementMinutes: function () {
                     var newDate = date.clone().add(options.stepping, 'm');
                     if (isValid(newDate, 'm')) {
-                        setValue(newDate);
+						flip_time('m','up');
+                         setTimeout(function(){
+							 setValue(newDate)
+						
+						 },220);
                     }
                 },
 
                 incrementSeconds: function () {
                     var newDate = date.clone().add(1, 's');
                     if (isValid(newDate, 's')) {
-                        setValue(newDate);
+                        flip_time('s','up');
+						 setTimeout(function(){
+							 setValue(newDate)
+						
+						 },220);
                     }
                 },
 
                 decrementHours: function () {
-                    var newDate = date.clone().subtract(1, 'h');
+                   
+					var newDate = date.clone().subtract(1, 'h');
                     if (isValid(newDate, 'h')) {
-                        setValue(newDate);
+						
+						flip_time('h','down');
+						
+                        setTimeout(function(){
+							 setValue(newDate)
+						
+						 },220);
                     }
                 },
 
                 decrementMinutes: function () {
                     var newDate = date.clone().subtract(options.stepping, 'm');
                     if (isValid(newDate, 'm')) {
-                        setValue(newDate);
+						flip_time('m','down');
+                        setTimeout(function(){
+							 setValue(newDate)
+						
+						 },220);
                     }
                 },
 
                 decrementSeconds: function () {
                     var newDate = date.clone().subtract(1, 's');
                     if (isValid(newDate, 's')) {
-                        setValue(newDate);
+						flip_time('m','down');
+                         setTimeout(function(){
+							 setValue(newDate)
+						
+						 },220);
                     }
                 },
 
@@ -1254,7 +1318,15 @@ use24Hours = true;
                     component.toggleClass('active');
                 }
                 place();
-                widget.show();
+				if(!options.inline)
+					{
+					widget.addClass('animated').addClass('fadeInFast');
+                	widget.slideDown();
+					}
+				else
+					{
+					widget.show();
+					}
                 if (options.focusOnShow && !input.is(':focus')) {
                     input.focus();
                 }
@@ -1327,14 +1399,14 @@ use24Hours = true;
             },
 
             change = function (e) {
-                var val = $(e.target).val().trim(),
-                    parsedDate = val ? parseInputDate(val) : null;
-                setValue(parsedDate);
+                //var val = $(e.target).val().trim(),
+               //     parsedDate = val ? parseInputDate(val) : null;
+                //setValue(parsedDate);
             },
 
             attachDatePickerElementEvents = function () {
                 input.on({
-                    'change': change,
+                  //  'change': change,
                     'blur': options.debug ? '' : hide,
                     'keydown': keydown,
                     'keyup': keyup,
@@ -1353,8 +1425,8 @@ use24Hours = true;
 
             detachDatePickerElementEvents = function () {
                 input.off({
-                    'change': change,
-                    'blur': blur,
+                   // 'change': change,
+                  //  'blur': blur,
                     'keydown': keydown,
                     'keyup': keyup,
                     'focus': options.allowInputToggle ? hide : ''
@@ -1783,10 +1855,10 @@ use24Hours = true;
 
             var parsedDate = parseInputDate(defaultDate);
             if (!parsedDate.isValid()) {
-                throw new TypeError('defaultDate() Could not parse date parameter: ' + defaultDate);
+                //throw new TypeError('defaultDate() Could not parse date parameter: ' + defaultDate);
             }
             if (!isValid(parsedDate)) {
-                throw new TypeError('defaultDate() date passed is invalid according to component setup validations');
+                //throw new TypeError('defaultDate() date passed is invalid according to component setup validations');
             }
 
             options.defaultDate = parsedDate;
@@ -2460,15 +2532,15 @@ use24Hours = true;
         disabledDates: false,
         enabledDates: false,
         icons: {
-            time: 'glyphicon glyphicon-time',
-            date: 'glyphicon glyphicon-calendar',
-            up: 'glyphicon glyphicon-chevron-up',
-            down: 'glyphicon glyphicon-chevron-down',
-            previous: 'glyphicon glyphicon-chevron-left',
-            next: 'glyphicon glyphicon-chevron-right',
+            time: 'fa fa-time',
+            date: 'fa fa-calendar',
+            up: 'fa fa-caret-up',
+            down: 'fa fa-caret-down',
+            previous: 'fa fa-caret-left',
+            next: 'fa fa-caret-right',
             today: 'glyphicon glyphicon-screenshot',
-            clear: 'glyphicon glyphicon-trash',
-            close: 'glyphicon glyphicon-remove'
+            clear: 'fa fa-trash',
+            close: 'fa fa-remove'
         },
         tooltips: {
             today: 'Go to today',
@@ -2634,3 +2706,30 @@ use24Hours = true;
 
     return $.fn.datetimepicker;
 }));
+function flip_time(digit,direction){
+	
+	var cls = '';
+	if(digit=='h')
+		cls = '.timepicker-hour';
+	if(digit=='m')
+		cls = '.timepicker-minute';
+	if(digit=='s')
+		cls = '.timepicker-second';
+	
+	jQuery('.over-picker '+cls).addClass('animated');
+	jQuery('.over-picker '+cls).addClass('flipX');
+	
+	
+	setTimeout(function(){
+	jQuery('.over-picker '+cls).addClass('animating');
+	
+	 },200);
+	
+	
+	setTimeout(function(){
+	jQuery(cls).removeClass('animated');
+	jQuery(cls).removeClass('flipX');
+	jQuery(cls).removeClass('animating');
+	
+	 },400);	
+}

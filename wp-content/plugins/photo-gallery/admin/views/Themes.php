@@ -15,12 +15,17 @@ class ThemesView_bwg extends AdminView_bwg {
    * @param $params
    */
   public function display( $params = array() ) {
-    if ( !BWG()->is_pro && get_option("wd_bwg_theme_version") ) {
-      WDWLibrary::topbar();
       ?>
       <div class="wrap">
       <?php
-      echo WDWLibrary::message_id(0, __('You can\'t change theme parameters in free version.', BWG()->prefix), 'error inline');
+      if ( !BWG()->is_pro && get_option("wd_bwg_theme_version") ) {
+        echo WDWLibrary::message_id(0, __('You can\'t change theme parameters in free version.', BWG()->prefix), 'error inline');
+        echo $this->title(array(
+                            'title' => $params['page_title'],
+                            'title_class' => 'wd-header',
+                            'add_new_button' => FALSE,
+                            'how_to_button' => true,
+                          ));
       ?>
       <img class="wd-width-100" src="<?php echo BWG()->plugin_url . '/images/theme.png'; ?>" />
       </div>
@@ -62,6 +67,7 @@ class ThemesView_bwg extends AdminView_bwg {
                         'add_new_button' => array(
 							          'href' => add_query_arg(array( 'page' => $page, 'task' => 'edit' ), admin_url('admin.php')),
                         ),
+                        'add_new_button_text' => 'Add new theme',
                       ));
     echo $this->search();
     ?>
@@ -220,12 +226,12 @@ class ThemesView_bwg extends AdminView_bwg {
 				<input type="text" id="name" name="name" value="<?php echo !empty( $row->name ) ? $row->name : ''; ?>" class="spider_text_input bwg_requried">
         <?php if ( BWG()->is_pro || get_option("wd_bwg_theme_version") ) { ?>
         <div class="bwg-page-actions">
-					<button class="button button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
+					<button class="tw-button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
 					<?php echo !empty($row->name) ? __('Update', BWG()->prefix) :  __('Save', BWG()->prefix); ?>
 					</button>
 					<?php if( $id ) { ?>
 					<input title="<?php _e('Reset to default theme', BWG()->prefix); ?>"
-						class="button preview-button button-large wd-btn-reset" type="submit"
+						class="tw-button-secondary preview-button button-large wd-btn-reset" type="submit"
 						onclick="if (confirm('<?php echo addslashes(__('Do you want to reset to default?', BWG()->prefix)); ?>')) {
 																spider_set_input_value('task', 'reset');
 															} else {
@@ -361,6 +367,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<input type="text" name="thumb_bg_color" id="thumb_bg_color" value="<?php echo $row->thumb_bg_color; ?>" class="color"/>
 								  </td>
 								</tr>
+                <tr>
+                  <td class="spider_label"><label for="thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <input type="text" name="thumb_bg_transparency" id="thumb_bg_transparency" value="<?php echo $row->thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                    <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                  </td>
+                </tr>
 								<tr>
 								  <td class="spider_label"><label for="thumb_transparent"><?php echo __('Thumbnail transparency:', BWG()->prefix); ?> </label></td>
 								  <td>
@@ -651,6 +664,13 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="masonry_thumb_bg_color" id="masonry_thumb_bg_color" value="<?php echo $row->masonry_thumb_bg_color; ?>" class="color" />
 										</td>
 									</tr>
+                  <tr>
+                    <td class="spider_label"><label for="masonry_thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                    <td>
+                      <input type="text" name="masonry_thumb_bg_transparency" id="masonry_thumb_bg_transparency" value="<?php echo $row->masonry_thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                      <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                    </td>
+                  </tr>
 									<tr>
 										<td class="spider_label"><label for="masonry_thumb_transparent"><?php echo __('Transparency:', BWG()->prefix); ?> </label></td>
 										<td>
@@ -912,11 +932,18 @@ class ThemesView_bwg extends AdminView_bwg {
 								<table style="clear:both;">
 								  <tbody>
 									<tr>
-									  <td class="spider_label"><label for="mosaic_thumb_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
+									  <td class="spider_label"><label for="mosaic_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<input type="text" name="mosaic_thumb_bg_color" id="mosaic_thumb_bg_color" value="<?php echo $row->mosaic_thumb_bg_color; ?>" class="color" />
 									  </td>
 									</tr>
+                  <tr>
+                    <td class="spider_label"><label for="mosaic_thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                    <td>
+                      <input type="text" name="mosaic_thumb_bg_transparency" id="mosaic_thumb_bg_transparency" value="<?php echo $row->mosaic_thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                      <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                    </td>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="mosaic_thumb_transparent"><?php echo __('Transparency:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -1878,6 +1905,13 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="album_compact_thumb_bg_color" id="album_compact_thumb_bg_color" value="<?php echo $row->album_compact_thumb_bg_color; ?>" class="color" />
 									  </td>
 									</tr>
+                  <tr>
+                    <td class="spider_label"><label for="album_compact_thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                    <td>
+                      <input type="text" name="album_compact_thumb_bg_transparency" id="album_compact_thumb_bg_transparency" value="<?php echo $row->album_compact_thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                      <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                    </td>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_compact_thumb_transparent"><?php echo __('Thumbnail transparency:', BWG()->prefix); ?> </label></td>
 									  <td>

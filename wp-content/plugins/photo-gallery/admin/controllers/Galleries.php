@@ -208,9 +208,14 @@ class GalleriesController_bwg {
    * @return int
    */
   public function publish( $id, $bulk = FALSE, $all = FALSE ) {
+
     global $wpdb;
-    $where = ($all ? '' : ' WHERE id=' . $id);
-    $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET published=1' . $where);
+    $where = ($all ? '' : ' WHERE id=%d');
+    if( $where != '' ) {
+      $updated = $wpdb->query($wpdb->prepare('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET published=1' . $where, $id));
+    } else {
+      $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET published=1' . $where);
+    }
 
     if ( $updated !== FALSE ) {
       $message = 9;
@@ -242,8 +247,13 @@ class GalleriesController_bwg {
    */
   public function unpublish( $id, $bulk = FALSE, $all = FALSE ) {
     global $wpdb;
-    $where = ($all ? '' : ' WHERE id=' . $id);
-    $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET published=0' . $where);
+    $where = ($all ? '' : ' WHERE id=%d');
+
+    if( $where != '' ) {
+        $updated = $wpdb->query($wpdb->prepare('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET published=0' . $where, $id));
+    } else {
+        $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET published=0' . $where);
+    }
 
     if ( $updated !== FALSE ) {
       $message = 10;
@@ -413,7 +423,7 @@ class GalleriesController_bwg {
     $gallery_id = WDWLibrary::get('current_id', 0, 'intval');
     $not_set_items = array();
     if ( $gallery_id ) {
-      $rows = $wpdb->get_results('SELECT T_IMAGES.thumb_url, T_PRICELISTS.item_longest_dimension, T_IMAGES.id FROM ' . $wpdb->prefix . 'bwg_image AS T_IMAGES LEFT JOIN ( SELECT  MAX(item_longest_dimension) AS item_longest_dimension, pricelist_id FROM ' . $wpdb->prefix . 'wdpg_ecommerce_pricelist_items AS T_PRICELIST_ITEMS LEFT JOIN ' . $wpdb->prefix . 'wdpg_ecommerce_pricelists AS T_PRICELISTS ON T_PRICELIST_ITEMS.pricelist_id = T_PRICELISTS.id  WHERE  T_PRICELISTS.sections LIKE "%downloads%" GROUP BY pricelist_id) AS T_PRICELISTS ON T_IMAGES.pricelist_id = T_PRICELISTS.pricelist_id WHERE T_IMAGES.gallery_id="' . $gallery_id . '"');
+      $rows = $wpdb->get_results($wpdb->prepare('SELECT T_IMAGES.thumb_url, T_PRICELISTS.item_longest_dimension, T_IMAGES.id FROM ' . $wpdb->prefix . 'bwg_image AS T_IMAGES LEFT JOIN ( SELECT  MAX(item_longest_dimension) AS item_longest_dimension, pricelist_id FROM ' . $wpdb->prefix . 'wdpg_ecommerce_pricelist_items AS T_PRICELIST_ITEMS LEFT JOIN ' . $wpdb->prefix . 'wdpg_ecommerce_pricelists AS T_PRICELISTS ON T_PRICELIST_ITEMS.pricelist_id = T_PRICELISTS.id  WHERE  T_PRICELISTS.sections LIKE "%downloads%" GROUP BY pricelist_id) AS T_PRICELISTS ON T_IMAGES.pricelist_id = T_PRICELISTS.pricelist_id WHERE T_IMAGES.gallery_id=%d',$gallery_id));
       foreach ( $rows as $row ) {
         if ( $row->item_longest_dimension ) {
           $file_path = str_replace("thumb", ".original", htmlspecialchars_decode(BWG()->upload_dir . $row->thumb_url, ENT_COMPAT | ENT_QUOTES));

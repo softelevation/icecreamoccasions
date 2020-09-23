@@ -357,7 +357,7 @@ function bwg_add_instagram_gallery(instagram_access_token, from_popup){
       /*filter out other echoed characters*/
       /*18 is the length of "wd_delimiter_start"*/
       response = response.substring(index_start+18,index_end);
-      response_JSON = jQuery.parseJSON(response);
+      response_JSON = JSON.parse(response);
 
       if(!response_JSON ){
         alert('There is some error. Cannot add Instagram gallery.');
@@ -369,7 +369,7 @@ function bwg_add_instagram_gallery(instagram_access_token, from_popup){
       }
       else{
         if(response_JSON[0] == 'error'){
-          alert('Error: ' + jQuery.parseJSON(response)[1]);
+          alert('Error: ' + JSON.parse(response)[1]);
           jQuery('#loading_div').hide();
           if(from_popup){
             jQuery('#bulk_embed').show();

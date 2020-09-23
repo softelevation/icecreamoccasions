@@ -800,7 +800,7 @@ class WDWLibraryEmbed {
     if ( empty($images_new) ) {
       return array(false, "Cannot get social data");
     }
-    $images = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "bwg_image WHERE gallery_id = '" . $id . "' ", OBJECT);
+    $images = $wpdb->get_results($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "bwg_image WHERE gallery_id = %d", $id), OBJECT);
     $images_count = sizeof($images);
     
     $images_update = array(); /*ids and orders of images existing in both arrays*/
@@ -894,25 +894,30 @@ class WDWLibraryEmbed {
     if($images_count != 0){
 		if($to_unpublish){
     		foreach ($images_dated as $image) {
-    			$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET published=0, `order` ='.$image['order'].' WHERE `id`='.$image['id'];
-				$wpdb->query($q);
+    			$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET published=0, `order` =%s WHERE `id`=%d';
+				  $wpdb->query( $wpdb->prepare($q, array($image['order'], $image['id'])) );
     		}
     	}
     	else {
     		foreach ($images_dated as $image) {
-				$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET `order` ='.$image['order'].' WHERE `id`='.$image['id'];
-    			$wpdb->query($q);
+				$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET `order` =%s WHERE `id`=%d';
+          $wpdb->query( $wpdb->prepare($q, array($image['order'], $image['id'])) );
     		}		
     	}
 
 		foreach ($images_update as $image) {
-			$save = $wpdb->update($wpdb->prefix . 'bwg_image', array(
+			$save = $wpdb->update($wpdb->prefix . 'bwg_image',
+        array(
 			  'order' => $image['order'],
 			  'slug' => self::spider_replace4byte($image['slug']),
 			  'description' => self::spider_replace4byte($image['description']),
 			  'alt' => self::spider_replace4byte($image['alt']),
 			  'date' => $image['date']
-			  ), array('id' => $image['id']));
+			  ),
+        array('id' => $image['id']),
+        array('%s','%s','%s','%s','%s'),
+        array('%d')
+      );
 		}
     }
 		/*add new images*/
@@ -936,9 +941,32 @@ class WDWLibraryEmbed {
         'comment_count' => $image['comment_count'],
         'avg_rating' => $image['avg_rating'],
         'rate_count' => $image['rate_count'],
-        'hit_count' => $image['hit_count'],
-        'redirect_url' => $image['redirect_url'],
-      ));
+      ),
+      array(
+        '%d',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%d',
+        '%d',
+        '%d',
+        '%d',
+        '%f',
+        '%d',
+        '%d',
+        '%s',
+        '%d',
+        '%d',
+      )
+      );
     }
 
 		$time = date('d F Y, H:i');

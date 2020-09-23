@@ -2,8 +2,8 @@
 Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 4.6
-Tested up to: 5.4
-Stable tag: 1.5.56
+Tested up to: 5.5
+Stable tag: 1.5.62
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,6 +281,27 @@ Choose whether to display random or the first/last specific number of images.
 **Theme.** Choose the theme, which will be applied to the gallery/album.
 
 == Changelog ==
+= 1.5.62 =
+* Fixed: Minor bug.
+
+= 1.5.61 =
+* Fixed: Conflicts with WP5.5.
+* Fixed: Conflicts with PHP7.4.
+* Fixed: Bug on lightbox fading effect.
+
+= 1.5.60 =
+* Fixed: JS Injection vulnerability.
+
+= 1.5.59 =
+* Added: Thumbnail background color transparency option.
+* Updated: Google fonts list.
+* Fixed: Bug on thumbnails alignment.
+* Fixed: Bug on thumbnail sizes during lazy load.
+* Fixed: Issues with folders and files with space in name.
+
+= 1.5.58 =
+* Improved: Admin pages UX/UI.
+
 = 1.5.56 =
 * Fixed: Security issue.
 

@@ -198,11 +198,13 @@
 
       for (var i = 1; i <= this.opt.number; i++) {
         var title = methods._getHint.call(this, i),
-            icon  = (this.opt.score && this.opt.score >= i) ? 'starOn' : 'starOff';
+            icon  = (this.opt.score && this.opt.score >= i) ? 'starOn' : 'starOff',
+			style  = (this.opt.score && this.opt.score >= i) ? 'styleOn' : 'styleOff';
 
         icon = this.opt[icon];
+		style = this.opt[style];
 
-        $('<i />', { 'class' : icon, title: title, 'data-score': i }).appendTo(this);
+        $('<i />', { 'class' : icon, title: title, 'data-score': i, 'style' : style }).appendTo(this);
 
         if (this.opt.space) {
           that.append((i < this.opt.number) ? '&#160;' : '');
@@ -237,8 +239,12 @@
           }
         } else {
           var icon = select ? 'starOn' : 'starOff';
+		  
+		  var style = select ? 'styleOn' : 'styleOff';
+		  var size 	= 'size';
 
           star.attr('class', this.opt[icon]);
+		  star.attr('style', 'color:'+this.opt[style]+';font-size:'+this.opt[size]+'px;');
         }
       }
     }, _getHint: function(score) {
@@ -260,15 +266,20 @@
       var rest = (score - Math.floor(score)).toFixed(2);
 
       if (rest > this.opt.round.down) {
-        var icon = 'starOn';                                 // Up:   [x.76 .. x.99]
+        var icon = 'starOn';
+		var style = 'styleOn';
+		var size = 'size';                                 // Up:   [x.76 .. x.99]
 
         if (this.opt.halfShow && rest < this.opt.round.up) { // Half: [x.26 .. x.75]
           icon = 'starHalf';
+		  style = 'styleHalf';
         } else if (rest < this.opt.round.full) {             // Down: [x.00 .. x.5]
           icon = 'starOff';
+		  style = 'styleOff';
         }
 
         this.stars.eq(Math.ceil(score) - 1).attr('class', this.opt[icon]);
+		this.stars.eq(Math.ceil(score) - 1).attr('style', 'color:'+this.opt[style]+';font-size:'+this.opt[size]+'px;');
       }                              // Full down: [x.00 .. x.25]
     }, _target: function(score, evt) {
       if (this.opt.target) {
@@ -437,11 +448,14 @@
     score         : undefined,
     scoreName     : 'score',
     single        : false,
-    size          : null,
+    size          : 25,
     space         : true,
-    starHalf      : 'fa fa-fw fa-star-half-o',
+    starHalf      : 'fa fa-fw fa-star-half',
     starOff       : 'fa fa-fw fa-star-o',
     starOn        : 'fa fa-fw fa-star',
+	styleOn       : '#ec971f',
+	styleOff      : '#bbb',
+    styleHalf     : '#ec971f',
     target        : undefined,
     targetFormat  : '{score}',
     targetKeep    : false,

@@ -242,27 +242,51 @@ function build_md_select(obj){
 			obj.dropdown({ select_obj : obj });	
 	
 }
-Number.prototype.format = function(n, x) {
-    var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
-    return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+/**
+ * Number.prototype.format(d, w, s, c)
+ * 
+ * @param integer d: length of decimal
+ * @param integer w: length of whole part
+ * @param mixed   s: sections delimiter
+ * @param mixed   c: decimal delimiter
+ */
+Number.prototype.format = function(d, w, s, c) {
+    var re = '\\d(?=(\\d{' + (w || 3) + '})+' + (d > 0 ? '\\b' : '$') + ')',
+        num = this.toFixed(Math.max(0, ~~d));
+    
+    return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
 };
-function run_count(selector, to)
+
+function run_count(selector, to, field_type)
 {
+	
   var from = jQuery(selector).text()=='' ? 0 : parseFloat(jQuery(selector).find('.math_result').text().replace(',',''));
   var get_decimals =  parseInt(jQuery(selector).attr('data-decimal-places'));
-  jQuery({someValue: from}).animate({someValue: parseFloat(to)}, {
-    duration: 400,
+  var decimal_separator =  (jQuery(selector).attr('data-decimal-separator')) ? jQuery(selector).attr('data-decimal-separator') : '.';
+  var thousand_separator = (jQuery(selector).attr('data-thousand-separator')) ? jQuery(selector).attr('data-thousand-separator') : ',';
+  jQuery({someValue: parseFloat(from)}).animate({someValue: parseFloat(to)}, {
+    duration: 300,
     easing:'swing',
     step: function() {
-      
-	  jQuery(selector).find('.math_result').text(Math.ceil(this.someValue).format(get_decimals));
+     // if(field_type=='time')
+	 // 	jQuery(selector).find('.math_result').text(parseFloat(nf_timeConvert(this.someValue)).format('2','','',':'));
+	 // else
+	  	jQuery(selector).find('.math_result').text(parseFloat(this.someValue).format(get_decimals, '',thousand_separator,decimal_separator));
     }
   });
-  setTimeout(function(){
-    jQuery(selector).find('.math_result').text(parseFloat(to).format(get_decimals));
-  }, 550);
-  
-  
+ 
+ /* if(field_type=='time')
+  	{	
+  		setTimeout(function(){
+		jQuery(selector).find('.math_result').text(parseFloat(nf_timeConvert(to)).format('2','','',':'));
+	  }, 400);
+  }
+ else
+ 	{*/
+	  setTimeout(function(){
+		jQuery(selector).find('.math_result').text(parseFloat(to).format(get_decimals, '',thousand_separator,decimal_separator));
+	  }, 400);
+	/*}*/
   jQuery(selector).find('.set_math_result').trigger('change');
 }
 
@@ -275,13 +299,24 @@ function set_up_math_logic(target){
 	while ((match = pattern.exec(get_math)) != null)
 		{
 		var element = document.getElementsByName(match[1]);
-		
-		jQuery(element).on('change',
-			function()
-				{
-				setTimeout(function(){run_math_logic(target)},30);
-				}
-			);
+		if(jQuery(element).closest('.form_field').hasClass('text'))
+			{
+			jQuery(element).on('keyup',
+				function()
+					{
+					setTimeout(function(){run_math_logic(target)},30);
+					}
+				);	
+			}
+		else
+			{
+			jQuery(element).on('change',
+				function()
+					{
+					setTimeout(function(){run_math_logic(target)},30);
+					}
+				);
+			}
 		}
 		
 }
@@ -382,14 +417,33 @@ function run_math_logic(target){
 			if(jQuery(element).closest('.form_field').hasClass('md-datepicker') || jQuery(element).closest('.form_field').hasClass('date') || jQuery(element).closest('.form_field').hasClass('jq-datepicker'))
 				{
 				
-				var get_date = (the_form.find('input[name="'+match_array[j]+'"]').val()) ? Date.parse(the_form.find('input[name="'+match_array[j]+'"]').val()) : 0;
+				var get_date = (the_form.find('input[name="'+match_array[j]+'"]').val()) ? moment(the_form.find('input[name="'+match_array[j]+'"]').val(),the_form.find('input[name="'+match_array[j]+'"]').parent().attr('data-format')) : 0;
+				
+				//alert(get_date);
 				var set_date = (get_date)/(1000 * 60 * 60 * 24)
-
+				
+				//alert(the_form.find('input[name="'+match_array[j]+'"]').val());
+				//alert(Date.parse(the_form.find('input[name="'+match_array[j]+'"]').val()));
+				
 				set_val = (set_date<0) ? 0 : set_date;
 				
 				}
+			else if(jQuery(element).closest('.form_field').hasClass('time'))
+				{
+				
+				var get_date = (the_form.find('input[name="'+match_array[j]+'"]').val()) ? moment(the_form.find('input[name="'+match_array[j]+'"]').val(),the_form.find('input[name="'+match_array[j]+'"]').parent().attr('data-format')) : 0;
+				
+				//alert(get_date);
+				var set_date = (get_date)/(1000 * 60)
+				
+				//alert(the_form.find('input[name="'+match_array[j]+'"]').val());
+				//alert(Date.parse(the_form.find('input[name="'+match_array[j]+'"]').val()));
+				
+				set_val = set_date;
+				
+				}
 			else	
-				set_val = (the_form.find('input[name="'+match_array[j]+'"]').val()) ? the_form.find('input[name="'+match_array[j]+'"]').val() : 0;
+				set_val = (the_form.find('input[name="'+match_array[j]+'"]').val()) ? the_form.find('input[name="'+match_array[j]+'"]').val().replace(',','.') : 0;
 				
 			//if(!the_form.find('input[name="'+match_array[j]+'"]').closest('.form_field').is(':visible'))
 				//set_val = 0;
@@ -410,8 +464,10 @@ function run_math_logic(target){
 		 clean_math = target.attr('data-math-equation').replace(set_match,set_val).replace('{','').replace('}','');
 		 target.attr('data-math-equation',clean_math)
 		}
-	//if(target.is(':visible'))
-		run_count(target,math.eval(clean_math));
+	if(jQuery(element).closest('.form_field').hasClass('time'))
+		run_count(target,math.eval(clean_math),'time');
+	else
+		run_count(target,math.eval(clean_math),'');
 	//For decimals
 	if(target.attr('data-decimal-places')!=0)
 		target.parent().find('input.set_math_result').val((Math.ceil(math.eval(clean_math) * 100)/100).toFixed(parseInt(target.attr('data-decimal-places'))));
@@ -450,7 +506,7 @@ function run_nf_reanimate(the_field){
 			the_field.addClass('test');
 			the_field.addClass(the_field.attr('data-animation-name'));	
 			
-			},200);
+			},100);
 }
 
 function run_nf_cl_animations(field,action, the_form){
@@ -489,7 +545,7 @@ function run_nf_cl_animations(field,action, the_form){
 						field.css('visibility','visible');
 						field.addClass('animation_exe');
 						},animation_delay);
-					},200
+					},100
 				);
 			}
 		}
@@ -500,7 +556,7 @@ function run_nf_cl_animations(field,action, the_form){
 				{
 				field.hide();
 				field.removeClass('animation_exe')
-				},200
+				},100
 			)
 		}
 		
@@ -519,10 +575,397 @@ else
 	
 		
 }
+var get_pressed_key = '';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 jQuery(document).ready(
 function()
 	{
+	jQuery('#nex-forms button.add_shine').append('<div class="shine"></div>');
+	jQuery(document).on('mouseover','#nex-forms button.add_shine',
+			function()
+				{
+				var btn = jQuery(this);
+				btn.addClass('do_shine');
+				//btn.find('.shine').show();
+				btn.find('.shine').addClass('animated');
+				btn.find('.shine').addClass('fadeOut');
+				
+				btn.find('.shine').css('transform','skewX(-20deg) translateX('+ (btn.width()+200) +'px)');
+				
+				setTimeout(function(){ 
+					btn.find('.shine').removeClass('fadeOut');
+					btn.find('.shine').removeClass('animated');
+					btn.find('.shine').attr('style','');
+					btn.removeClass('do_shine');
+				}, 400);
+				}
+			);
+	
+	
+	
+	jQuery('#nex-forms input[type="text"]').each(
+			function()
+				{
+				if(jQuery(this).closest('.form_field').hasClass('date') || jQuery(this).closest('.form_field').hasClass('time'))
+					{
+					jQuery(this).val('');
+					}
+				else
+					{
+					if(jQuery(this).attr('data-value'))
+						{
+						if(jQuery(this).closest('.form_field').hasClass('date') || jQuery(this).closest('.form_field').hasClass('time'))
+							jQuery(this).val('');
+						else
+							jQuery(this).val(jQuery(this).attr('data-value'));
+						}
+					}
+				}
+			);
+		jQuery('#nex-forms textarea').each(
+			function()
+				{
+				if(jQuery(this).attr('data-value'))
+					jQuery(this).val(jQuery(this).attr('data-value'));
+				}
+			)	
+	
+	jQuery(document).on('mouseenter','.bootstrap-datetimepicker-widget',function() {
+	  jQuery(this).addClass('over-picker');
+	});
+	jQuery(document).on('mouseleave','.bootstrap-datetimepicker-widget',function() {
+	  jQuery(this).removeClass('over-picker');
+	});
+	
+	
+	jQuery(document).on('focus','.form_field .form-control',
+		function()
+			{
+			if(!jQuery(this).closest('.form_field').hasClass('is_focused'))
+				jQuery(this).closest('.form_field').addClass('is_focused');
+			if(!jQuery(this).closest('.form_field').hasClass('is_typing'))
+				jQuery(this).closest('.form_field').addClass('is_typing');
+			}
+		);
+	jQuery(document).on('blur','.form_field .form-control',
+		function()
+			{
+			if(jQuery(this).val()=='' && (jQuery(this).attr('placeholder')=='' || !jQuery(this).attr('placeholder')))
+				jQuery(this).closest('.form_field').removeClass('is_focused');
+			
+			jQuery(this).closest('.form_field').removeClass('is_typing');
+			}
+		);	
+		
+		
+	jQuery('.v7_container').each(
+		function()
+			{
+			if(jQuery(this).hasClass('form_type_conversational'))
+				{
+				var form = 	jQuery(this);
+				form.find('.form_field').each(
+					function(index)
+						{
+						if(jQuery(this).hasClass('html_fields'))
+							{
+							jQuery(this).append('<input type="text" class="the_input_element cf_dummy_field" name="cf_dummy_field" value="" />');
+							}
+						/*if(index==1)
+							{
+							//jQuery(this).addClass('active');	
+							//jQuery(this).find('input, select, textarea, button, a').first().focus();	
+							}*/
+						jQuery(this).addClass('field_num_'+index);
+						jQuery(this).attr('data-field-num',index);
+						}
+					);
+					
+				
+				
+					
+					
+				}
+			
+			}
+		);
+	
+	
+	
+	
+	jQuery(document).on('keydown', '#nex-forms .form_type_conversational form input, #nex-forms .form_type_conversational form textarea, #nex-forms .form_type_conversational form select', function(e) {
+	 
+	  if(e.which == 13) {
+		e.preventDefault();
+		var form = 	jQuery(this).closest('.v7_container');
+		var field_num = parseInt(jQuery(this).closest('.form_field').attr('data-field-num'));
+		var next_field = '';
+		for(var i=field_num; i<100;i++)
+			{
+			if(form.find('.form_field.field_num_'+(i+1)).is(':visible'))
+				{
+				next_field = form.find('.form_field.field_num_'+(i+1));
+				break;
+				}
+			}
+		
+		var get_next_field_pos = next_field.position();
+		
+		next_field.find('input, select, textarea, button').first().focus();
+		next_field.find('input, select, textarea, button').first().trigger('focus');
+		
+		var checked = false;
+		next_field.find('.the-radios input[type="radio"]').each(
+			function()
+				{
+				if(jQuery(this).prop('checked'))
+					checked=true;
+				}
+			);
+		if(!checked)
+			{
+			next_field.find('.the-radios input[type="radio"]').first().prop('checked',true);
+			next_field.find('.the-radios input[type="radio"]').first().trigger('change');
+			}
+		
+		var icon_checked = false;
+		next_field.find('.icon-holder:not(.default-selected-icon)').each(
+			function()
+				{
+				if(jQuery(this).find('input[type="radio"]').prop('checked'))
+					icon_checked=true;
+				}
+			);
+		if(!icon_checked)
+			{
+			next_field.find('.icon-container .icon-holder').first().find('input[type="radio"]').trigger('click');
+			}
+			
+		
+			form.find('.form_field.active').removeClass('active');
+			next_field.addClass('active');
+			
+		//if(next_field.hasClass('the_submit'))
+			//{
+			jQuery("html, body").animate(
+					{
+					scrollTop:get_next_field_pos.top+300
+					},500
+				);
+							
+			//}
+		
+			
+			
+		return false;
+	  
+	  }
+	});
+	
+	
+	jQuery(document).on('focus', '#nex-forms .form_type_conversational form input, #nex-forms .form_type_conversational form textarea, #nex-forms .form_type_conversational form select, #nex-forms .form_type_conversational form button',
+		function(e)
+			{
+			if(jQuery(this).hasClass('check'))
+				jQuery(this).closest('label').addClass('check_on_focus');
+			
+			if(jQuery(this).parent().hasClass('icon-holder'))
+				jQuery(this).parent().addClass('check_on_focus');
+			
+			//if(!jQuery(this).hasClass('the_submit'))
+				//{
+				e.preventDefault();
+				var form = 	jQuery(this).closest('.v7_container');
+				var field = jQuery(this).closest('.form_field')
+				
+				form.find('.form_field.active').removeClass('active');
+				var checked = false;
+				field.find('#the-radios input[type="radio"]').each(
+					function()
+						{
+						if(jQuery(this).prop('checked'))
+							checked=true;
+						}
+					);
+				if(!checked)
+					{
+					field.find('#the-radios input[type="radio"]').first().prop('checked',true);
+					field.find('#the-radios input[type="radio"]').first().trigger('change');
+					}
+				
+				var icon_checked = false;
+				field.find('.icon-holder:not(.default-selected-icon)').each(
+					function()
+						{
+						if(jQuery(this).find('input[type="radio"]').prop('checked'))
+							icon_checked=true;
+						}
+					);
+				if(!icon_checked)
+					{
+					field.find('.icon-container .icon-holder').first().find('input[type="radio"]').trigger('click');
+					}
+				
+				
+				field.addClass('active');
+				
+				var get_next_field_pos = field.position();
+				
+				jQuery("html, body").animate(
+						{
+						scrollTop:get_next_field_pos.top+300
+						},500
+					);
+				}
+				
+			//}
+		);	
+	jQuery(document).on('blur', '#nex-forms .form_type_conversational form input[type="checkbox"]',
+		function(e)
+			{
+			jQuery(this).closest('label').removeClass('check_on_focus');
+			jQuery(this).parent().removeClass('check_on_focus');
+			}
+		);
+	
+	
+	
+	
+	
+	jQuery('.v7_container').each(
+		function()
+			{
+			if(jQuery(this).hasClass('form_type_chat'))
+				{
+				var form = 	jQuery(this);
+				form.find('.form_field').each(
+					function(index)
+						{
+						if(index==0)
+							jQuery(this).addClass('html_fields');
+						jQuery(this).addClass('out_of_focus');
+						
+						jQuery(this).addClass('field_num_'+index);
+						
+						jQuery(this).attr('data-field-num',index);
+						}
+					);
+
+				nf_run_chat(jQuery(this));	
+				}
+			
+			}
+		);
+function nf_run_chat(form){	
+	form.find('.out_of_focus').each(
+			function(index)
+				{
+				var field = jQuery(this);
+				var form = 	jQuery(this).closest('.v7_container');
+				nf_replace_tags(form,field);
+				
+				console.log(field.find('.the_input_element').text().length);
+				
+				if(!strstr(field.attr('style'),'display: none'))
+					{
+					if(field.hasClass('html_fields'))	
+						{
+						setTimeout(function(){
+							field.removeClass('out_of_focus'); 
+							field.find('#field_container').addClass('animated'); 
+							field.find('#field_container').addClass('pulse_chat')
+							},(1000*index)+(field.find('.the_input_element').text().length*10));
+						return true;
+						}
+					else
+						{
+						field.addClass('chat_question');
+						setTimeout(function(){
+							field.removeClass('out_of_focus'); 
+							field.addClass('animated'); 
+							field.addClass('fadeIn')
+							},(1000*index));
+						return false;
+						}
+						
+					}
+					
+				}
+	
+		);
+}
+	
+	jQuery(document).on('change', '#nex-forms .form_type_chat form input[type="radio"], #nex-forms .form_type_chat form input[type="checkbox"], .form_type_chat form select', function(e) {
+	 	var field = jQuery(this);
+		var form = 	field.closest('.v7_container');
+		
+		field.closest('.form_field').removeClass('chat_question');
+		field.closest('.form_field').addClass('chat_answered'); 
+		setTimeout(function(){
+		field.closest('.form_field').prepend('<div class="user_answer">'+ field.closest('.form_field').find('.the_value').val() +'</div>'); 
+		},200);
+		setTimeout(function(){nf_run_chat(form)},400);
+		
+	  }
+	);
+
+	jQuery(document).on('keydown', '#nex-forms .form_type_chat form input, #nex-forms .form_type_chat form textarea, #nex-forms .form_type_chat form select', function(e) {
+	 
+	  if(e.which == 13) 
+	  	{
+		
+		jQuery(this).closest('.form_field').removeClass('chat_question'); 
+		jQuery(this).closest('.form_field').addClass('chat_answered');
+		jQuery(this).closest('.form_field').prepend('<div class="user_answer">'+ jQuery(this).val() +'</div>'); 
+		
+		e.preventDefault();
+		var form = 	jQuery(this).closest('.v7_container');
+		
+		setTimeout(function(){nf_run_chat(form)},500);
+	
+	  	}
+		
+	  }
+	);
+	/*$(document).on('keypress', 'input', 
+		function (e)
+			{
+			var form = 	jQuery(this).closest('.v7_container');
+			var field_num = parseInt(jQuery(this).closest('.form_field').attr('data-field-num'));
+			if (e.which == 13) 
+				{
+				e.preventDefault();
+				form.find('.form_field.active').removeClass('active');
+				form.find('.form_field.field_num_'+(field_num+1)).addClass('active');
+				}
+			}
+	);*/
 	
 	
 	jQuery(this).closest('form').find('input').removeAttr('disabled');
@@ -533,12 +976,25 @@ function()
 		function()
 			{
 			var form_container = jQuery(this);
+			var form_id		   = jQuery(this).find('form').attr('id');
 			form_container.find(':disabled').each(
 				function()
 					{
 					form_container.find('form').append('<input type="hidden" name="'+ jQuery(this).attr('name') +'" value="'+ jQuery(this).val() +'" />');
 					}
 				);	
+			
+			form_container.find('.the-radios label').each(
+				function()
+					{
+					var label = jQuery(this);
+					var field = jQuery(this).closest('.form_field');
+					var input = jQuery(this).find('input');
+					var set_id = form_id+'_'+ field.attr('id')+ '_'+input.attr('name')+'_'+input.attr('value')+'_'+format_illegal_chars(jQuery(this).find('.input-label').text());
+					label.attr('for',set_id);
+					input.attr('id',set_id);
+					}
+				);
 			}
 		);
 	
@@ -599,16 +1055,16 @@ function()
 	jQuery(document).on('click', ".date #datetimepicker input",
 		function()
 			{
-			jQuery(this).parent().find('.input-group-addon').trigger('click');
-			jQuery(this).parent().find('.input-group-addon-bd').trigger('click');
+			//jQuery(this).parent().find('.input-group-addon').trigger('click');
+			//jQuery(this).parent().find('.input-group-addon-bd').trigger('click');
 			}
 		);	
 
 	jQuery(document).on('click', ".time #datetimepicker input",
 		function()
 			{
-			jQuery(this).parent().find('.input-group-addon').trigger('click');
-			jQuery(this).parent().find('.input-group-addon-bd').trigger('click');
+			//jQuery(this).parent().find('.input-group-addon').trigger('click');
+			//jQuery(this).parent().find('.input-group-addon-bd').trigger('click');
 			}
 		);	
 		
@@ -618,22 +1074,47 @@ function()
 	/* MD FIELDS */
 	jQuery('input').trigger('autoresize');
 	jQuery('textarea').trigger('autoresize');
-	jQuery('select.material_select').material_select();
+	jQuery('select.material_select').dropdown();
 
 	jQuery('.nex_forms_modal.modal').modal(
 			{
-			dismissible: false, // Modal can be dismissed by clicking outside of the modal
-			opacity: .8, // Opacity of modal background
-			inDuration: 300, // Transition in duration
-			outDuration: 200, // Transition out duration (not for bottom modal)
-			startingTop: '4%', // Starting top style attribute (not for bottom modal)
-			endingTop: '10%', // Ending top style attribute (not for bottom modal)
-			ready: function(modal, trigger)
+			dismissible: true, // Modal can be dismissed by clicking outside of the modal
+			opacity: 0, // Opacity of modal background
+			//inDuration: 300, // Transition in duration
+			//outDuration: 200, // Transition out duration (not for bottom modal)
+			//startingTop: '4%', // Starting top style attribute (not for bottom modal)
+			endingTop: '0%', // Ending top style attribute (not for bottom modal)
+			onOpenStart: function(element)
 				{ 	// Callback for Modal open. Modal and trigger parameters available.
-
+				
+				//console.log(element);
+				/*var el = jQuery(element);
+				var get_animation = el.attr('data-animation'); 
+				get_animation = get_animation.replace('In','Out');
+				get_animation = get_animation.replace('Down','Up');
+				get_animation = get_animation.replace('Up','Down');
+				console.log(get_animation);
+				
+				el.removeClass(get_animation);
+				
+				
+				
+				el.addClass(el.attr('data-animation'));
+				*/
 				},
-			complete: function() 
-				{  
+			onCloseStart: function(element) 
+				{ 
+				/*var el = jQuery(element);
+				var get_animation = el.attr('data-animation'); 
+				
+				el.removeClass(get_animation);
+				
+				get_animation = get_animation.replace('In','Out');
+				get_animation = get_animation.replace('Down','Up');
+				get_animation = get_animation.replace('Up','Down');
+				
+				el.addClass(get_animation);*/
+				
 				} // Callback for Modal close
 			}
 		);
@@ -722,6 +1203,7 @@ function()
 							var set_error_msg = get_error_msg.replace('{x}',max_upload_size_per_file)
 							show_nf_error(jQuery(this).closest('.form_field'),set_error_msg)
 							return false;
+
 							}
 						}
 					var fname = files[i].name;
@@ -862,96 +1344,194 @@ function()
 		}
 		
 		jQuery(document).trigger('scroll','html, body');
-
-	jQuery(document).on('blur', '#nex-forms input, #nex-forms textarea', function()
+	
+	jQuery(document).on('keyup', '#nex-forms input[type="text"]', function()
 		{
-		jQuery(this).trigger('change');
-		jQuery(this).keyup();
+		//var the_input = jQuery(this);
+		//if(!the_input.closest('.form_field').hasClass('date'))
+			//the_input.trigger('change');
 		}
 	);
 	
+	jQuery(document).on('blur', '#nex-forms input[type="text"], #nex-forms textarea', function(e)
+		{
+		//e.preventDefault();
+		//jQuery(this).trigger('change');
+		//jQuery(this).keyup();
+		}
+	);
 	
-	jQuery('#nex-forms input.numbers_only').on('keyup', function(){
-		var n = parseInt(jQuery(this).val().replace(/\D/g,''),10);
-		if(jQuery(this).val()=='NaN')
-			jQuery(this).val(0);
-		console.log(jQuery(this).val())
-	});
+	jQuery('#nex-forms .numbers_only input').on('keyup', function(){
+		var get_val = jQuery(this).val();
+		get_val = get_val.replace(/[^\d\.\,]*/g,'');
+		
+		jQuery(this).val(get_val);
+		}
+	);
 	
-	jQuery('#nex-forms input, #nex-forms textarea').each(
+	jQuery('#nex-forms .text_only input').on('keyup', function(){
+		var get_val = jQuery(this).val();
+		get_val = get_val.replace(/[^a-z]+/gi,'');
+		
+		jQuery(this).val(get_val);
+		}
+	);
+
+	
+	jQuery('#nex-forms input[type="text"], #nex-forms textarea').each(
 		function()
 			{
-			jQuery(this).attr('autocomplete','off');
+			//jQuery(this).attr('autocomplete','on');
 			
-			if(jQuery(this).attr('maxlength') && !jQuery(this).closest('.form_field').hasClass('material_field'))
+			
+			if(jQuery(this).attr('minlength'))
+				{
+				var current_total = jQuery(this).val().length;
+				var min_total = jQuery(this).attr('minlength');
+				jQuery(this).parent().append('<div class="text_counter_holder"><div class="text_counter text-red" style="display:none;">' + current_total + '/' + min_total + '</div></div>')
+				
+				jQuery(this).focus(function () {
+					jQuery(this).parent().find('.text_counter').show();
+					jQuery(this).parent().find('.text_counter').addClass('animated');
+					jQuery(this).parent().find('.text_counter').addClass('fadeIn');
+				});
+				
+				jQuery(this).blur(function () {
+					jQuery(this).parent().find('.text_counter').hide();
+					jQuery(this).parent().find('.text_counter').removeClass('animated');
+					jQuery(this).parent().find('.text_counter').removeClass('fadeIn');
+				});
+				
+           		jQuery(this).keyup(function () {
+ 
+            	var left = (jQuery(this).val().length-min_total);
+ 
+				if(jQuery(this).val().length < min_total){
+					jQuery(this).parent().find('.text_counter').addClass("text-red").removeClass('text-light-green');
+				}else{
+					jQuery(this).parent().find('.text_counter').removeClass("text-red").addClass('text-light-green');
+				}
+ 				
+				
+            	jQuery(this).parent().find('.text_counter').text(jQuery(this).val().length + '/' + min_total);
+				});
+				}
+			
+			
+			
+			
+			if(jQuery(this).attr('maxlength'))
 				{
 				var current_total = jQuery(this).val().length;
 				var max_total = jQuery(this).attr('maxlength');
-				jQuery(this).parent().append('<div class="text_counter_holder"><div class="badge label-success text_counter" style="display:none;">' + current_total + ' / ' + max_total + '</div></div>')
+				jQuery(this).parent().append('<div class="text_counter_holder"><div class="text_counter" style="display:none;">' + current_total + '/' + max_total + '</div></div>')
+				
+				jQuery(this).focus(function () {
+					jQuery(this).parent().find('.text_counter').show();
+					jQuery(this).parent().find('.text_counter').addClass('animated');
+					jQuery(this).parent().find('.text_counter').addClass('fadeIn');
+				});
+				
+				jQuery(this).blur(function () {
+					jQuery(this).parent().find('.text_counter').hide();
+					jQuery(this).parent().find('.text_counter').removeClass('animated');
+					jQuery(this).parent().find('.text_counter').removeClass('fadeIn');
+				});
 				
            		jQuery(this).keyup(function () {
  
             	var left = (max_total-jQuery(this).val().length);
  
-				if(left <= 0){
-					jQuery(this).parent().find('.text_counter').addClass("label-danger").removeClass('label-success');
+				/*if(left <= 0){
+					jQuery(this).parent().find('.text_counter').addClass("text-red").removeClass('text-light-green');
 				}else{
-					jQuery(this).parent().find('.text_counter').removeClass("label-danger").addClass('label-success');
-				}
+					jQuery(this).parent().find('.text_counter').removeClass("text-red").addClass('text-light-green');
+				}*/
  				
 				if(jQuery(this).val().length<=0)
 					{
 					jQuery(this).closest('.form_field').removeClass('has_max_lenght');	
-					jQuery(this).parent().find('.character-counter').hide();
+					
 					}
 				else
 					{
 					jQuery(this).closest('.form_field').addClass('has_max_lenght');	
-					jQuery(this).parent().find('.character-counter').show();
+					
 					}
-            	jQuery(this).parent().find('.character-counter').text(jQuery(this).val().length + '/' + max_total);
+            	jQuery(this).parent().find('.text_counter').text(jQuery(this).val().length + '/' + max_total);
 				});
 				}
 			}
 		);
 		
 		
-		jQuery(document).on('click', '.the-radios a, .the-radios .input-label, .the-radios span.check-icon', function(e){
+		
+	
+		
+		
+		
+		/*jQuery(document).on('click', '.the-radios a, .the-radios .input-label, .the-radios span.check-icon', function(e){
+				
+				}
+			);
+		*/
+		
+		
+		
+		/*jQuery(document).on('click', 'form .the-radios label.radio_selected', function(e){
+		
+				jQuery(this).find('input').prop('checked', false);
+				jQuery(this).find('input').trigger('change');
+				jQuery(this).find('a').attr('class','ui-state-default');
+				jQuery(this).find('a').css('background','#fff');
+				jQuery(this).removeClass('radio_selected');
+				jQuery(this).find('.check-icon').remove();
+				
+				
+		});*/
+		
+		
+		
+		jQuery(document).on('change', 'form .the-radios input[type="radio"], form  .the-radios input[type="checkbox"]', function(e){
 				
 				
 				var the_field = jQuery(this).closest('.form_field');
 				
-				
+				hide_nf_error(the_field);
 				if(!the_field.hasClass('classic-radio-group') && !the_field.hasClass('classic-check-group'))
 					{
 						e.preventDefault();
 					}
 				
-				var clickedParent = (jQuery(this).hasClass('input-label')) ? jQuery(this).parent().find('.clearfix') : jQuery(this).closest('.clearfix');
-				var	input = clickedParent.find('input');
-				var	nexCheckable = clickedParent.find('a:first');
-				var	input_label = clickedParent.closest('label');
+				var clickedParent 	= 	jQuery(this).closest('label');
+				var	input 			=	jQuery(this);
+				var	nexCheckable 	= 	clickedParent.find('a:first');
+				var	input_label 	= 	jQuery(this).closest('label');
 				
-				
+				var	input_holder 	= 	jQuery(this).closest('.input_container');
+			
+				var check_animation 	= (input_holder.attr('data-checked-animation')) ? input_holder.attr('data-checked-animation') : 'fadeInDown';
+				var uncheck_animation 	= (input_holder.attr('data-unchecked-animation')) ? input_holder.attr('data-unchecked-animation') : 'fadeOutUp';
 				
 				if(input.prop('type') === 'radio')
 					{
 					
 					the_field.find('.radio_selected').removeClass('radio_selected');
-						the_field.find('#the-radios a').css('background','#fff');
+						the_field.find('#the-radios a').css('background','rgba(255,255,255,0.9)');
 						the_field.find('.check-icon').remove();
+						//the_field.find('.thumb-icon-holder').remove();
 					if(!nexCheckable.hasClass('checked'))
 						{
-							jQuery('input[name="' + input.attr('name') + '"]').each(
+							the_field.find('input[name="' + input.attr('name') + '"]').each(
 								function(index, el)
 									{
-									jQuery(el).prop('checked', false).parent().find('a:first').removeClass('checked').removeClass("ui-state-active").addClass("ui-state-default").removeClass(jQuery(el).closest('.the-radios').attr('data-checked-class'));
+									jQuery(this).prop('checked', false).parent().find('a:first').removeClass('checked').removeClass("ui-state-active").addClass("ui-state-default").removeClass(jQuery(el).closest('.the-radios').attr('data-checked-class'));
 									nexCheckable.attr('class','checked' );
 									
 									
 									
 									input_label.removeClass('radio_selected');
-									
+									jQuery(this).closest('label').removeClass('ui-state-active');
 									}
 								);
 							
@@ -972,48 +1552,131 @@ function()
 								{
 								setTimeout(function()
 										{	
-											the_field.closest('.step ').find('.nex-step').trigger('click');	
+											the_field.closest('.step').find('.nex-step').trigger('click');	
 										},300
 									)
 								}
 						}
 					
-					}
-				
+					
+					//RADIOS
 					if(input.prop('checked'))
 						{
 						input.prop('checked', false);
 						nexCheckable.attr('class','ui-state-default');
-							nexCheckable.css('background','#fff');
+							nexCheckable.css('background','rgba(255,255,255,0.2)');
 						input_label.removeClass('radio_selected');
 						nexCheckable.parent().find('.check-icon').remove();
+						//input_label.find('.thumb-icon-holder').remove();
+						
+						
+						
+						input_label.removeClass('ui-state-active');
 						} 
 					else 
 						{
 						
+						the_field.find('.thumb-icon-holder .thumb-icon').removeClass(check_animation);
+						the_field.find('.thumb-icon-holder .thumb-icon').addClass(uncheck_animation);
+						setTimeout(function() { the_field.find('.thumb-icon-holder .thumb-icon.'+uncheck_animation).parent().remove() },300);
+						
+						var set_thumb_icon_bg = '#8bc34a';
+						if(input_label.closest('.ui-nex-forms-container').hasClass('jquery_ui'))
+							input_label.addClass('ui-state-active');
 						input.prop('checked', true);
 						nexCheckable.attr('class','checked');
 						nexCheckable.addClass("ui-state-active").removeClass("ui-state-default")
 						input_label.addClass('radio_selected');
 						if(nexCheckable.closest('#the-radios').data('checked-bg-color') && nexCheckable.closest('#the-radios').data('checked-bg-color')!='')
+							{
 							nexCheckable.css('background',nexCheckable.closest('#the-radios').attr('data-checked-bg-color'));
+							set_thumb_icon_bg = nexCheckable.closest('#the-radios').attr('data-checked-bg-color');
+							}
 						else
+							{
 							nexCheckable.css('background','#8bc34a');
-						
-						var checked_color = '#ffffff';
+							set_thumb_icon_bg = '#8bc34a';
+							
+							}
+						var checked_color = 'rgba(255,255,255)';
 						
 						if(nexCheckable.css('color')!='transparent' && nexCheckable.css('color')!='undefined' && nexCheckable.css('color')!='' && nexCheckable.css('color')!='rgba(0, 0, 0, 0)')
 							checked_color = nexCheckable.css('color');
-							
-						nexCheckable.after('<span style="color:'+ checked_color +';" class="check-icon checked fa '+ nexCheckable.closest('.the-radios').attr('data-checked-class')+'"></span>' );
 						
-						nexCheckable.addClass('animated').addClass('pulse');
-						setTimeout(function(){ nexCheckable.removeClass('animated').removeClass('pulse');},1300);
+						
+						if(the_field.hasClass('image-choices-field'))
+							clickedParent.find('.thumb-image-outer-wrap').prepend('<div class="thumb-icon-holder"><span style="background: '+ set_thumb_icon_bg +'; color:'+ checked_color +';" class="thumb-icon set_animation_fast '+check_animation+' checked fa '+ nexCheckable.closest('.the-radios').attr('data-checked-class')+'"></span></div>' );
+						else
+							nexCheckable.after('<span style="color:'+ checked_color +';" class="check-icon animated zoomInFast checked fa '+ nexCheckable.closest('.the-radios').attr('data-checked-class')+'"></span>' );
+						
+						
+						if(!jQuery(this).closest('.ui-nex-forms-container').hasClass('neumorphism'))
+							{
+							//nexCheckable.addClass('animated').addClass('flip');
+							nexCheckable.addClass('animated').addClass('pulse');
+							setTimeout(function(){ nexCheckable.removeClass('animated').removeClass('pulse');},1300);
+							}
+						}	
+					}	
+				else
+					{
+					
+					//CHECKS
+					if(!input.prop('checked'))
+						{
+						nexCheckable.attr('class','ui-state-default');
+							nexCheckable.css('background','rgba(255,255,255,0.2)');
+						input_label.removeClass('radio_selected');
+						nexCheckable.parent().find('.check-icon').remove();
+						input_label.find('.thumb-icon-holder .thumb-icon').removeClass(check_animation);
+						input_label.find('.thumb-icon-holder .thumb-icon').addClass(uncheck_animation);
+						setTimeout(function() { input_label.find('.thumb-icon-holder').remove() },300);
+						if(input_label.closest('.ui-nex-forms-container').hasClass('jquery_ui'))
+							input_label.removeClass('ui-state-active');
+						} 
+					else 
+						{
+						var set_thumb_icon_bg = '#8bc34a';
+						if(input_label.closest('.ui-nex-forms-container').hasClass('jquery_ui'))
+							input_label.addClass('ui-state-active');
+						nexCheckable.attr('class','checked');
+						nexCheckable.addClass("ui-state-active").removeClass("ui-state-default")
+						input_label.addClass('radio_selected');
+						if(nexCheckable.closest('#the-radios').data('checked-bg-color') && nexCheckable.closest('#the-radios').data('checked-bg-color')!='')
+							{
+							nexCheckable.css('background',nexCheckable.closest('#the-radios').attr('data-checked-bg-color'));
+							set_thumb_icon_bg = nexCheckable.closest('#the-radios').attr('data-checked-bg-color');
+							}
+						else
+							{
+							nexCheckable.css('background','#8bc34a');
+							set_thumb_icon_bg = '#8bc34a';
+							
+							}
+						var checked_color = 'rgba(255,255,255)';
+						
+						if(nexCheckable.css('color')!='transparent' && nexCheckable.css('color')!='undefined' && nexCheckable.css('color')!='' && nexCheckable.css('color')!='rgba(0, 0, 0, 0)')
+							checked_color = nexCheckable.css('color');
+						
+						
+						if(the_field.hasClass('image-choices-field'))
+							clickedParent.find('.thumb-image-outer-wrap').prepend('<div class="thumb-icon-holder"><span style="background: '+ set_thumb_icon_bg +'; color:'+ checked_color +';" class="thumb-icon set_animation_fast '+ check_animation +' checked fa '+ nexCheckable.closest('.the-radios').attr('data-checked-class')+'"></span></div>' );
+						else
+							nexCheckable.after('<span style="color:'+ checked_color +';" class="check-icon animated zoomInFast checked fa '+ nexCheckable.closest('.the-radios').attr('data-checked-class')+'"></span>' );
+						
+						
+						
+						if(!jQuery(this).closest('.ui-nex-forms-container').hasClass('neumorphism'))
+							{
+							//nexCheckable.addClass('animated').addClass('flip');
+							nexCheckable.addClass('animated').addClass('pulse');
+							setTimeout(function(){ nexCheckable.removeClass('animated').removeClass('pulse');},1300);
+							}
 						
 						}	
-						
-					input.trigger('change');
-					}		
+					}
+					//input.trigger('change');
+				}		
 				
 			);
 		
@@ -1097,7 +1760,17 @@ function()
 		
 		
 		
+	jQuery('body').prepend('<div id="nex-forms" class="nex-forms nf_popups_holder"></div>');	
 		
+		
+	jQuery('.nex_forms_modal').each(
+		function()
+			{
+			var the_modal = jQuery(this).detach();
+			jQuery('.nf_popups_holder').prepend(the_modal);
+			//console.log(jQuery(this).attr('id'));	
+			}
+		);	
 		
 		
 		
@@ -1106,9 +1779,9 @@ function()
 		function(e)
 			{
 			e.preventDefault();
-			run_parent_css_reset(jQuery(this).attr('data-popup-id'))
+			//run_parent_css_reset(jQuery(this).attr('data-popup-id'))
 			
-			var form = jQuery(this).closest('#nex-forms').find('form');
+			var form = jQuery('.nf_popups_holder #nexForms_popup_'+jQuery(this).attr('data-popup-id')).find('form');
 			
 			var default_values = jQuery(this).attr('data-default-values');
 			
@@ -1141,10 +1814,9 @@ function()
 							{
 							if(jQuery(this).val()==pre_val)
 								{
-								var get_check = jQuery(this).parent().find('a');
 
-
-								setTimeout(function(){ get_check.trigger('click') },200);
+								jQuery(this).prop('checked',true);
+								jQuery(this).trigger('change');
 								}
 							}
 						)
@@ -1159,14 +1831,21 @@ function()
 						}
 					if(the_input.attr('type')=='radio')
 						{
-						the_input.closest('.the-radios').find('input').each(
+						the_input.closest('.icon-container').find('input').each(
 							function()
 								{
 								if(jQuery(this).val()==pre_val)
 									{
-									var get_radio = jQuery(this).parent().find('a');
+									var get_radio = jQuery(this).parent();
 									setTimeout(function(){ get_radio.trigger('click') },200);
 									}	
+								}
+							);
+						the_input.closest('.the-radios').find('input[type="radio"]').each(
+							function()
+								{
+								if(jQuery(this).val()==pre_val)
+									jQuery(this).closest('label').trigger('click');
 								}
 							);
 						}
@@ -1178,7 +1857,7 @@ function()
 					}
 				}
 				
-			jQuery(this).closest('#nex-forms').find('#nexForms_popup_'+jQuery(this).attr('data-popup-id')).modal('open');
+			jQuery('#nexForms_popup_'+jQuery(this).attr('data-popup-id')).modal('open');
 			}
 		)
 		
@@ -1281,47 +1960,17 @@ function()
 			jQuery(this).find('.step').hide()
 			jQuery(this).find('.step').first().show();	
 			}
+
 		);
 	jQuery('div.ui-nex-forms-container .tab-pane').removeClass('tab-pane');
 		
 	
 			
-	jQuery('div.ui-nex-forms-container .form_field').each(
-		function(index)
-			{
-			var the_element = jQuery(this);
-			
-			if(jQuery(this).find('.appendix_field').is('div'))
-				the_element.css('z-index',1000-index);
-			else
-				the_element.css('z-index','');
-				
-			setup_ui_element(the_element);
-			
-			if(the_element.hasClass('material_field'))
-				{
-					if(the_element.find('i.material-icons').attr('class'))
-						the_element.addClass('has_icon');
-					else
-						the_element.addClass('no_icon');
-				}
-			
-			if(the_element.hasClass('select') || the_element.hasClass('multi-select') || the_element.hasClass('radio-group') || the_element.hasClass('check-group') || the_element.hasClass('md-select') || the_element.hasClass('md-multi-select') || the_element.hasClass('md-radio-group')  || the_element.hasClass('jq-radio-group') || the_element.hasClass('jq-check-group'))
-				{
-				if(the_element.hasClass('md-select'))
-					{
-					var the_input = the_element.find('select.the_input_element');
-					}
-				else
-					{
-					var the_input = the_element.find('.the_input_element');
-					
-					}	
-					the_element.append('<input type="hidden" class="the_value" name="real_val__'+ the_input.attr('name') +'">'); 
-				}
-			
-			}
-		);	
+	
+	
+	
+	jQuery('input.radio').css('display','block');
+	jQuery('input.check').css('display','block');
 	
 	
 	jQuery('#nex-forms .grid-replication-enabled').each(
@@ -1346,8 +1995,8 @@ function()
 				);				
 			}
 		);
-		
-		
+	
+	
 	jQuery(document).on('click','.recreate-grid',
 		function()
 			{
@@ -1363,7 +2012,20 @@ function()
 			grid_container.attr('data-replicated',replicated);
 			
 			clone.find('.grid_replicate').html('<div class="remove-grid"><span class="fa fa-minus"></span></div></span></div>');
+			clone.find('.bootstrap-touchspin-prefix').remove();
+			clone.find('.bootstrap-touchspin-postfix').remove();
+			clone.find('.bootstrap-touchspin .input-group-btn').remove();
+			clone.find('.bootstrap-touchspin .input-group-btn-vertical').remove();
+			clone.find('.bootstrap-tagsinput').remove();
+			clone.find('#spinner').unwrap();
+			jQuery(this).closest('.is_grid').find('input').val(null);
+			jQuery(this).closest('.is_grid').find('select option').prop('selected',false);
+			var select_clone = '';
+			select_clone = clone.closest('.is_grid').find('select');
+			var selected = (select_clone.attr('data-selected')) ? select_clone.attr('data-selected') : '0';
 			
+			clone.closest('.is_grid').find('select').val(selected);
+			jQuery(this).closest('.is_grid').find('textarea').val('');
 			clone.find('.form_field').each(
 				function()
 					{
@@ -1371,9 +2033,7 @@ function()
 					}
 				);
 			
-			jQuery(this).closest('.is_grid').find('input').val(null);
-			jQuery(this).closest('.is_grid').find('select').val('');
-			jQuery(this).closest('.is_grid').find('textarea').val('');
+			
 			jQuery(this).closest('.is_grid').find('.fileinput-filename').text('');
 			jQuery('.fileinput-exists input[type="hidden"]').remove();
 			
@@ -1443,78 +2103,28 @@ function()
 	jQuery('.glyphicon-file').addClass('fa-file');
 	jQuery('.glyphicon-file').removeClass('glyphicon');
 	jQuery('.glyphicon-file').removeClass('glyphicon-file');
-		
-	jQuery('.ui-nex-forms-container select').each(
-		function()
-			{
-			if(jQuery(this).closest('.form_field').hasClass('md-select') && jQuery(this).closest('.form_field').hasClass('md-select'))
-				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).closest('.form_field').find('input.select-dropdown').val());
-			else
-				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).find('option:selected').text());	
-			}
-		);
 	
-	jQuery(document).on('change','.ui-nex-forms-container select', 
-		function()
-			{
-			if(jQuery(this).closest('.form_field').hasClass('md-select') && jQuery(this).closest('.form_field').hasClass('md-select'))
-				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).closest('.form_field').find('input.select-dropdown').val());
-			else
-				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).find('option:selected').text());	
-			}
-		);
-	jQuery(document).on('click','.md-radio-group .radio_check_input label',
-		function()
-			{
-			var input = jQuery(this);
-			setTimeout(	function(){
-				input.closest('.form_field').find('input.the_value').val(input.html());
-			},300);
-			
-			}
-		);
-	jQuery(document).on('change','.ui-nex-forms-container input[type="radio"]',
-		function()
-			{
-			if(!jQuery(this).closest('.form_field').hasClass('md-radio-group'))
-				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).closest('label').find('.input-label').html());
-			}
-		);
-		
-	jQuery(document).on('change','.ui-nex-forms-container input[type="checkbox"]',
-		function()
-			{
-			var selected = '';
-				jQuery(this).closest('.form_field').find('.input-inner a').each(function() {
-					
-					if(jQuery(this).hasClass('checked'))
-						selected +=  jQuery(this).parent().parent().find('.check-label').text() + ', ' ;
-					
-				});
-				jQuery(this).closest('.form_field').find('input.the_value').val(selected);
-			}
-		);
 		
 	
 	
 	jQuery('input[type="radio"]').each(
 		function()
 			{
-			jQuery(this).prop('checked',false);
+			//jQuery(this).prop('checked',false);
 			}
 		);
 	jQuery('input[type="checkbox"]').each(
 		function()
 			{
-			jQuery(this).prop('checked',false);
+			//jQuery(this).prop('checked',false);
 			}
 		);
 	
 	jQuery('a.checked').each(
 		function()
 			{
-			jQuery(this).parent().find('input').prop('checked',true);
-			jQuery(this).parent().find('input').trigger('change');
+			//jQuery(this).parent().find('input').prop('checked',true);
+			//jQuery(this).parent().find('input').trigger('change');
 			}
 	);
 	
@@ -1535,7 +2145,7 @@ function()
 		);
 	
 	
-	Materialize.updateTextFields();
+	//Materialize.updateTextFields();
 	
 	jQuery(document).on('blur','textarea.materialize-textarea, input',
 			function()
@@ -1547,7 +2157,9 @@ function()
 		);
 	
 	
-	jQuery("input, textarea").attr('autocomplete', 'disabled');
+	jQuery("input, textarea").attr('autocomplete', 'enabled');
+	jQuery("#datetimepicker input").attr('autocomplete', 'off');
+	
 
 	var sticky_form_bottom_height = jQuery('.nf-sticky-contact-form.paddel-bottom').height();
 	var sticky_paddel_height = jQuery('.nf-sticky-contact-form .nf-sticky-paddel').height();
@@ -1591,9 +2203,153 @@ function()
 	
 	
 	
+	jQuery('div.ui-nex-forms-container .form_field').each(
+		function(index)
+			{
+			var the_element = jQuery(this);
+			
+			if(jQuery(this).find('.appendix_field').is('div'))
+				the_element.css('z-index',1000-index);
+			else
+				the_element.css('z-index','');
+				
+			setup_ui_element(the_element);
+			
+			if(the_element.hasClass('material_field'))
+				{
+					if(the_element.find('i.material-icons').attr('class'))
+						the_element.addClass('has_icon');
+					else
+						the_element.addClass('no_icon');
+				}
+			
+			if(the_element.hasClass('select') || the_element.hasClass('multi-select') || the_element.hasClass('radio-group') || the_element.hasClass('check-group') || the_element.hasClass('md-select') || the_element.hasClass('md-multi-select') || the_element.hasClass('md-radio-group')  || the_element.hasClass('jq-radio-group') || the_element.hasClass('jq-check-group') || the_element.hasClass('image-choices-field'))
+				{
+				if(the_element.hasClass('md-select'))
+					{
+					var the_input = the_element.find('select.the_input_element');
+					}
+				else
+					{
+					var the_input = the_element.find('.the_input_element');
+					
+					}	
+					the_element.append('<input type="hidden" class="the_value" name="real_val__'+ the_input.attr('name') +'">'); 
+				}
+			
+			}
+		);	
 	
+	jQuery('.ui-nex-forms-container select').each(
+		function()
+			{
+			if(jQuery(this).closest('.form_field').hasClass('md-select') && jQuery(this).closest('.form_field').hasClass('md-select'))
+				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).closest('.form_field').find('input.select-dropdown').val());
+			else
+				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).find('option:selected').text());	
+			}
+		);
 	
-	
+	jQuery(document).on('change','.ui-nex-forms-container select', 
+		function()
+			{
+			jQuery(this).attr('data-selected',jQuery(this).val());
+			if(jQuery(this).closest('.form_field').hasClass('md-select') && jQuery(this).closest('.form_field').hasClass('md-select'))
+				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).closest('.form_field').find('input.select-dropdown').val());
+			else
+				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).find('option:selected').text());	
+			}
+		);
+	jQuery(document).on('click','.md-radio-group .radio_check_input label',
+		function()
+			{
+			var input = jQuery(this);
+			setTimeout(	function(){
+				input.closest('.form_field').find('input.the_value').val(input.html());
+			},300);
+			
+			}
+		);
+	jQuery(document).on('change','.ui-nex-forms-container input[type="radio"]',
+		function()
+			{
+			if(!jQuery(this).closest('.form_field').hasClass('md-radio-group'))
+				jQuery(this).closest('.form_field').find('input.the_value').val(jQuery(this).closest('label').find('.input-label').html());
+			}
+		);
+		
+	jQuery(document).on('change','.ui-nex-forms-container input[type="checkbox"]',
+		function()
+			{
+			var selected = '';
+				jQuery(this).closest('.form_field').find('.input-inner a').each(function() {
+					
+					if(jQuery(this).closest('label').find('input').prop('checked'))
+						selected +=  jQuery(this).closest('label').find('.input-label').text() + ', ' ;
+					
+				});
+				jQuery(this).closest('.form_field').find('input.the_value').val(selected.replace(/,(?=\s*$)/, ''));
+			}
+		);
+		
+		
+		jQuery('.radio-group').each(
+		function()
+			{
+			var group = jQuery(this);
+			var set_val = '';
+			group.find('.radio-inline').each(
+			function()
+				{
+				if(jQuery(this).find('.check-icon').attr('class'))
+					{
+					var the_check =	jQuery(this).find('input');
+					//jQuery(this).trigger('click');
+					//jQuery(this).trigger('click');
+					//jQuery(this).find('input').trigger('change');
+					if(the_check.attr('type')=='checkbox')
+						{
+							jQuery(this).find('input').prop('checked', true);
+							jQuery(this).find('input').trigger('change');
+						}
+					else
+						setTimeout(function(){ the_check.closest('label').trigger('click'); }, 120); 
+					//set_val += jQuery(this).find('.input-label').text()+', ';
+					}
+				}
+			);
+			//group.find('.the_value').val(set_val.replace(/,(?=\s*$)/, ''));
+			}
+		);
+		
+		jQuery('.image-choices-field').each(
+		function()
+			{
+			var group = jQuery(this);
+			var set_val = '';
+			group.find('.image-choices-choice').each(
+			function()
+				{
+				if(jQuery(this).find('.thumb-icon-holder').attr('class'))
+					{
+					var the_check =	jQuery(this).find('input');
+					jQuery(this).find('input').prop('checked', true);
+					jQuery(this).find('input').trigger('change');
+					
+					if(the_check.attr('type')=='checkbox')
+						{
+						jQuery(this).find('input').prop('checked', true);
+						jQuery(this).find('input').trigger('change');
+						}
+					else
+						setTimeout(function(){ the_check.closest('label').trigger('click'); }, 120);
+					//set_val += jQuery(this).find('.input-label').text()+', ';
+					}
+				}
+			);
+			//group.find('.the_value').val(set_val.replace(/,(?=\s*$)/, ''));
+			}
+		);
 	
 	
 	
@@ -1672,6 +2428,45 @@ function()
 			
 	}
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function IsSafari() {
 
   var is_safari = navigator.userAgent.toLowerCase().indexOf('safari/') > -1;
@@ -1806,6 +2601,10 @@ function run_conditions(){
 				}
 			}
 		);	
+	
+	
+	
+	
 	jQuery(document).on('change', 'div.ui-nex-forms-container div.form_field input[type="text"], div.ui-nex-forms-container div.form_field input[type="hidden"], div.ui-nex-forms-container div.form_field textarea', function(){
 
 			if(jQuery(this).hasClass('has_con'))
@@ -1880,6 +2679,8 @@ function run_conditions(){
 						}
 					}
 				);	
+				
+	    
 		
 }
 
@@ -1933,22 +2734,64 @@ function setup_ui_element(obj){
 	
 	if(obj.hasClass('date') && !obj.hasClass('classic_field'))
 		{
+		var enabled_days = obj.find('#datetimepicker').attr('data-enabled-days');
+		if(enabled_days)
+			var enabled_days_array = enabled_days.split(',')
+			
+		var disabled_dates = obj.find('#datetimepicker').attr('data-disabled-dates');
+		if(disabled_dates)
+			var disabled_dates_array = disabled_dates.split(',')
+		
+		var set_format = (obj.find('#datetimepicker').attr('data-format')) ? obj.find('#datetimepicker').attr('data-format') : 'MM/DD/YYYY';	
+			
 		obj.find('#datetimepicker').datetimepicker( 
-				{ 
-				
+				{
+				useCurrent:(obj.find('#datetimepicker').attr('data-inline')=='true' && !obj.hasClass('required')) ? true : false,
+				allowInputToggle:true,
+				disabledDates: (disabled_dates_array) ? disabled_dates_array : [],
+				keepOpen:(obj.find('#datetimepicker').attr('data-keep-open')=='true') ? true : false,
+				widgetPositioning: {vertical: (obj.find('#datetimepicker').attr('data-position')) ? obj.find('#datetimepicker').attr('data-position') : 'bottom', horizontal:'auto'},
+				inline:(obj.find('#datetimepicker').attr('data-inline')=='true') ? true : false,
 				minDate: (obj.find('#datetimepicker').attr('data-disable-past-dates')=='1') ? new Date() : false,
-				format: (obj.find('#datetimepicker').attr('data-format')) ? obj.find('#datetimepicker').attr('data-format') : 'MM/DD/YYYY',
+				format: set_format,
 				locale: (obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en',
-				defaultDate: new Date(),
+				defaultDate: (obj.find('input').attr('data-value')=='now') ? 'now' : '',
+				viewMode: (obj.find('#datetimepicker').attr('data-viewMode')) ? obj.find('#datetimepicker').attr('data-viewMode') : 'days',
+				daysOfWeekDisabled: (enabled_days_array) ? enabled_days_array : []
 				} 
 			);	
 		}	
+		
 	if(obj.hasClass('time') && !obj.hasClass('classic_field'))
 		{
+		var enabled_hours = obj.find('#datetimepicker').attr('data-enabled-hours');
+		if(enabled_hours)
+			var enabled_hours_array = enabled_hours.split(',')
+			
+		
+		var date = '';
+		if(obj.find('input').attr('data-value'))
+			{
+			var dateString = '00-00-00 '+(obj.find('input').attr('data-value')),
+			dateTimeParts = dateString.split(' '),
+			timeParts = dateTimeParts[1].split(':'),
+			dateParts = dateTimeParts[0].split('-');
+			date = new Date(dateParts[2], parseInt(dateParts[1], 10) - 1, dateParts[0], timeParts[0], timeParts[1]);
+			}
+		if(obj.find('input').attr('data-value')=='now')
+			date = 'now';
+			
 		obj.find('#datetimepicker input').datetimepicker(
 				{
-				format: (obj.find('#datetimepicker').attr('data-format')) ? obj.find('#datetimepicker').attr('data-format') : 'HH:mm',
-				locale:(obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en'
+				useCurrent:(obj.find('#datetimepicker').attr('data-inline')=='true') ? true : false,
+				allowInputToggle:true,
+				widgetPositioning: {vertical: (obj.find('#datetimepicker').attr('data-position')) ? obj.find('#datetimepicker').attr('data-position') : 'bottom', horizontal:'auto'},
+				inline:(obj.find('#datetimepicker').attr('data-inline')=='true') ? true : false,
+				format:'HH:mm', 
+				defaultDate: date,
+				locale:(obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en',
+				stepping: (obj.find('#datetimepicker').attr('data-stepping')) ? obj.find('#datetimepicker').attr('data-stepping') : 5,
+				enabledHours: (enabled_hours_array) ? enabled_hours_array : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0]
 				}
 			);
 		}
@@ -1971,7 +2814,7 @@ function setup_ui_element(obj){
 			}
 		else
 			{
-			 obj.find('#datetimepicker input').datepicker({});
+			 //obj.find('#datetimepicker input').datepicker({});
 			}
 		}
 	
@@ -1988,11 +2831,11 @@ function setup_ui_element(obj){
 				lang : (obj.find('#datetimepicker').attr('data-language')) ? obj.find('#datetimepicker').attr('data-language') : 'en',
 		  }).on('open', function(e, date)
 			{
-			var get_theme = jQuery(this).closest('.set_form_theme').attr('class');
+			var get_theme = obj.closest('.set_form_theme').attr('class');
 			
 			var set_theme = get_theme.replace('set_form_theme','');
 			
-			jQuery('#'+jQuery(this).attr('data-dtp')).addClass(set_theme);
+			jQuery('#'+obj.find('input').attr('data-dtp')).addClass(set_theme);
 			});
 		  if(obj.find('#datetimepicker').attr('data-disable-past-dates')=='1')
 		  	obj.find('input').bootstrapMaterialDatePicker('setMinDate', new Date());
@@ -2002,7 +2845,14 @@ function setup_ui_element(obj){
    if(obj.hasClass('md-time-picker'))
 		{
 		obj.find('input').bootstrapMaterialDatePicker({ date: false, shortTime: false, format: 'HH:mm', cancelText: '<span class="fa fa-close"></span>', 
-		okText: '<span class="fa fa-check"></span>',  })
+		okText: '<span class="fa fa-check"></span>',  }).on('open', function(e, date)
+			{
+			var get_theme = obj.closest('.set_form_theme').attr('class');
+			
+			var set_theme = get_theme.replace('set_form_theme','');
+			
+			jQuery('#'+obj.find('input').attr('data-dtp')).addClass(set_theme);
+			});
 		}
 	
 	
@@ -2135,7 +2985,7 @@ function setup_ui_element(obj){
 					handle.css('border-color',the_slider.attr('data-handel-border-color'))
 					handle.css('color',the_slider.attr('data-text-color'))
 					
-					the_slider.find('.ui-slider-range').css('background',the_slider.attr('data-fill-color'));
+					the_slider.find('.ui-slider-range').css('background',(the_slider.attr('data-fill-color')) == '#f2f2f2' ? '#ddd' : the_slider.attr('data-fill-color'));
 					
 				}
 				
@@ -2179,10 +3029,16 @@ function setup_ui_element(obj){
 	if(obj.hasClass('star-rating'))
 		{
 		obj.find('#star').raty({
-		  size     : 24,
 		  number   : parseInt(obj.find('#star').attr('data-total-stars')),
 		  scoreName: format_illegal_chars(obj.find('.the_label').text()),
-		  half: (obj.find('#star').attr('data-enable-half')=='false') ? false : true 
+		  half: (obj.find('#star').attr('data-enable-half')=='false') ? false : true,
+		  starHalf      : (obj.find('#star').attr('data-starHalf')) ? obj.find('#star').attr('data-starHalf') : 'fa fa-star-half ',
+		  starOff       : (obj.find('#star').attr('data-starOff')) ? obj.find('#star').attr('data-starOff') + ' set_animation_fast zoomIn' : 'fa fa-star-o set_animation_fast zoomIn',
+		  starOn        : (obj.find('#star').attr('data-starOn')) ? obj.find('#star').attr('data-starOn') + '  set_animation_fast bounceIn' : 'fa fa-star set_animation_fast bounceIn', 
+		  styleHalf     : (obj.find('#star').attr('data-stylehalf')) ? obj.find('#star').attr('data-stylehalf') : '#ec971f',
+		  styleOff      : (obj.find('#star').attr('data-styleoff')) ? obj.find('#star').attr('data-styleoff') : '#bbb',
+		  styleOn       : (obj.find('#star').attr('data-styleon')) ? obj.find('#star').attr('data-styleon') : '#ec971f',
+		  size        	: (obj.find('#star').attr('data-size')) ? obj.find('#star').attr('data-size') : '25'
 		});
 		
 		obj.find('#star input').attr('name', obj.find('#star').attr('data-input-name'));
@@ -2197,12 +3053,34 @@ function setup_ui_element(obj){
 		}
 	if(obj.hasClass('tags'))
 		{	
-		var the_tag_input = obj.find('input#tags');
+		
+		
+		if(obj.find('.input-group').attr('class'))
+			{
+			var the_tag_input = obj.find('input#tags');
+			var the_tag_input_clone = the_tag_input.detach();
+			if(obj.find('.input-group-addon').hasClass('postfix'))
+				the_tag_input.insertBefore(obj.find('.input-group-addon'));
+			else
+				the_tag_input.insertAfter(obj.find('.input-group-addon'));
+			}
+		else
+			var the_tag_input = obj.find('input#tags');
+		
+			
 		 the_tag_input.tagsinput( {maxTags: (the_tag_input.attr('data-max-tags')) ? the_tag_input.attr('data-max-tags') : '' });
 		 
 		obj.find('.bootstrap-tagsinput input').css('color',the_tag_input.attr('data-text-color'));
 		obj.find('.bootstrap-tagsinput').css('border-color',the_tag_input.attr('data-border-color'));
 		obj.find('.bootstrap-tagsinput').css('background-color',the_tag_input.attr('data-background-color'));
+		obj.find('.bootstrap-tagsinput').addClass('error_message').addClass('the_input_element');
+		obj.find('.bootstrap-tagsinput').addClass('form-control');
+		obj.find(".bootstrap-tagsinput").attr('data-placement',the_tag_input.attr('data-placement'));
+		obj.find(".bootstrap-tagsinput").attr('data-error-class',the_tag_input.attr('data-error-class'));
+		obj.find(".bootstrap-tagsinput").attr('data-content',the_tag_input.attr('data-content'));
+		
+		obj.find('input').removeClass('the_input_element');
+		
 		}
 	
 	
@@ -2229,6 +3107,8 @@ function setup_ui_element(obj){
 	
 }
 function format_illegal_chars(input_value){
+	if(!input_value)
+		return;
 	
 	input_value = input_value.toLowerCase();
 	if(input_value=='name' || input_value=='page' || input_value=='post' || input_value=='id')
@@ -2322,7 +3202,20 @@ function show_nf_error(obj, error){
 				else
 					{
 					if(!obj.hasClass('material_field'))
-						obj.find('.error_message').parent().after('<div data-toggle="tooltip" data-title="'+ error +'" title="'+ error +'" class="error_msg modern '+ input_lg +' '+ extra_padding +'"><i class="fa fa-warning"></i></div></div>');
+						{
+						if(obj.hasClass('classic_error_style'))
+							{
+							if(obj.hasClass('error_left'))
+							obj.find('.error_message').parent().after('<div class="error_msg indent fadeInLeft animated">'+ error +'</div>');
+							else
+								obj.find('.error_message').parent().after('<div class="error_msg indent fadeInRight animated">'+ error +'</div>');
+							}
+						else
+							obj.find('.error_message').parent().after('<div data-toggle="tooltip" data-title="'+ error +'" title="'+ error +'" class="error_msg modern '+ input_lg +' '+ extra_padding +'"><i class="fa fa-warning"></i></div></div>');
+					
+						
+						}
+					
 					}
 				
 				
@@ -2380,8 +3273,11 @@ function nf_get_total_steps(the_form){
 
 function nf_replace_tags(the_form,obj){
 	var str = obj.html();
+	if(!str)
+		return;
 	var re = /\{{2}(.*?)\}{2}/g;
-	var found = str.match(re);
+	if(re)
+		var found = str.match(re);
 	var get_field_name = '';
 	var set_field_name = '';
 	var the_input = '';
@@ -2469,19 +3365,21 @@ function ()
 		function()
 			{
 				var the_select = jQuery(this);
-				
-				if(jQuery(this).val() == 0 || jQuery(this).val()==jQuery(this).attr('data-default-selected-value'))
+				if(	jQuery(this).closest('.form_field').hasClass('required'))
 					{
-					if(jQuery(this).closest('.form_field').hasClass('md-select'))
-						show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('select.error_message').attr('data-content'))
-					else
-						show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('.error_message').attr('data-content'))
-					
-					//settings.errors++;
-					}
-				 else
-					{
-					hide_nf_error(jQuery(this).closest('.form_field'));
+					if(jQuery(this).val() == 0 || jQuery(this).val()==jQuery(this).attr('data-default-selected-value'))
+						{
+						if(jQuery(this).closest('.form_field').hasClass('md-select'))
+							show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('select.error_message').attr('data-content'))
+						else
+							show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('.error_message').attr('data-content'))
+						
+						//settings.errors++;
+						}
+					 else
+						{
+						hide_nf_error(jQuery(this).closest('.form_field'));
+						}
 					}
 				
 			//AUTO STEP
@@ -2514,18 +3412,22 @@ function ()
 	jQuery(document).on('blur','#nex-forms select',
 		function()
 			{
-				if(jQuery(this).val() == 0 || jQuery(this).val()==jQuery(this).attr('data-default-selected-value'))
+				
+				if(	jQuery(this).closest('.form_field').hasClass('required'))
 					{
-					if(jQuery(this).closest('.form_field').hasClass('md-select'))
-						show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('select.error_message').attr('data-content'))
-					else
-						show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('.error_message').attr('data-content'))
-					
-					//settings.errors++;
-					}
-				 else
-					{
-					hide_nf_error(jQuery(this).closest('.form_field'));
+					if(jQuery(this).val() == 0 || jQuery(this).val()==jQuery(this).attr('data-default-selected-value'))
+						{
+						if(jQuery(this).closest('.form_field').hasClass('md-select'))
+							show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('select.error_message').attr('data-content'))
+						else
+							show_nf_error(jQuery(this).closest('.form_field'),jQuery(this).closest('.form_field').find('.error_message').attr('data-content'))
+						
+						//settings.errors++;
+						}
+					 else
+						{
+						hide_nf_error(jQuery(this).closest('.form_field'));
+						}
 					}
 			}
 		);
@@ -2643,12 +3545,12 @@ function ()
 			}
 		);
 	
-	jQuery(document).on('click','.the-radios a, .the-radios .input-label, #the-radios .input-label, .survey_fields label',	
+	/*jQuery(document).on('click','.the-radios a, .the-radios .input-label, #the-radios .input-label, .survey_fields label',	
 			function(e)
 				{	
 				hide_nf_error(jQuery(this).closest('.form_field'));
 				}
-			);
+			);*/
 	jQuery(document).on('click','#star .fa', 
 			function(e)
 				{
@@ -2743,8 +3645,7 @@ function ()
 				
 				var get_percentage = Math.round(100/(set_total_steps));
 
-				console.log(current_step+ '/' + (nf_get_total_steps(the_form)) + ' ' + get_percentage + '%');
-
+			
 				current_step = current_step+1;
 				
 				var set_percentage = get_percentage*(current_step-1);
@@ -2855,8 +3756,7 @@ function ()
 				
 			var get_percentage = Math.round(100/(set_total_steps));
 			
-			console.log(current_step+ '/' + (nf_get_total_steps(the_form)-1) + ' ' + get_percentage + '%');
-			
+		
 			the_container.find('div.nf_step_breadcrumb ol').find('li:eq('+ (current_step-1) +')').removeClass('visited').removeClass('current');
 			the_container.find('div.nf_step_breadcrumb ol').find('li:eq('+ (current_step-2) +')').addClass('current').removeClass('visited');
 			
@@ -2927,7 +3827,17 @@ function ()
 			}
 		);
 	
-	
+	jQuery(document).on('click','.send-nex-form button.nex-submit',
+		function(e)
+			{
+			e.preventDefault();
+			if(validate_form(jQuery('.send-nex-form')))
+				{
+				//setTimeout(function(){ jQuery(this).removeClass('animated').removeClass('pulse');},1000);
+				jQuery('.send-nex-form').submit();
+				}
+			}
+		);
 			
 	jQuery('form.submit-nex-form').ajaxForm({
     data: {
@@ -2935,7 +3845,10 @@ function ()
 	   paypal_return_url: jQuery('#paypal_return_url').text()
     },
     beforeSubmit: function(formData, jqForm, options) {
-
+			
+		 if(jqForm.hasClass('no-submit'))
+		 	return false;
+			
 		 if(jqForm.closest('.nex-forms').find('.on_form_submmision').text()=='redirect')
 			{
 			nf_replace_tags(jqForm,jqForm.closest('.nex-forms').find('.confirmation_page'))
@@ -3125,7 +4038,7 @@ function validate_form(object){
 							}
 						 else
 							{
-							 if((input.attr('minlength') && input.attr('minlength')!='')) {
+							/* if((input.attr('minlength') && input.attr('minlength')!='')) {
 								if(input.val().length<parseInt(input.attr('minlength')))
 									{
 									settings.errors++;
@@ -3138,8 +4051,8 @@ function validate_form(object){
 									hide_nf_error(input.closest('.form_field'));
 									break;
 									}  
-							}
-							else if(input.hasClass('email') && input.is(':visible'))
+								}*/
+							if(input.hasClass('email') && input.is(':visible'))
 								{
 								if(!IsValidEmail(val))
 									{   
@@ -3184,8 +4097,26 @@ function validate_form(object){
 									} 
 								else
 									{
-									hide_nf_error(input.closest('.form_field'));
-									break;
+									if((input.attr('minlength') && input.attr('minlength')!='')) {
+										if(input.val().length<parseInt(input.attr('minlength')))
+											{
+											settings.errors++;
+											show_nf_error(input.closest('.form_field'),input.closest('.form_field').find('.error_message').attr('data-content'))	
+											break;
+											}
+										else
+											{
+											
+											hide_nf_error(input.closest('.form_field'));
+											break;
+											}  
+										}
+									else
+										{
+										
+										hide_nf_error(input.closest('.form_field'));
+										break;
+										}  
 									} 
 								}
 							else if(input.hasClass('text_only') && input.is(':visible'))
@@ -3223,14 +4154,14 @@ function validate_form(object){
 							
 							}
 						}
-					else if((input.attr('minlength') && input.attr('minlength')!='')  && input.is(':visible')) {
-								if(input.val().length<parseInt(input.attr('minlength')))
-									{
-									settings.errors++;
-									show_nf_error(input.closest('.form_field'),input.attr('data-content'))	
-									}
-								break;
-							}
+					//else if((input.attr('minlength') && input.attr('minlength')!='')  && input.is(':visible')) {
+								//if(input.val().length<parseInt(input.attr('minlength')))
+									//{
+									//settings.errors++;
+									//show_nf_error(input.closest('.form_field'),input.attr('data-content'))	
+									//}
+								//break;
+						//	}
 					
 				    else if(input.hasClass('email') && val!='' && input.is(':visible')) {
 					   if(!IsValidEmail(val)) {  
@@ -3258,6 +4189,7 @@ function validate_form(object){
 									
 							break;
 					   }
+					  
 					}
 					else if(input.hasClass('text_only') && val!='' && input.is(':visible')) {
 					   if(!allowedChars(val, 'text')) {
@@ -3520,6 +4452,7 @@ else
 	},1000);
 
 	var error_msg = jQuery('div.error_msg').first();
+	error_msg.closest('.form_field').find('input, select, textarea').focus();
 	var error_offset = error_msg.offset();
 	setTimeout(function(){
 		if(error_offset && !error_msg.closest('.form_field').isInViewport())
@@ -3550,6 +4483,8 @@ function IsValidEmail(email){
   }
 	return true;
 }
+
+
 function allowedChars(input_value, accceptedchars){
 	var aChars = ' -_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	if(accceptedchars)
@@ -3574,6 +4509,8 @@ function allowedChars(input_value, accceptedchars){
 	 }
 	return valid;
 }
+
+
 function validate_url(get_url) {
         var url = get_url;
         var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
@@ -3581,6 +4518,14 @@ function validate_url(get_url) {
             return true;
  
         return false;
+}
+function nf_timeConvert(n) {
+var num = n;
+var hours = (num / 60);
+var rhours = Math.floor(hours);
+var minutes = (hours - rhours) * 60;
+var rminutes = Math.round(minutes);
+return  rhours + "." + rminutes + "";
 }
 ;(function ( $, window, document, undefined ) {
    
@@ -4720,244 +5665,6 @@ function(t) {
     }, t(document).data("keycount", 0).on("keydown", ".bootstrap-select [data-toggle=dropdown], .bootstrap-select [role=menu], .bootstrap-select-searchbox input", e.prototype.keydown).on("focusin.modal", ".bootstrap-select [data-toggle=dropdown], .bootstrap-select [role=menu], .bootstrap-select-searchbox input", function(t) {
         t.stopPropagation()
     })
-}(window.jQuery),
-function(t) {
-    "use strict";
-
-    function e(e, i) {
-        this.itemsArray = [], this.$element = t(e), this.$element.hide(), this.isSelect = "SELECT" === e.tagName, this.multiple = this.isSelect && e.hasAttribute("multiple"), this.objectItems = i && i.itemValue, this.placeholderText = e.hasAttribute("placeholder") ? this.$element.attr("placeholder") : "", this.inputSize = Math.max(1, this.placeholderText.length), this.$container = t('<div class="bootstrap-tagsinput form-control "></div>'), this.$input = t('<input  size="' + this.inputSize + '" type="text" placeholder="' + this.placeholderText + '"/>').appendTo(this.$container), this.$element.after(this.$container), this.build(i)
-    }
-
-    function i(t, e) {
-        if ("function" != typeof t[e]) {
-            var i = t[e];
-            t[e] = function(t) {
-                return t[i]
-            }
-        }
-    }
-
-    function n(t, e) {
-        if ("function" != typeof t[e]) {
-            var i = t[e];
-            t[e] = function() {
-                return i
-            }
-        }
-    }
-
-    function s(t) {
-        return t ? r.text(t).html() : ""
-    }
-
-    function a(t) {
-        var e = 0;
-        if (document.selection) {
-            t.focus();
-            var i = document.selection.createRange();
-            i.moveStart("character", -t.value.length), e = i.text.length
-        } else(t.selectionStart || "0" == t.selectionStart) && (e = t.selectionStart);
-        return e
-    }
-    var o = {
-        tagClass: "label label-info",
-        setTagClass: "label label-info",
-        setTagIcon: "fa fa-tag",
-        itemValue: function(t) {
-            return t ? t.toString() : t
-        },
-        itemText: function(t) {
-            return this.itemValue(t)
-        },
-        freeInput: !0,
-        maxTags: void 0,
-        confirmKeys: [13],
-        onTagExists: function(t, e) {
-            e.hide().fadeIn()
-        }
-    };
-    e.prototype = {
-        constructor: e,
-        add: function(e, i) {
-            var n = this;
-            if (!(n.options.maxTags && n.itemsArray.length >= n.options.maxTags || e !== !1 && !e)) {
-                if ("object" == typeof e && !n.objectItems) throw "Can't add objects when itemValue option is not set";
-                if (!e.toString().match(/^\s*$/)) {
-                    if (n.isSelect && !n.multiple && n.itemsArray.length > 0 && n.remove(n.itemsArray[0]), "string" == typeof e && "INPUT" === this.$element[0].tagName) {
-                        var a = e.split(",");
-                        if (a.length > 1) {
-                            for (var o = 0; o < a.length; o++) this.add(a[o], !0);
-                            return void(i || n.pushVal())
-                        }
-                    }
-                    var r = n.options.itemValue(e),
-                        l = n.options.itemText(e),
-                        c = (n.options.tagClass, t.grep(n.itemsArray, function(t) {
-                            return n.options.itemValue(t) === r
-                        })[0]);
-                    if (c) {
-                        if (n.options.onTagExists) {
-                            var d = t(".tag", n.$container).filter(function() {
-                                return t(this).data("item") === c
-                            });
-                            n.options.onTagExists(e, d)
-                        }
-                    } else {
-                        n.itemsArray.push(e);
-                        var u = t('<span class="tag label ' + this.$element.attr("data-tag-class") + '"><span id="tag-icon" class="' + this.$element.attr("data-tag-icon") + '"></span> ' + s(l) + '<span data-role="remove"></span></span>');
-                        if (u.data("item", e), n.findInputWrapper().before(u), u.after(" "), n.isSelect && !t('option[value="' + escape(r) + '"]', n.$element)[0]) {
-                            var h = t("<option selected>" + s(l) + "</option>");
-                            h.data("item", e), h.attr("value", r), n.$element.append(h)
-                        }
-                        i || n.pushVal(), n.options.maxTags === n.itemsArray.length && n.$container.addClass("bootstrap-tagsinput-max"), n.$element.trigger(t.Event("itemAdded", {
-                            item: e
-                        }))
-                    }
-                }
-            }
-        },
-        remove: function(e, i) {
-            var n = this;
-            n.objectItems && (e = "object" == typeof e ? t.grep(n.itemsArray, function(t) {
-                return n.options.itemValue(t) == n.options.itemValue(e)
-            })[0] : t.grep(n.itemsArray, function(t) {
-                return n.options.itemValue(t) == e
-            })[0]), e && (t(".tag", n.$container).filter(function() {
-                return t(this).data("item") === e
-            }).remove(), t("option", n.$element).filter(function() {
-                return t(this).data("item") === e
-            }).remove(), n.itemsArray.splice(t.inArray(e, n.itemsArray), 1)), i || n.pushVal(), n.options.maxTags > n.itemsArray.length && n.$container.removeClass("bootstrap-tagsinput-max"), n.$element.trigger(t.Event("itemRemoved", {
-                item: e
-            }))
-        },
-        removeAll: function() {
-            var e = this;
-            for (t(".tag", e.$container).remove(), t("option", e.$element).remove(); e.itemsArray.length > 0;) e.itemsArray.pop();
-            e.pushVal(), e.options.maxTags && !this.isEnabled() && this.enable()
-        },
-        refresh: function() {
-            var e = this;
-            t(".tag", e.$container).each(function() {
-                var i = t(this),
-                    n = i.data("item"),
-                    a = e.options.itemValue(n),
-                    o = e.options.itemText(n),
-                    r = e.options.tagClass(n);
-                if (i.attr("class", null), i.addClass("tag " + s(r)), i.contents().filter(function() {
-                    return 3 == this.nodeType
-                })[0].nodeValue = s(o), e.isSelect) {
-                    var l = t("option", e.$element).filter(function() {
-                        return t(this).data("item") === n
-                    });
-                    l.attr("value", a)
-                }
-            })
-        },
-        items: function() {
-            return this.itemsArray
-        },
-        pushVal: function() {
-            var e = this,
-                i = t.map(e.items(), function(t) {
-                    return e.options.itemValue(t).toString()
-                });
-            e.$element.val(i, !0).trigger("change")
-        },
-        build: function(e) {
-            var s = this;
-            s.options = t.extend({}, o, e);
-            var r = s.options.typeahead || {};
-            s.objectItems && (s.options.freeInput = !1), i(s.options, "itemValue"), i(s.options, "itemText"), i(s.options, "tagClass"), s.options.source && (r.source = s.options.source), r.source && t.fn.typeahead && (n(r, "source"), s.$input.typeahead({
-                source: function(e, i) {
-                    function n(t) {
-                        for (var e = [], n = 0; n < t.length; n++) {
-                            var o = s.options.itemText(t[n]);
-                            a[o] = t[n], e.push(o)
-                        }
-                        i(e)
-                    }
-                    this.map = {};
-                    var a = this.map,
-                        o = r.source(e);
-                    t.isFunction(o.success) ? o.success(n) : t.when(o).then(n)
-                },
-                updater: function(t) {
-                    s.add(this.map[t])
-                },
-                matcher: function(t) {
-                    return -1 !== t.toLowerCase().indexOf(this.query.trim().toLowerCase())
-                },
-                sorter: function(t) {
-                    return t.sort()
-                },
-                highlighter: function(t) {
-                    var e = new RegExp("(" + this.query + ")", "gi");
-                    return t.replace(e, "<strong>$1</strong>")
-                }
-            })), s.$container.on("click", t.proxy(function() {
-                s.$input.focus()
-            }, s)), s.$container.on("keydown", "input", t.proxy(function(e) {
-                var i = t(e.target),
-                    n = s.findInputWrapper();
-                switch (e.which) {
-                    case 8:
-                        if (0 === a(i[0])) {
-                            var o = n.prev();
-                            o && s.remove(o.data("item"))
-                        }
-                        break;
-                    case 46:
-                        if (0 === a(i[0])) {
-                            var r = n.next();
-                            r && s.remove(r.data("item"))
-                        }
-                        break;
-                    case 37:
-                        var l = n.prev();
-                        0 === i.val().length && l[0] && (l.before(n), i.focus());
-                        break;
-                    case 39:
-                        var c = n.next();
-                        0 === i.val().length && c[0] && (c.after(n), i.focus());
-                        break;
-                    default:
-                        s.options.freeInput && t.inArray(e.which, s.options.confirmKeys) >= 0 && (s.add(i.val()), i.val(""), e.preventDefault())
-                }
-                i.attr("size", Math.max(this.inputSize, i.val().length))
-            }, s)), s.$container.on("click", "[data-role=remove]", t.proxy(function(e) {
-                s.remove(t(e.target).closest(".tag").data("item"))
-            }, s)), s.options.itemValue === o.itemValue && ("INPUT" === s.$element[0].tagName ? s.add(s.$element.val()) : t("option", s.$element).each(function() {
-                s.add(t(this).attr("value"), !0)
-            }))
-        },
-        destroy: function() {
-            var t = this;
-            t.$container.off("keypress", "input"), t.$container.off("click", "[role=remove]"), t.$container.remove(), t.$element.removeData("tagsinput"), t.$element.show()
-        },
-        focus: function() {
-            this.$input.focus()
-        },
-        input: function() {
-            return this.$input
-        },
-        findInputWrapper: function() {
-            for (var e = this.$input[0], i = this.$container[0]; e && e.parentNode !== i;) e = e.parentNode;
-            return t(e)
-        }
-    }, t.fn.tagsinput = function(i) {
-        var n = [];
-        return this.each(function() {
-            var s = t(this).data("tagsinput");
-            if (s) {
-                var a = "";
-                void 0 !== a && n.push(a)
-            } else s = new e(this, i), t(this).data("tagsinput", s), n.push(s), "SELECT" === this.tagName && t("option", t(this)).attr("selected", "selected"), t(this).val(t(this).val())
-        }), "string" == typeof i ? n.length > 1 ? n : n[0] : n
-    }, t.fn.tagsinput.Constructor = e;
-    var r = t("<div />");
-    t(function() {
-        t("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput()
-    })
 }(window.jQuery), + function(t) {
     "use strict";
     var e = "Microsoft Internet Explorer" == window.navigator.appName,
@@ -5290,7 +5997,653 @@ function(t) {
         }
     })
 }(jQuery);
+(function ($) {
+  "use strict";
 
+  var defaultOptions = {
+    tagClass: function(item) {
+      return 'label label-info';
+    },
+    itemValue: function(item) {
+      return item ? item.toString() : item;
+    },
+    itemText: function(item) {
+      return this.itemValue(item);
+    },
+    itemTitle: function(item) {
+      return null;
+    },
+    freeInput: true,
+    addOnBlur: true,
+    maxTags: undefined,
+    maxChars: undefined,
+    confirmKeys: [13, 44],
+    delimiter: ',',
+    delimiterRegex: null,
+    cancelConfirmKeysOnEmpty: true,
+    onTagExists: function(item, $tag) {
+      $tag.hide().fadeIn();
+    },
+    trimValue: false,
+    allowDuplicates: false
+  };
+
+  /**
+   * Constructor function
+   */
+  function TagsInput(element, options) {
+    this.itemsArray = [];
+
+    this.$element = $(element);
+    this.$element.hide();
+
+    this.isSelect = (element.tagName === 'SELECT');
+    this.multiple = (this.isSelect && element.hasAttribute('multiple'));
+    this.objectItems = options && options.itemValue;
+    this.placeholderText = element.hasAttribute('placeholder') ? this.$element.attr('placeholder') : '';
+    this.inputSize = Math.max(1, this.placeholderText.length);
+
+    this.$container = $('<div class="bootstrap-tagsinput"></div>');
+    this.$input = $('<input type="text" placeholder="' + this.placeholderText + '"/>').appendTo(this.$container);
+
+    this.$element.before(this.$container);
+
+    this.build(options);
+  }
+
+  TagsInput.prototype = {
+    constructor: TagsInput,
+
+    /**
+     * Adds the given item as a new tag. Pass true to dontPushVal to prevent
+     * updating the elements val()
+     */
+    add: function(item, dontPushVal, options) {
+      var self = this;
+
+      if (self.options.maxTags && self.itemsArray.length >= self.options.maxTags)
+        return;
+
+      // Ignore falsey values, except false
+      if (item !== false && !item)
+        return;
+
+      // Trim value
+      if (typeof item === "string" && self.options.trimValue) {
+        item = $.trim(item);
+      }
+
+      // Throw an error when trying to add an object while the itemValue option was not set
+      if (typeof item === "object" && !self.objectItems)
+        throw("Can't add objects when itemValue option is not set");
+
+      // Ignore strings only containg whitespace
+      if (item.toString().match(/^\s*$/))
+        return;
+
+      // If SELECT but not multiple, remove current tag
+      if (self.isSelect && !self.multiple && self.itemsArray.length > 0)
+        self.remove(self.itemsArray[0]);
+
+      if (typeof item === "string" && this.$element[0].tagName === 'INPUT') {
+        var delimiter = (self.options.delimiterRegex) ? self.options.delimiterRegex : self.options.delimiter;
+        var items = item.split(delimiter);
+        if (items.length > 1) {
+          for (var i = 0; i < items.length; i++) {
+            this.add(items[i], true);
+          }
+
+          if (!dontPushVal)
+            self.pushVal();
+          return;
+        }
+      }
+
+      var itemValue = self.options.itemValue(item),
+          itemText = self.options.itemText(item),
+          tagClass = self.options.tagClass(item),
+          itemTitle = self.options.itemTitle(item);
+
+      // Ignore items allready added
+      var existing = $.grep(self.itemsArray, function(item) { return self.options.itemValue(item) === itemValue; } )[0];
+      if (existing && !self.options.allowDuplicates) {
+        // Invoke onTagExists
+        if (self.options.onTagExists) {
+          var $existingTag = $(".tag", self.$container).filter(function() { return $(this).data("item") === existing; });
+          self.options.onTagExists(item, $existingTag);
+        }
+        return;
+      }
+
+      // if length greater than limit
+      if (self.items().toString().length + item.length + 1 > self.options.maxInputLength)
+        return;
+
+      // raise beforeItemAdd arg
+      var beforeItemAddEvent = $.Event('beforeItemAdd', { item: item, cancel: false, options: options});
+      self.$element.trigger(beforeItemAddEvent);
+      if (beforeItemAddEvent.cancel)
+        return;
+
+      // register item in internal array and map
+      self.itemsArray.push(item);
+
+      // add a tag element
+
+      var $tag = $('<span class="tag ' + htmlEncode(tagClass) + (itemTitle !== null ? ('" title="' + itemTitle) : '') + '">' + htmlEncode(itemText) + '<span data-role="remove"></span></span>');
+      $tag.data('item', item);
+      self.findInputWrapper().before($tag);
+      $tag.after(' ');
+
+      // add <option /> if item represents a value not present in one of the <select />'s options
+      if (self.isSelect && !$('option[value="' + encodeURIComponent(itemValue) + '"]',self.$element)[0]) {
+        var $option = $('<option selected>' + htmlEncode(itemText) + '</option>');
+        $option.data('item', item);
+        $option.attr('value', itemValue);
+        self.$element.append($option);
+      }
+
+      if (!dontPushVal)
+        self.pushVal();
+
+      // Add class when reached maxTags
+      if (self.options.maxTags === self.itemsArray.length || self.items().toString().length === self.options.maxInputLength)
+        self.$container.addClass('bootstrap-tagsinput-max');
+
+      self.$element.trigger($.Event('itemAdded', { item: item, options: options }));
+    },
+
+    /**
+     * Removes the given item. Pass true to dontPushVal to prevent updating the
+     * elements val()
+     */
+    remove: function(item, dontPushVal, options) {
+      var self = this;
+
+      if (self.objectItems) {
+        if (typeof item === "object")
+          item = $.grep(self.itemsArray, function(other) { return self.options.itemValue(other) ==  self.options.itemValue(item); } );
+        else
+          item = $.grep(self.itemsArray, function(other) { return self.options.itemValue(other) ==  item; } );
+
+        item = item[item.length-1];
+      }
+
+      if (item) {
+        var beforeItemRemoveEvent = $.Event('beforeItemRemove', { item: item, cancel: false, options: options });
+        self.$element.trigger(beforeItemRemoveEvent);
+        if (beforeItemRemoveEvent.cancel)
+          return;
+
+        $('.tag', self.$container).filter(function() { return $(this).data('item') === item; }).remove();
+        $('option', self.$element).filter(function() { return $(this).data('item') === item; }).remove();
+        if($.inArray(item, self.itemsArray) !== -1)
+          self.itemsArray.splice($.inArray(item, self.itemsArray), 1);
+      }
+
+      if (!dontPushVal)
+        self.pushVal();
+
+      // Remove class when reached maxTags
+      if (self.options.maxTags > self.itemsArray.length)
+        self.$container.removeClass('bootstrap-tagsinput-max');
+
+      self.$element.trigger($.Event('itemRemoved',  { item: item, options: options }));
+    },
+
+    /**
+     * Removes all items
+     */
+    removeAll: function() {
+      var self = this;
+
+      $('.tag', self.$container).remove();
+      $('option', self.$element).remove();
+
+      while(self.itemsArray.length > 0)
+        self.itemsArray.pop();
+
+      self.pushVal();
+    },
+
+    /**
+     * Refreshes the tags so they match the text/value of their corresponding
+     * item.
+     */
+    refresh: function() {
+      var self = this;
+      $('.tag', self.$container).each(function() {
+        var $tag = $(this),
+            item = $tag.data('item'),
+            itemValue = self.options.itemValue(item),
+            itemText = self.options.itemText(item),
+            tagClass = self.options.tagClass(item);
+
+          // Update tag's class and inner text
+          $tag.attr('class', null);
+          $tag.addClass('tag ' + htmlEncode(tagClass));
+          $tag.contents().filter(function() {
+            return this.nodeType == 3;
+          })[0].nodeValue = htmlEncode(itemText);
+
+          if (self.isSelect) {
+            var option = $('option', self.$element).filter(function() { return $(this).data('item') === item; });
+            option.attr('value', itemValue);
+          }
+      });
+    },
+
+    /**
+     * Returns the items added as tags
+     */
+    items: function() {
+      return this.itemsArray;
+    },
+
+    /**
+     * Assembly value by retrieving the value of each item, and set it on the
+     * element.
+     */
+    pushVal: function() {
+      var self = this,
+          val = $.map(self.items(), function(item) {
+            return self.options.itemValue(item).toString();
+          });
+
+      self.$element.val(val, true).trigger('change');
+    },
+
+    /**
+     * Initializes the tags input behaviour on the element
+     */
+    build: function(options) {
+      var self = this;
+
+      self.options = $.extend({}, defaultOptions, options);
+      // When itemValue is set, freeInput should always be false
+      if (self.objectItems)
+        self.options.freeInput = false;
+
+      makeOptionItemFunction(self.options, 'itemValue');
+      makeOptionItemFunction(self.options, 'itemText');
+      makeOptionFunction(self.options, 'tagClass');
+
+      // Typeahead Bootstrap version 2.3.2
+      if (self.options.typeahead) {
+        var typeahead = self.options.typeahead || {};
+
+        makeOptionFunction(typeahead, 'source');
+
+        self.$input.typeahead($.extend({}, typeahead, {
+          source: function (query, process) {
+            function processItems(items) {
+              var texts = [];
+
+              for (var i = 0; i < items.length; i++) {
+                var text = self.options.itemText(items[i]);
+                map[text] = items[i];
+                texts.push(text);
+              }
+              process(texts);
+            }
+
+            this.map = {};
+            var map = this.map,
+                data = typeahead.source(query);
+
+            if ($.isFunction(data.success)) {
+              // support for Angular callbacks
+              data.success(processItems);
+            } else if ($.isFunction(data.then)) {
+              // support for Angular promises
+              data.then(processItems);
+            } else {
+              // support for functions and jquery promises
+              $.when(data)
+               .then(processItems);
+            }
+          },
+          updater: function (text) {
+            self.add(this.map[text]);
+            return this.map[text];
+          },
+          matcher: function (text) {
+            return (text.toLowerCase().indexOf(this.query.trim().toLowerCase()) !== -1);
+          },
+          sorter: function (texts) {
+            return texts.sort();
+          },
+          highlighter: function (text) {
+            var regex = new RegExp( '(' + this.query + ')', 'gi' );
+            return text.replace( regex, "<strong>$1</strong>" );
+          }
+        }));
+      }
+
+      // typeahead.js
+      if (self.options.typeaheadjs) {
+          var typeaheadConfig = null;
+          var typeaheadDatasets = {};
+
+          // Determine if main configurations were passed or simply a dataset
+          var typeaheadjs = self.options.typeaheadjs;
+          if ($.isArray(typeaheadjs)) {
+            typeaheadConfig = typeaheadjs[0];
+            typeaheadDatasets = typeaheadjs[1];
+          } else {
+            typeaheadDatasets = typeaheadjs;
+          }
+
+          self.$input.typeahead(typeaheadConfig, typeaheadDatasets).on('typeahead:selected', $.proxy(function (obj, datum) {
+            if (typeaheadDatasets.valueKey)
+              self.add(datum[typeaheadDatasets.valueKey]);
+            else
+              self.add(datum);
+            self.$input.typeahead('val', '');
+          }, self));
+      }
+
+      self.$container.on('click', $.proxy(function(event) {
+        if (! self.$element.attr('disabled')) {
+          self.$input.removeAttr('disabled');
+        }
+        self.$input.focus();
+      }, self));
+
+        if (self.options.addOnBlur && self.options.freeInput) {
+          self.$input.on('focusout', $.proxy(function(event) {
+              // HACK: only process on focusout when no typeahead opened, to
+              //       avoid adding the typeahead text as tag
+              if ($('.typeahead, .twitter-typeahead', self.$container).length === 0) {
+                self.add(self.$input.val());
+                self.$input.val('');
+              }
+          }, self));
+        }
+
+
+      self.$container.on('keydown', 'input', $.proxy(function(event) {
+        var $input = $(event.target),
+            $inputWrapper = self.findInputWrapper();
+
+        if (self.$element.attr('disabled')) {
+          self.$input.attr('disabled', 'disabled');
+          return;
+        }
+
+        switch (event.which) {
+          // BACKSPACE
+          case 8:
+            if (doGetCaretPosition($input[0]) === 0) {
+              var prev = $inputWrapper.prev();
+              if (prev.length) {
+                self.remove(prev.data('item'));
+              }
+            }
+            break;
+
+          // DELETE
+          case 46:
+            if (doGetCaretPosition($input[0]) === 0) {
+              var next = $inputWrapper.next();
+              if (next.length) {
+                self.remove(next.data('item'));
+              }
+            }
+            break;
+
+          // LEFT ARROW
+          case 37:
+            // Try to move the input before the previous tag
+            var $prevTag = $inputWrapper.prev();
+            if ($input.val().length === 0 && $prevTag[0]) {
+              $prevTag.before($inputWrapper);
+              $input.focus();
+            }
+            break;
+          // RIGHT ARROW
+          case 39:
+            // Try to move the input after the next tag
+            var $nextTag = $inputWrapper.next();
+            if ($input.val().length === 0 && $nextTag[0]) {
+              $nextTag.after($inputWrapper);
+              $input.focus();
+            }
+            break;
+         default:
+             // ignore
+         }
+
+        // Reset internal input's size
+        var textLength = $input.val().length,
+            wordSpace = Math.ceil(textLength / 5),
+            size = textLength + wordSpace + 1;
+        $input.attr('size', Math.max(this.inputSize, $input.val().length));
+      }, self));
+
+      self.$container.on('keypress', 'input', $.proxy(function(event) {
+        
+		 var $input = $(event.target);
+
+         if (self.$element.attr('disabled')) {
+            self.$input.attr('disabled', 'disabled');
+            return;
+         }
+
+         var text = $input.val(),
+         maxLengthReached = self.options.maxChars && text.length >= self.options.maxChars;
+         if (self.options.freeInput && (keyCombinationInList(event, self.options.confirmKeys) || maxLengthReached)) {
+            // Only attempt to add a tag if there is data in the field
+            if (text.length !== 0) {
+               self.add(maxLengthReached ? text.substr(0, self.options.maxChars) : text);
+               $input.val('');
+            }
+
+            // If the field is empty, let the event triggered fire as usual
+            //if (self.options.cancelConfirmKeysOnEmpty === false) {
+               event.preventDefault();
+           // }
+         }
+
+         // Reset internal input's size
+         var textLength = $input.val().length,
+            wordSpace = Math.ceil(textLength / 5),
+            size = textLength + wordSpace + 1;
+         $input.attr('size', Math.max(this.inputSize, $input.val().length));
+      }, self));
+
+      // Remove icon clicked
+      self.$container.on('click', '[data-role=remove]', $.proxy(function(event) {
+        if (self.$element.attr('disabled')) {
+          return;
+        }
+        self.remove($(event.target).closest('.tag').data('item'));
+      }, self));
+
+      // Only add existing value as tags when using strings as tags
+      if (self.options.itemValue === defaultOptions.itemValue) {
+        if (self.$element[0].tagName === 'INPUT') {
+            self.add(self.$element.val());
+        } else {
+          $('option', self.$element).each(function() {
+            self.add($(this).attr('value'), true);
+          });
+        }
+      }
+    },
+
+    /**
+     * Removes all tagsinput behaviour and unregsiter all event handlers
+     */
+    destroy: function() {
+      var self = this;
+
+      // Unbind events
+      self.$container.off('keypress', 'input');
+      self.$container.off('click', '[role=remove]');
+
+      self.$container.remove();
+      self.$element.removeData('tagsinput');
+      self.$element.show();
+    },
+
+    /**
+     * Sets focus on the tagsinput
+     */
+    focus: function() {
+      this.$input.focus();
+    },
+
+    /**
+     * Returns the internal input element
+     */
+    input: function() {
+      return this.$input;
+    },
+
+    /**
+     * Returns the element which is wrapped around the internal input. This
+     * is normally the $container, but typeahead.js moves the $input element.
+     */
+    findInputWrapper: function() {
+      var elt = this.$input[0],
+          container = this.$container[0];
+      while(elt && elt.parentNode !== container)
+        elt = elt.parentNode;
+
+      return $(elt);
+    }
+  };
+
+  /**
+   * Register JQuery plugin
+   */
+  $.fn.tagsinput = function(arg1, arg2, arg3) {
+    var results = [];
+
+    this.each(function() {
+      var tagsinput = $(this).data('tagsinput');
+      // Initialize a new tags input
+      if (!tagsinput) {
+          tagsinput = new TagsInput(this, arg1);
+          $(this).data('tagsinput', tagsinput);
+          results.push(tagsinput);
+
+          if (this.tagName === 'SELECT') {
+              $('option', $(this)).attr('selected', 'selected');
+          }
+
+          // Init tags from $(this).val()
+          $(this).val($(this).val());
+      } else if (!arg1 && !arg2) {
+          // tagsinput already exists
+          // no function, trying to init
+          results.push(tagsinput);
+      } else if(tagsinput[arg1] !== undefined) {
+          // Invoke function on existing tags input
+            if(tagsinput[arg1].length === 3 && arg3 !== undefined){
+               var retVal = tagsinput[arg1](arg2, null, arg3);
+            }else{
+               var retVal = tagsinput[arg1](arg2);
+            }
+          if (retVal !== undefined)
+              results.push(retVal);
+      }
+    });
+
+    if ( typeof arg1 == 'string') {
+      // Return the results from the invoked function calls
+      return results.length > 1 ? results : results[0];
+    } else {
+      return results;
+    }
+  };
+
+  $.fn.tagsinput.Constructor = TagsInput;
+
+  /**
+   * Most options support both a string or number as well as a function as
+   * option value. This function makes sure that the option with the given
+   * key in the given options is wrapped in a function
+   */
+  function makeOptionItemFunction(options, key) {
+    if (typeof options[key] !== 'function') {
+      var propertyName = options[key];
+      options[key] = function(item) { return item[propertyName]; };
+    }
+  }
+  function makeOptionFunction(options, key) {
+    if (typeof options[key] !== 'function') {
+      var value = options[key];
+      options[key] = function() { return value; };
+    }
+  }
+  /**
+   * HtmlEncodes the given value
+   */
+  var htmlEncodeContainer = $('<div />');
+  function htmlEncode(value) {
+    if (value) {
+      return htmlEncodeContainer.text(value).html();
+    } else {
+      return '';
+    }
+  }
+
+  /**
+   * Returns the position of the caret in the given input field
+   * http://flightschool.acylt.com/devnotes/caret-position-woes/
+   */
+  function doGetCaretPosition(oField) {
+    var iCaretPos = 0;
+    if (document.selection) {
+      oField.focus ();
+      var oSel = document.selection.createRange();
+      oSel.moveStart ('character', -oField.value.length);
+      iCaretPos = oSel.text.length;
+    } else if (oField.selectionStart || oField.selectionStart == '0') {
+      iCaretPos = oField.selectionStart;
+    }
+    return (iCaretPos);
+  }
+
+  /**
+    * Returns boolean indicates whether user has pressed an expected key combination.
+    * @param object keyPressEvent: JavaScript event object, refer
+    *     http://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
+    * @param object lookupList: expected key combinations, as in:
+    *     [13, {which: 188, shiftKey: true}]
+    */
+  function keyCombinationInList(keyPressEvent, lookupList) {
+      var found = false;
+      $.each(lookupList, function (index, keyCombination) {
+          if (typeof (keyCombination) === 'number' && keyPressEvent.which === keyCombination) {
+              found = true;
+              return false;
+          }
+
+          if (keyPressEvent.which === keyCombination.which) {
+              var alt = !keyCombination.hasOwnProperty('altKey') || keyPressEvent.altKey === keyCombination.altKey,
+                  shift = !keyCombination.hasOwnProperty('shiftKey') || keyPressEvent.shiftKey === keyCombination.shiftKey,
+                  ctrl = !keyCombination.hasOwnProperty('ctrlKey') || keyPressEvent.ctrlKey === keyCombination.ctrlKey;
+              if (alt && shift && ctrl) {
+                  found = true;
+                  return false;
+              }
+          }
+      });
+
+      return found;
+  }
+
+  /**
+   * Initialize tagsinput behaviour on inputs and selects which have
+   * data-role=tagsinput
+   */
+  $(function() {
+    $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
+  });
+})(window.jQuery);
 
 jQuery(document).ready(
 function()
@@ -5325,6 +6678,7 @@ function()
 	jQuery(document).on('click','.the-thumb',
 				function()
 					{
+					hide_nf_error(jQuery(this).closest('.form_field'));
 					jQuery(this).closest('.form_field').find('.the-thumb').removeClass('checked').removeClass('text-success').removeClass('text-danger');
 					if(jQuery(this).hasClass('fa-thumbs-o-up'))
 						jQuery(this).addClass('text-success').addClass('checked')
@@ -5338,6 +6692,7 @@ function()
 		jQuery(document).on('click','.the-smile',
 				function()
 					{
+					hide_nf_error(jQuery(this).closest('.form_field'));
 					jQuery(this).closest('.form_field').find('.the-smile').removeClass('checked').removeClass('text-success').removeClass('text-danger').removeClass('text-warning');
 					if(jQuery(this).hasClass('fa-smile-o'))
 						jQuery(this).addClass('text-success').addClass('checked')						
@@ -5493,7 +6848,10 @@ function()
 	jQuery(document).on('click','div.icon-holder',
 				function()
 					{
-					//console.log('clicked');
+					
+					
+						
+						
 					var label = jQuery(this);
 					
 					var form_field = label.closest('.icon-select-group');
@@ -5504,7 +6862,35 @@ function()
 					var selected_icon_container = input_container.find('.selected-icon-holder');
 
 					icon_container.css('width', icon_container.closest('.form_field').css('width')+'px');
-
+					
+					
+					
+					
+					if(input_container.closest('.step').hasClass('auto-step'))
+							{
+							
+							if(input_container.closest('.step').hasClass('last_step'))
+								{
+								setTimeout(function()
+									{
+									icon_container.closest('form').submit();
+									},500);
+								}
+							else
+								{	
+								setTimeout(function()
+									{
+									input_container.closest('.step').find('.nex-step').trigger('click');	
+									},300
+									)
+								}
+						}
+					
+					
+					
+					
+					
+					
 					if(label.hasClass('default-selected-icon'))
 						{
 						
@@ -5555,7 +6941,7 @@ function()
 										else
 											{
 											selected_icon_container.find('.default-selected-icon').show();
-											
+											selected_icon_container.find('.default-selected-icon input').focus();
 											selected_icon_container.find('.default-selected-icon input').prop('checked',true)
 											selected_icon_container.find('.default-selected-icon input').trigger('change');
 											icon_container.hide();
@@ -5576,6 +6962,7 @@ function()
 									label.find('.icon-select').removeClass(animation);
 									label.find('.icon-select').addClass(animation);
 									
+									label.find('input').focus();
 									label.find('input').prop('checked',false);
 									label.find('input').trigger('change');
 									
@@ -5585,7 +6972,7 @@ function()
 									{
 										
 									
-										
+									label.find('input').focus();	
 									label.find('input').prop('checked',true);
 									label.find('input').trigger('change');
 									
@@ -5593,6 +6980,7 @@ function()
 										{
 										label.parent().find('.icon-holder').removeClass('icon-checked');
 										label.parent().find('.off-label').show();
+
 										label.parent().find('.on-label').hide();
 										
 										label.parent().find('.off-icon').show();
@@ -5697,62 +7085,22 @@ function()
 										}
 									}
 								},110);
-						}
-						if(icon_container.closest('.step ').hasClass('auto-step'))
-							{
-							
-							if(icon_container.closest('.step').hasClass('last_step'))
-								{
-								setTimeout(function()
-									{
-									icon_container.closest('form').submit();
-									},500);
-								}
-							else
-								{	
 								
-								setTimeout(function()
-									{	
-									
-									jQuery(this).closest('form').submit();
-									
-									icon_container.closest('.step ').find('.nex-step').trigger('click');	
-									},300
-									)
-								}
+						
+						
+						
+								
+								
 						}
+						
 					}
 				);
 	
 	
-	jQuery(document).on('keyup keypress', '#nex-forms form input[type="text"]', function(e) {
-	  if(e.which == 13) {
-		e.preventDefault();
-		return false;
-	  }
-	});
 	
-	jQuery(document).on('click','.nexf_title',
-		function()
-			{
-			jQuery(this).parent().parent().find('input').focus();
-			jQuery(this).parent().parent().find('textarea').focus();
-			}
-		);
-	jQuery('#nex-forms input').each(
-			function()
-				{
-				if(jQuery(this).attr('data-value'))
-					jQuery(this).val(jQuery(this).attr('data-value'));
-				}
-			);
-		jQuery('#nex-forms textarea').each(
-			function()
-				{
-				if(jQuery(this).attr('data-value'))
-					jQuery(this).val(jQuery(this).attr('data-value'));
-				}
-			)
+	
+	
+	
 	
 	
 	jQuery('.pre_fill_fields input').each(
@@ -5796,8 +7144,8 @@ function()
 					{
 					if(jQuery(this).val()==pre_val)
 						{
-						var get_check = jQuery(this).parent().find('a');
-						setTimeout(function(){ get_check.trigger('click') },200);
+						jQuery(this).prop('checked',true);
+						jQuery(this).trigger('change');
 						}
 					}
 				)
@@ -5822,14 +7170,11 @@ function()
 								}	
 							}
 						);
-					the_input.closest('.the-radios').find('input').each(
+					the_input.closest('.the-radios').find('input[type="radio"]').each(
 						function()
 							{
 							if(jQuery(this).val()==pre_val)
-								{
-								var get_radio = jQuery(this).parent().find('a');
-								setTimeout(function(){ get_radio.trigger('click') },200);
-								}	
+								jQuery(this).closest('label').trigger('click');
 							}
 						);
 					}

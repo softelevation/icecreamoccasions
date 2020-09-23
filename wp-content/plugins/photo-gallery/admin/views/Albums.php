@@ -41,6 +41,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 							'add_new_button' => array(
 								'href' => add_query_arg(array( 'page' => $params['page'], 'task' => 'edit' ), admin_url('admin.php')),
 							),
+              'add_new_button_text' => 'Add new group',
               'how_to_button' => true,
 						  )
 						);
@@ -53,7 +54,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 		?>
 		</div>
 		<table class="images_table adminlist table table-striped wp-list-table widefat fixed pages media bwg-gallery-lists">
-			<thead>
+			<thead class="alternate">
 				<td id="cb" class="column-cb check-column">
 				  <label class="screen-reader-text" for="cb-select-all-1"><?php _e('Select all', BWG()->prefix); ?></label>
 					<input id="check_all" type="checkbox" onclick="spider_check_all(this)" />
@@ -64,6 +65,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 			<tbody>
 			<?php
       if ( $params['rows'] ) {
+        $alternate = 'alternate';
         foreach ( $params['rows'] as $row ) {
 					$user = get_userdata($row->author);
 					$alternate = (!isset($alternate) || $alternate == '') ? 'class="alternate"' : '';
@@ -169,24 +171,30 @@ class AlbumsView_bwg extends AdminView_bwg {
     $row = $params['row'];
     $enable_wp_editor = isset(BWG()->options->enable_wp_editor) ? BWG()->options->enable_wp_editor : 0;
     ?>
-    <div class="bwg-page-header">
-      <div class="wd-page-title wd-header">
-        <h1 class="wp-heading-inline"><?php _e('Gallery Group Title', BWG()->prefix); ?></h1>
-        <input type="text" id="name" name="name" value="<?php echo !empty($row->name) ? esc_attr( $row->name ) : ''; ?>">
+    <div class="bwg-page-header wd-list-view-header">
+      <div class="wd-page-title wd-header wd-list-view-header-left">
+        <div>
+          <h1 class="wp-heading-inline bwg-heading"><?php _e('Gallery Group Title', BWG()->prefix); ?></h1>
+          <input type="text" id="name" name="name" value="<?php echo !empty($row->name) ? esc_attr( $row->name ) : ''; ?>">
+        </div>
         <div class="bwg-page-actions">
           <?php
           if ( $params['shortcode_id'] ) {
             require BWG()->plugin_dir . '/framework/howto/howto.php';
           }
           ?>
-          <button class="button button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
+          <button class="tw-button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
             <?php echo ($params['id']) ? __('Update', BWG()->prefix) : __('Publish', BWG()->prefix); ?>
           </button>
           <?php if ($params['id'] && $params['preview_action']) { ?>
-            <a class="button preview-button button-large" href="<?php echo $params['preview_action']; ?>" target="_blank"><?php _e('Preview', BWG()->prefix); ?></a>
+            <a class="tw-button-secondary tw-preview-button button-large" href="<?php echo $params['preview_action']; ?>" target="_blank"><?php _e('Preview', BWG()->prefix); ?></a>
           <?php } ?>
         </div>
       </div>
+        <?php
+        if (!BWG()->is_pro) {
+          WDWLibrary::topbar_upgrade_ask_question();
+        }?>
       <div class="bwg-clear"></div>
     </div>
     <div class="wd-table meta-box-sortables">

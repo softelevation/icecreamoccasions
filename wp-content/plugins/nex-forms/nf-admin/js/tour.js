@@ -35,8 +35,8 @@ var first_run = new Tour({
 			
 			element: "#nex-forms",
 			title: "<strong>Welcome to NEX-Forms</strong>",
-			content: "We recomend that you first take a Main Tour and then procede with some Quick Tutorials <a href='#' class='start-button start-tutorial tour-main' data-role='' style='display:block;'><span class='start-border'>Start Tour</span><span class='start-border-2 pulsate_1'></span></a><div class='more_tuts'><h5>Tutorials</h5><a href='#' class='tut-1'>Building a Simple Contact Form</a><a href='#' class='tut-2'>Using Conditional Logic</a><a href='#' class='tut-3'>Using Math Logic</a><a href='#' class='tut-4'>Creating a Multi-Step Form</a></div>",
-			template: "<div class='popover tour first-run tutorial-step-1 animated zoomIn'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button></div>",
+			content: "We recomend that you first take a Main Tour and then proceed with some Quick Tutorials <a href='#' class='start-button start-tutorial tour-main' data-role='' style='display:block;'><span class='start-border'>Start Tour</span><span class='start-border-2 pulsate_1'></span></a><div class='more_tuts'><h5>Tutorials</h5><a href='#' class='tut-1'>Building a Simple Contact Form</a><a href='#' class='tut-2'>Using Conditional Logic</a><a href='#' class='tut-3'>Using Math Logic</a><a href='#' class='tut-4'>Creating a Multi-Step Form</a></div>",
+			template: "<div class='popover tour first-run tutorial-step-1 animated bounceInDown'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button></div>",
 			placement: 'bottom',
 		  },
 		  ]
@@ -56,7 +56,7 @@ var demo_popup = new Tour({
 		  			{
 						jQuery('#nex-forms').removeClass('demo-popup'); 
 						setTimeout(
-							function(){run_demo_popup()},300000);
+							function(){run_demo_popup()},200000);
 						
 						jQuery('.upgrade_pro').show();
 						
@@ -64,8 +64,11 @@ var demo_popup = new Tour({
 		  steps: [
 				  {
 					element: ".builder-footer",
-					title: "Like this plugin?",
-					content: "<strong>Buy once</strong> and recieve <strong>lifetime FREE</strong> automatic <strong>updates</strong>!<a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button'><span class='start-border'>Buy Now</span><span class='start-border-2 pulsate_1'></a>",
+					title: "SPECIAL OFFER!!!",
+					content: "Buy NEX-Forms today and get all add-ons worth $210 for FREE!<strong></strong>!<a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button'><span class='start-border'>Buy Now</span><span class='start-border-2 pulsate_1'></a>",
+
+					//content: "NEX-Forms is currently on sale for 30% LESS - Was $39 now only $27! Dont miss out, offer Ends 1 July!<strong></strong>!<a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button'><span class='start-border'>Buy Now</span><span class='start-border-2 pulsate_1'></a>",
+					//content: "<strong>Buy once</strong> and recieve <strong>lifetime FREE</strong> automatic <strong>updates</strong>!<a href='http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix' target='_blank' class='start-button'><span class='start-border'>Buy Now</span><span class='start-border-2 pulsate_1'></a>",
 					template: "<div class='popover tour tour-demo-popup animated fadeInUp'><h3 class='popover-title'></h3><div class='popover-content'></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button></div>",
 					placement: 'bottom',
 				  },
@@ -85,7 +88,7 @@ var demo_popup = new Tour({
 		setTimeout(
 			function(){
 				demo_popup.restart();
-			}, 90000);
+			}, 60000);
 	}
 
 /* TOURS */
@@ -750,6 +753,13 @@ var demo_popup = new Tour({
 		
 		  steps: [
 		  {
+			element: ".btn-fullscreen",
+			title: "Full Screen Mode",
+			content: "Enables full screen mode. Click again to leave full screen mode.",
+			placement: 'bottom',
+			
+		  },
+		  {
 			element: ".btn-dashboard",
 			title: "Dashboard",
 			content: "Takes you back to your NEX-Forms Dashboard.",
@@ -765,20 +775,20 @@ var demo_popup = new Tour({
 		  {
 			element: ".create_new_form",
 			title: "New Form",
-			content: "Click here to start creating a new form.",
+			content: "Click here to start a new form, template or form import.",
 			placement: 'bottom',
 			
 		  },
 		  {
 			element: "a.canvas_view",
 			title: "Form Canvas",
-			content: "From here you build and style your form.",
+			content: "Click here to build and style your form.",
 			placement: 'bottom',
 		  },
 		  {
 			element: "li a.email_setup",
 			title: "Autoresponders",
-			content: "Setup your admin notification and user confirmation emails here.",
+			content: "Setup your admin notification emails and user confirmation emails here.",
 			placement: 'bottom'
 		  },
 		  {
@@ -805,12 +815,7 @@ var demo_popup = new Tour({
 			content: "This is the Title of your form.",
 			placement: 'bottom'
 		  },
-		  {
-			element: ".top-menu-btn.form-preview",
-			title: "Form Preview",
-			content: "Gives you a live preview of your form while you build it. ",
-			placement: 'bottom'
-		  },
+		  
 		   {
 			element: ".save_nex_form.prime_save",
 			title: "Save your form",
@@ -819,8 +824,8 @@ var demo_popup = new Tour({
 		  },
 		  {
 			element: ".view_test_page",
-			title: "New Test Page Created",
-			content: "<br>A front-end test page has been created just for you!<br><br> Click on this button after you created <strong>AND SAVED</strong> the form. You can test your form live with email submissions and everything. </br></br>Remember you can download the form you create here to import into your own site!",
+			title: "Demo Test Page",
+			content: "<br>A front-end test page has been created just for you in this backend demo!<br><br> Click on this button after you created <strong>AND SAVED</strong> the form. You can test your form live with email submissions and everything. </br></br>Remember you can download the form you create here to import into your own site!",
 			placement: 'bottom'
 			},
 		  {
@@ -839,53 +844,23 @@ var demo_popup = new Tour({
 			onShow:function(){ jQuery('.help_menu a.tours-menu').parent().find('.aa_menu_2').addClass('open-2');  },
 			onHide:function(){ jQuery('.aa_menu_2').removeClass('open-2');  }
 		  },
-		  {
-			element: "select.set_form_theme",
-			title: "Form Base",
-			content: "Change your overall form base to: Bootstrap, Material Design, jQuery UI or Classic (Browser Default) style.<br><br>Requires <a href='https://codecanyon.net/item/form-themes-for-nexforms/10037800' target='_blank'>Themes Add-on for NEX-Forms</a>.",
-			placement: 'bottom'
+		 {
+			element: ".add-step-btn",
+			title: "Add a new Multi-step",
+			content: "Click this button to add a new step in your form.",
+			placement: 'right'
 		  },
 		  {
-			element: "select.choose_form_theme",
-			title: "Preset Color Schemes",
-			content: "Choose a color scheme from here to instantly style your whole form. <br><br>Requires <a href='https://codecanyon.net/item/form-themes-for-nexforms/10037800' target='_blank'>Themes Add-on for NEX-Forms</a>",
+			element: ".field-selection-tools",
+			title: "Form Fields Menu",
+			content: "This is your Fields toolbar. Click on any of these fields and elements to be added to your form.",
 			placement: 'bottom'
 		  },
 		   {
-			element: "select.md_theme_shade_selection",
-			title: "Form Canvas Shade",
-			content: "Select the shade you want to build your form on, light or dark. <br><br> <strong>NOTE!</strong> This is for building purposes only and does not effect the form on the front end. For example if you are using light shades for field labels then select the dark shade so you can see what are you doing when building and editing the form.",
-			placement: 'bottom'
-		  },
-		  {
-			element: ".full-screen-btn",
-			title: "Full Screen",
-			content: "Click here to go to full screen mode. When in full screen mode click again to go back to normal editing mode.",
+			element: ".overall-styling-btn",
+			title: "Overall Styling Options",
+			content: "Although each field can be styled individually this panel includes settings to apply styling to all fields simultaneously and the form container itself as well.<br><br> You can close this panel (click on X -> top left corner) to create more editing space and re-open it again next to the Conditional Logic button above.",
 			placement: 'left'
-		  },
-		  {
-			element: ".field_selection_dropdown_menu",
-			title: "Fields Menu",
-			content: "Show/hide the fields menu from here. Usefull to hide the fields menu to create more editing space on smaller screens.",
-			placement: 'bottom'
-		  },
-		  {
-			element: ".other-form-elements",
-			title: "Other Elements",
-			content: "This panel includes form elements that is not input related like headings, dividers, text paragraphs, etc.",
-			placement: 'bottom'
-		  },
-		  {
-			element: ".select-grid-fields",
-			title: "Grid System",
-			content: "Add grid layouts from this panel. The number on the button is equal to the total columns that will be added.",
-			placement: 'bottom'
-		  },
-		  {
-			element: ".multi-step-fields",
-			title: "Add a new Multi-step",
-			content: "Click this button to add a new step in your form.",
-			placement: 'bottom'
 		  },
 		  {
 			element: ".conditional-logic-btn",
@@ -893,29 +868,68 @@ var demo_popup = new Tour({
 			content: "From here you can add Conditional Logic to your form fields.<br><br>See <a href='' class='tut-2'>Using Conditional Logic Tutorial</a>",
 			placement: 'left'
 		  },
-		  {
-			element: ".tool-section",
-			title: "Field Menu",
-			content: "Add your form fields from this menu. Click on the field type you want and the field will be added to the form canvas.",
-			placement: 'right'
+		  /*{
+			element: ".other-form-elements",
+			title: "HTML Elements",
+			content: "This panel includes form elements that is not input related like headings, dividers, text paragraphs, etc.",
+			placement: 'bottom'
+		  },*/
+		  /*{
+			element: ".select-grid-fields",
+			title: "Grid System",
+			content: "Add grid layouts from this panel. The number on the button is equal to the total columns that will be added.",
+			placement: 'bottom'
+		  },*/
+		   {
+			element: ".workspace_theme_light",
+			title: "Light Workspace",
+			content: "Click here to make your workspace light (this is the default)",
+			placement: 'bottom'
 		  },
+		  {
+			element: ".workspace_theme_dark",
+			title: "Dark Workspace",
+			content: "Click here to make your workspace dark. This is a good option if you are working with light heading colors, labels, etc so you can see your work better.",
+			placement: 'bottom'
+		  },
+		  
+		   {
+			element: ".workspace.normal",
+			title: "Design Mode",
+			content: "This is the default Form building mode and gives you total focus on your form building and designing.",
+			placement: 'bottom'
+		  },
+		   {
+			element: ".workspace.split",
+			title: "Split Mode",
+			content: "This mode splits your preview and design in realtime. The preview automatically refreshes as you work.",
+			placement: 'bottom'
+		  },
+		   {
+			element: ".workspace.preview",
+			title: "Preview Mode",
+			content: "This mode gives you the preview of your form.",
+			placement: 'bottom'
+		  },
+		  {
+			element: ".width_input",
+			title: "Set Form Width",
+			content: "Set your form width in % (percentage) or PX (pixels). We recomend you use % as fixed PX is not Mobile responsive!",
+			placement: 'bottom'
+		  },
+		 
 		  {
 			element: ".nex-forms-container",
 			title: "Form Canvas",
 			content: "This is the WYSIWYG area where you build, drag, sort and edit your form fields.",
 			placement: 'top'
 		  },
-		  {
-			element: ".overall-form-styling-column",
-			title: "Overall Styling Options",
-			content: "Although each field can be styled individually this panel includes settings to apply styling to all fields simultaneously and the form container itself as well.<br><br> You can close this panel (click on X -> top left corner) to create more editing space and re-open it again next to the Conditional Logic button above.",
-			placement: 'left'
-		  },
+		  
 		  
 		  {
 			orphan: true,
 			title: "End of Tour",
-			content: "That concludes the Main Tour. <br><br>See next: <br><br><a href='#' class='tour-email-setup'>Email Setup Tour</a><br><a href='#' class='tour-paypal-setup'>Integartions Tour</a><br><a href='#' class='tour-form-submit-setup'>Form Options Tour</a>",
+			content: "That concludes the Main Tour. <br><br>See next: <br><br><a href='#' class='tour-email-setup'>Email Setup Tour</a><br><a href='#' class='tour-paypal-setup'>Add-on Integrations Tour</a><br><a href='#' class='tour-form-submit-setup'>Form Options Tour</a>",
 			placement: 'bottom',
 		  },
 		  
@@ -935,7 +949,7 @@ var demo_popup = new Tour({
 /* TUTORIALS */
 function nf_check_form_canvas(){
 	
-	if(jQuery('.nex-forms-container').find('.form_field').length>0)
+	if(jQuery('.nex-forms-container').find('.form_field').length>1)
 		{  
 		setTimeout(function(){ 
 			jQuery('.start-tutorial').hide();
@@ -957,7 +971,10 @@ function nf_check_form_canvas(){
 jQuery(document).on('click','.clear_form, .restart-tutorial',
 		function()
 			{
-			jQuery('.nex-forms-container').html('');
+			jQuery('.multi-step-stepping').html('');
+			jQuery('.show_all_steps').hide();
+			jQuery('.btn.workspace.normal').trigger('click');
+			jQuery('.nex-forms-container').html('<div class="form_field hidden" id="_ms_current_step"><input class="ms_current_step" value="1" name="ms_current_step" type="hidden"></div>');
 			jQuery('.con-logic-column .set_rules').html('');	
 			jQuery('.nf_step_breadcrumb').hide();
 			end_nf_tours();
@@ -1028,12 +1045,12 @@ var current_tut_step = '';
 		  {
 			element: ".tool-section .form_field.Query",
 			title: "Step 3",
-			content: "Good, now we can add a query field so we get some feedback from the customer.",
+			content: "Good, now we can add a query field so we can get some feedback from the customer.",
 			placement: 'bottom',
 			reflex: true,
 		  },
 		  {
-			element: ".canvas-tools .form_field.the_submit",
+			element: ".tool-section .tool-spacer .form_field.submit-button.the_submit",
 			title: "Step 4",
 			content: "Thats all we need for now, just add a submit button so the user can send the form.",
 			placement: 'bottom',
@@ -1051,7 +1068,7 @@ var current_tut_step = '';
 			orphan: true,
 			title: "Tutorial 1 - Complete!",
 			content: "<span class='fa fa-check'></span><strong>Well done!</strong></br>You have just created your first Contact Form! <a href='#' class='start-button start-tutorial restart-tutorial' data-tutorial='tut-1' data-role='' style='display:block;'><span class='start-border'>restart</span><span class='start-border-2 pulsate_1'></span></a><div class='more_tuts'><h5>Also See:</h5><a href='#' class='tut-1'>Building a Simple Contact Form</a><a href='#' class='tut-2'>Using Conditional Logic</a><a href='#' class='tut-3'>Using Math Logic</a><a href='#' class='tut-4'>Creating a Multi-Step Form</a></div>",
-			template: "<div class='popover tour tutorial-last-step animated zoomIn'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button></div>",
+			template: "<div class='popover tour tutorial-last-step animated bounceInDown'><div class='popover-arrow'></div><h3 class='popover-title'></h3><div class='popover-content'></div><div class='popover-navigation'></div><button class='end-tour' data-role='end'><span class='fa fa-close'></span></button></div>",
 			placement: 'bottom',
 		  },
 		]});
@@ -1266,7 +1283,7 @@ var current_tut_step = '';
 			reflex: true,
 		  },
 		  {
-			element: ".tool-section .form_field.the_submit",
+			element: ".tool-section .tool-spacer .form_field.submit-button.the_submit",
 			title: "Step 14",
 			content: "...and now add a Submit button so the user can send the form.",
 			placement: 'right',
@@ -1681,16 +1698,16 @@ var current_tut_step = '';
 			placement: 'right',
 			reflex: true,
 		  },
-		  {
+		  /*{
 			element: ".tool-section .form_field.surname",
 			title: "Add another field to Step 1",
 			content: "...and a Surname (last name) Field",
 			placement: 'right',
 			reflex: true,
-		  },
+		  },*/
 		  
 		  {
-			element: ".nf_step_breadcrumb .new_step",
+			element: ".canvas-tools .form_field.step",
 			title: "Create Step 2",
 			content: "Well done! Your first step is complete.<br><br>Now add a new step by clicking here on this <strong><span class='fa fa-plus'></span></strong>",
 			placement: 'right',
@@ -1719,7 +1736,7 @@ var current_tut_step = '';
 		  },
 		  
 		  {
-			element: ".nf_step_breadcrumb .new_step",
+			element: ".canvas-tools .form_field.step",
 			title: "Create Step 3",
 			content: "Step 2 done! Add a 3rd step.",
 			placement: 'right',
@@ -1752,7 +1769,7 @@ var current_tut_step = '';
 			placement: 'left',
 		  },
 		  {
-			element: ".button-settings .button-type .do-submit",
+			element: ".field-setting .button-type .do-submit",
 			title: "Change to Submit",
 			content: "Change the Button Type from Next to Submit.",
 			placement: 'bottom',
@@ -1792,16 +1809,15 @@ var current_tut_step = '';
 			}
 		);
 	
-	jQuery(document).on('click','.tut-4 .tool-section.multi-step-fields .step',
+	jQuery(document).on('click','.tut-4 .add-step-btn',
 		function()
 			{
-			
 			if(current_tut_step=='1')
 				setTimeout(function(){tutorial_4.goTo(2); jQuery('.step').removeClass('tour-tut-4-element');},200); 
 			if(current_tut_step=='5')
-				setTimeout(function(){tutorial_4.goTo(7); jQuery('.step').removeClass('tour-tut-4-element');},200); 
+				setTimeout(function(){tutorial_4.goTo(6); jQuery('.step').removeClass('tour-tut-4-element');},200); 
 			if(current_tut_step=='9')
-				setTimeout(function(){tutorial_4.goTo(11); jQuery('.step').removeClass('tour-tut-4-element');},200); 
+				setTimeout(function(){tutorial_4.goTo(10); jQuery('.step').removeClass('tour-tut-4-element');},200); 
 			}
 		);
 	
@@ -1816,27 +1832,27 @@ var current_tut_step = '';
 		function()
 			{
 			if(jQuery(this).val()=='Contact Info')
-				tutorial_4.goTo(8)
+				tutorial_4.goTo(7)
 			}
 		);
 	jQuery(document).on('keyup',".tut-4 .nf_multi_step_3 input[name='multi_step_name']",
 		function()
 			{
 			if(jQuery(this).val()=='Query')
-				tutorial_4.goTo(12)
+				tutorial_4.goTo(11)
 			}
 		);
 	jQuery(document).on('click','.tut-4 .nf_multi_step_3 .nex_prev_steps .grid_input_holder:last-child .button_fields',
 		function()
 			{
-			setTimeout(function(){tutorial_4.goTo(14);},300); 
+			setTimeout(function(){tutorial_4.goTo(13);},300); 
 			}
 		);
 	jQuery(document).on('keyup',".tut-4 #set_button_val",
 		function()
 			{
 			if(jQuery(this).val()=='Submit')
-				tutorial_4.goTo(15)
+				tutorial_4.goTo(14)
 			}
 		);	
 	}

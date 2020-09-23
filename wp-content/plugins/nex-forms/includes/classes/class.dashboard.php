@@ -28,10 +28,11 @@ if(!class_exists('NEXForms_dashboard'))
 		$extra_buttons = array(),
 		$show_headings = true,
 		$show_delete = true,
-		$checkout = true,
+		$checkout = false,
+		$client_info = 'no info',
 		$action_button;
 		
-		public function __construct($table='', $table_header='', $extra_classes='', $table_header_icon='',$additional_params='', $search_params='', $table_headings='', $show_headings='', $show_delete='', $field_selection ='', $extra_buttons ='', $checkout=true ){
+		public function __construct($table='', $table_header='', $extra_classes='', $table_header_icon='',$additional_params='', $search_params='', $table_headings='', $show_headings='', $show_delete='', $field_selection ='', $extra_buttons ='', $checkout=false ){
 			$this->table 				= $table;
 			$this->table_header 		= $table_header;
 			$this->table_header_icon	= $table_header_icon;
@@ -43,22 +44,29 @@ if(!class_exists('NEXForms_dashboard'))
 			$this->show_delete			= $show_delete;
 			$this->extra_buttons		= $extra_buttons;
 			$this->extra_classes		= $extra_classes;
-			$this->checkout				= $checkout;
 			}
-		
+		public function dashboard_checkout()
+			{
+			$db_action = new NEXForms_Database_Actions();
+			$this->checkout	= $db_action->checkout();
+			$this->client_info	= $db_action->client_info;	
+			
+			}
 		public function dashboard_header(){
 				$item = get_option('7103891');
 				
 				$output = '';
 				$config = new NEXForms5_Config();
-				
-				$builder = new NEXForms_Builder7();
+				$nf_function = new NEXForms_Functions();
+				//$builder = new NEXForms_Builder7();
 					
-				$output .= $builder->new_form_wizard();
+				$output .= $nf_function->new_form_setup($this->checkout);
 				
 			   
 				$theme = wp_get_theme();
 				$output .= '<div id="demo_site" style="display:none;">'.(($theme->Name=='NEX-Forms Demo') ? 'yes' : 'no').'</div>';
+				$output .= '<div id="currently_viewing" style="display:none;">'.(($this->checkout) ? 'dashboard' : 'backend').'</div>';
+				
 				$output .= '<div class="row row_zero_margin">';
 					
 					$output .= '
@@ -73,7 +81,7 @@ if(!class_exists('NEXForms_dashboard'))
 							  	
 								<li class="tab"><a class="active forms_tab" href="#dashboard_panel">'.__('Forms &amp; Analytics','nex-forms').'</a></li>
 								<li class="tab"><a href="#latest_submissions" class="submissions_tab">'.__('Submissions','nex-forms').'</a></li>';
-								if(is_plugin_active( 'nex-forms-paypal-advanced/main.php' ) && $theme->Name!='NEX-Forms Demo')
+								if(function_exists('run_nf_adv_paypal') && $theme->Name!='NEX-Forms Demo')
 									$output .= '<li class="tab"><a href="#online_payments">'.__('Payments','nex-forms').'</a></li>';
 
 								
@@ -82,7 +90,7 @@ if(!class_exists('NEXForms_dashboard'))
 								<li class="tab"><a href="#submission_reports" class="reporting_tab">'.__('Reporting','nex-forms').'</a></li>
 								<li class="tab"><a href="#file_uploads" class="file_uploads_tab">'.__('File Uploads','nex-forms').'</a></li>
 								<li class="tab"><a href="#global_settings" class="global_settings_tab">'.__('Global Settings','nex-forms').'</a></li>
-								<li class="tab"><a href="#add_ons_panel" class="add_ons_tab">'.__('ADD-ONS','nex-forms').'</a></li>
+								<li class="tab"><a href="#add_ons_panel" class="add_ons_tab">'.__('ADD-ONS','nex-forms').' </a></li>
 								<li class="tab docs_link"><a href="http://basixonline.net/nex-forms-docs/" target="_blank"><span class="fa fas fa-file-export"></span> '.__('DOCS','nex-forms').'</a></li>
 								'.(($theme->Name=='NEX-Forms Demo') ? '<a href="http://codecanyon.net/item/nexforms-the-ultimate-wordpress-form-builder/7103891?license=regular&open_purchase_for_item_id=7103891&purchasable=source&ref=Basix" target="_blank" class="btn waves-effect waves-light upgrade_pro">BUY NEX-FORMS</a>' : '' ).'
 							  </ul>
@@ -141,7 +149,7 @@ if(!class_exists('NEXForms_dashboard'))
 						$output .= '</div>';
 						
 							//$output .= '<button class="btn waves-effect waves-light switch_chart" data-chart-type="global"><i class="fa fa-globe"></i></button>';
-							$output .= '<button class="btn waves-effect waves-light switch_chart" data-chart-type="radar"><i class="fa fa-area-chart"></i></button>';
+							$output .= '<button class="btn waves-effect waves-light switch_chart" data-chart-type="radar"><i class="fa fa-spider"></i></button>';
 							$output .= '<button class="btn waves-effect waves-light switch_chart" data-chart-type="polarArea"><i class="fa fa-bullseye"></i></button>';
 							$output .= '<button class="btn waves-effect waves-light switch_chart" data-chart-type="doughnut"><i class="fa fa-pie-chart"></i></button>';
 							$output .= '<button class="btn waves-effect waves-light switch_chart" data-chart-type="bar"><i class="fa fa-bar-chart"></i></button>';
@@ -160,7 +168,7 @@ if(!class_exists('NEXForms_dashboard'))
 				
 				
 					
-					$output .= '<div class="chart-container"><div class="data_set">'.$this->print_chart().'</div>
+					$output .= '<div class="chart-container"><div class="data_set">'.$this->print_chart($this->checkout).'</div>
 					
 					<canvas id="chart_canvas" height="136px" ></canvas>
 					</div>';
@@ -179,7 +187,7 @@ if(!class_exists('NEXForms_dashboard'))
 			return $output;
 		}	
 		
-		public function print_chart(){
+		public function print_chart($args=''){
 			global $wpdb;
 			$current_year = (int)date('Y');
 	
@@ -192,7 +200,11 @@ if(!class_exists('NEXForms_dashboard'))
 					
 					$database_actions = new NEXForms_Database_Actions();
 					$nf7_functions = new NEXForms_Functions();
-					$checkin = $database_actions->checkout();
+					
+					if($args)
+						$checkin = $args;
+					else
+						$checkin = $database_actions->checkout();
 					
 					$form_id = isset($_REQUEST['form_id']) ? filter_var($_REQUEST['form_id'],FILTER_SANITIZE_NUMBER_INT) : '';
 					
@@ -407,6 +419,8 @@ if(!class_exists('NEXForms_dashboard'))
 													'PT' => __('Portugal','nex-forms'),
 													'PR' => __('Puerto Rico','nex-forms'),
 													'QA' => __('Qatar','nex-forms'),
+
+
 													'RE' => __('Reunion','nex-forms'),
 													'RO' => __('Romania','nex-forms'),
 													'RU' => __('Russia','nex-forms'),
@@ -911,7 +925,7 @@ if(!class_exists('NEXForms_dashboard'))
 					$output .= '<span class="header_text '.(($this->action_button) ? 'has_action_button' : '' ).'">'.$this->table_header.'</span></div>
 					  <div class="search_box">
 						<div class="input-field">
-						<input id="search" type="text" class="search_box" value="" placeholder="'.__('Search...','nex-forms').'" name="table_search_term">
+						<input id="search" type="text" class="search_box material-d" value="" placeholder="'.__('Search...','nex-forms').'" name="table_search_term">
 						<i class="fa fa-search do_search"></i>
 					   </div>
 					   </div>
@@ -1562,7 +1576,7 @@ if(!class_exists('NEXForms_dashboard'))
 					$output .= '</div>';
 					
 					$output .= '<div class="col-sm-5">';
-						$output .= '<input name="column_value" placeholder="'.__('Value','nex-forms').'" value="'.$val['value'].'">';	
+						$output .= '<input name="column_value" class="form-control" placeholder="'.__('Value','nex-forms').'" value="'.$val['value'].'">';	
 					 $output .= '</div>';
 					 
 					 $output .= '<div class="">';
@@ -1599,7 +1613,7 @@ if(!class_exists('NEXForms_dashboard'))
 					$output .= '</div>';
 					
 					$output .= '<div class="col col-sm-5">';
-						$output .= '<input name="column_value" placeholder="'.__('Value','nex-forms').'">';	
+						$output .= '<input name="column_value" class="form-control" placeholder="'.__('Value','nex-forms').'">';	
 					 $output .= '</div>';
 					 
 					 $output .= '<div class="">';
@@ -1685,9 +1699,8 @@ if(!class_exists('NEXForms_dashboard'))
 										<div class="col-sm-4">'.__('Mailing Method','nex-forms').'</div>
 										<div class="col-sm-8">
 											<input type="radio" '.((!$email_config['email_method'] || $email_config['email_method']=='php_mailer') ? 	'checked="checked"' : '').' name="email_method" value="php_mailer" 	id="php_mailer"	class="with-gap"><label for="php_mailer">PHP Mailer</label><br />
-											<input type="radio" '.(($email_config['email_method']=='wp_mailer') ? 	'checked="checked"' : '').' name="email_method" value="wp_mailer" 	id="wp_mailer"	class="with-gap"><label for="wp_mailer">WP Mail</label><br />
+											<input type="radio" '.(($email_config['email_method']=='wp_mailer' || $email_config['email_method']=='api') ? 	'checked="checked"' : '').' name="email_method" value="wp_mailer" 	id="wp_mailer"	class="with-gap"><label for="wp_mailer">WP Mail</label><br />
 											<input type="radio" '.(($email_config['email_method']=='php') ? 		'checked="checked"' : '').' name="email_method" value="php" 		id="php"		class="with-gap"><label for="php">Normal PHP</label><br />
-											<input type="radio" '.(($email_config['email_method']=='api') ? 		'checked="checked"' : '').' name="email_method" value="api" 		id="api"		class="with-gap"><label for="api">API (note: no attachements)</label><br />
 											<input type="radio" '.(($email_config['email_method']=='smtp') ? 		'checked="checked"' : '').' name="email_method" value="smtp" 		id="smtp"		class="with-gap"><label for="smtp">SMTP</label><br />
 											
 										</div>
@@ -1875,10 +1888,11 @@ if(!class_exists('NEXForms_dashboard'))
 			$output .= '</div>';
 			
 			$output .= '<div  class="dashboard-box-content">';
-				$output .= '<form name="other_config" id="other_config" action="'.admin_url('admin-ajax.php').'" method="post">		
+			if($theme->Name!='NEX-Forms Demo')
+				$output .= '<form name="other_config" id="other_config" action="'.admin_url('admin-ajax.php').'" method="post">';
 							
 								
-						<!--<div class="row">
+				$output .= '		<!--<div class="row">
 									<div class="col-sm-4">'.__('Admin Color Adapt','nex-forms').'</div>
 									<div class="col-sm-8">
 										<label  for="enable-color-adapt-1">			<input type="radio" '.(($other_config['enable-color-adapt']=='1') ? 	'checked="checked"' : '').'  name="enable-color-adapt" value="1" 		id="enable-color-adapt-1"		><strong> Yes</strong> <em>(NEX-Forms admin will adapt to the Wordpress color scheme)</em></label>
@@ -1935,12 +1949,16 @@ if(!class_exists('NEXForms_dashboard'))
 						
 						
 							<button class="btn blue waves-effect waves-light" '.(($theme->Name=='NEX-Forms Demo') ? 'disabled="disabled"' : '').'>&nbsp;&nbsp;&nbsp;'.__('Save WP Admin Options','nex-forms').'&nbsp;&nbsp;&nbsp;</button>
-							<div style="clear:both;"></div>
+							<div style="clear:both;"></div>';
 						
 									
 										
-								
-					</form></div></div>';
+					if($theme->Name!='NEX-Forms Demo')			
+						$output .= '</form>';
+					
+					$output .= '</div>';
+					
+			$output .= '</div>';
 		return $output;
 	}
 	
@@ -2082,12 +2100,26 @@ if(!class_exists('NEXForms_dashboard'))
 	}
 	
 
-	public function license_setup(){
+	public function license_setup($args='', $client_info=''){
 		
-		$api_params2 = array( 'check_key' => 1,'ins_data'=>get_option('7103891'));
-		$response2 = wp_remote_post( 'http://basixonline.net/activate-license-new-api-v2', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params2) );
-		$checked = $response2['body'];
-	
+		
+		
+		if(!$args)
+			{
+			$api_params2 = array( 'check_key' => 1,'ins_data'=>get_option('7103891'));
+			$response2 = wp_remote_post( 'https://basixonline.net/activate-license-new-api-v3', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params2) );
+			if(is_array($response2->errors))
+				{
+				foreach($response2->errors as $error_type => $error)
+					{
+					echo '<br /><br /><div class="alert alert-danger"><strong>WP ERROR: </strong>'.strtoupper($error_type).' - '.$error[0].'<br />NEX-Forms can not verify your license as a result of this error. Please as your Hosting Provider to resolve this error. <a href="https://www.google.com/search?q='.$error[0].'" target="_blank">Here are some helpfull articles for your Host</a> </div><br /><br />&nbsp;';
+					}	
+				}
+			$checked = false;
+			}
+		else
+			$checked = $args;
+		
 		$output = '';
 		$output .= '<div class="dashboard-box global_settings">';
 			$output .= '<div class="dashboard-box-header">';
@@ -2096,14 +2128,10 @@ if(!class_exists('NEXForms_dashboard'))
 			$output .= '</div>';
 			
 			$output .= '<div  class="dashboard-box-content activation_box">';
-		
-			$api_params = array( 'client_current_license_key' => 1,'key'=>get_option('7103891'));
-			$response = wp_remote_post( 'http://basixonline.net/activate-license-new-api-v2', array('timeout'   => 30,'sslverify' => false,'body'  => $api_params) );	
-			$get_response = json_decode($response['body'],1);
-			$theme = wp_get_theme();
-			
+	
 			if($checked=='true')
 				{	
+				$theme = wp_get_theme();
 				if($theme->Name=='NEX-Forms Demo')
 					{
 					$output .= '<div class="row">';
@@ -2154,8 +2182,8 @@ if(!class_exists('NEXForms_dashboard'))
 							$output .= '<strong>'.__('Purchase Code','nex-forms').'</strong>';
 						$output .= '</div>';
 						$output .= '<div class="col-sm-7">';
-							if($get_response['purchase_code'])
-								$output .= $get_response['purchase_code'];
+							if($client_info['purchase_code'])
+								$output .= $client_info['purchase_code'];
 							else
 								$output .= __('<strong>License not activated for this domain. Please refresh this page and enter your purchase code when prompted.</strong>','nex-forms');
 						$output .= '</div>';
@@ -2165,7 +2193,7 @@ if(!class_exists('NEXForms_dashboard'))
 							$output .= '<strong>'.__('Envato Username','nex-forms').'</strong>';
 						$output .= '</div>';
 						$output .= '<div class="col-sm-7">';
-							$output .= $get_response['envato_user_name'];
+							$output .= $client_info['envato_user_name'];
 						$output .= '</div>';
 					$output .= '</div>';
 					$output .= '<div class="row">';
@@ -2173,7 +2201,7 @@ if(!class_exists('NEXForms_dashboard'))
 							$output .= '<strong>'.__('License Type','nex-forms').'</strong>';
 						$output .= '</div>';
 						$output .= '<div class="col-sm-7">';
-							$output .= $get_response['license_type'];
+							$output .= $client_info['license_type'];
 						$output .= '</div>';
 					$output .= '</div>';
 					$output .= '<div class="row">';
@@ -2181,7 +2209,7 @@ if(!class_exists('NEXForms_dashboard'))
 							$output .= '<strong>'.__('Activated on','nex-forms').'</strong>';
 						$output .= '</div>';
 						$output .= '<div class="col-sm-7">';
-							$output .= $get_response['for_site'];
+							$output .= $client_info['for_site'];
 						$output .= '</div>';
 					$output .= '</div>';
 					

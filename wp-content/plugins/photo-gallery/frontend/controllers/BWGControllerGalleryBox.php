@@ -42,7 +42,8 @@ class BWGControllerGalleryBox {
     $wpdb->update($wpdb->prefix . 'bwg_image', array(
       'avg_rating' => $rates->average,
       'rate_count' => $rates->rate_count
-    ), array( 'id' => $image_id ));
+    ), array( 'id' => $image_id ),
+      array('%f','%d'),array('%d'));
     $this->display();
   }
 

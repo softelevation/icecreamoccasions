@@ -137,7 +137,7 @@ class BWGViewSite {
       </div>
     </div>
     <script>
-      jQuery(document).ready(function () {
+      jQuery(function() {
         bwg_main_ready();
       });
     </script>
@@ -421,6 +421,9 @@ class BWGViewSite {
           <option <?php if ( $sort_by == 'default' ) {
             echo 'selected';
           } ?> value="default"><?php echo __('Order by Default', BWG()->prefix); ?></option>
+          <option <?php if ( $sort_by == 'alt' ) {
+            echo 'selected';
+          } ?> value="alt"><?php echo __('Title', BWG()->prefix); ?></option>
           <option <?php if ( $sort_by == 'date' ) {
             echo 'selected';
           } ?> value="date"><?php echo __('Date', BWG()->prefix); ?></option>
@@ -716,14 +719,15 @@ class BWGViewSite {
           return false;
         }
       }
-		  jQuery(document).ready(function () {
+	  jQuery(function() {
         jQuery(window).off("scroll").on("scroll", bwg_scroll_load_action );
-		  });
+		});
 		</script>
       <?php
       }
     }
-	$page_number = WDWLibrary::get('page_number_' . $current_view, 1, 'intval');
+	  $page_number = WDWLibrary::get('page_number_' . $current_view, 1, 'intval');
+    $scroll_to_top = $pagination == 1 ? 1 : 0;
     ?>
     <input type="hidden" id="page_number_<?php echo $current_view; ?>" name="page_number_<?php echo $current_view; ?>" value="<?php echo $page_number; ?>" />
     <script type="text/javascript">
@@ -761,7 +765,7 @@ class BWGViewSite {
           default:
             document.getElementById('page_number_<?php echo $current_view; ?>').value = 1;
         }
-        bwg_ajax('<?php echo $form_id; ?>', '<?php echo $current_view; ?>', '<?php echo $id; ?>', '<?php echo $album_gallery_id; ?>', '', '<?php echo $type; ?>', 0, '', '', load_more);
+        bwg_ajax('<?php echo $form_id; ?>', '<?php echo $current_view; ?>', '<?php echo $id; ?>', '<?php echo $album_gallery_id; ?>', '', '<?php echo $type; ?>', 0, '', '', load_more, '', <?php echo $scroll_to_top; ?>);
       }
 
       <?php if ( BWG()->options->front_ajax != "1" ) { ?>

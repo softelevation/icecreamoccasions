@@ -13,6 +13,12 @@ Copyright (c) 2015 Daniel Eden
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
+.set_animation_fast {
+  -webkit-animation-duration: 400ms;
+  animation-duration: 400ms;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
 
 .animated2 {
   -webkit-animation-duration: 0.6s;
@@ -21,7 +27,8 @@ Copyright (c) 2015 Daniel Eden
   animation-fill-mode: both;
 }
 
-.animated.infinite {
+.animated.infinite,
+.set_animation_fast.infinite {
   -webkit-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
 }
@@ -137,6 +144,47 @@ Copyright (c) 2015 Daniel Eden
 .pulse {
   -webkit-animation-name: pulse;
   animation-name: pulse;
+}
+
+
+
+@-webkit-keyframes pulse_chat {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    -webkit-transform: scale3d(1.05, 1.05, 1.05);
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes pulse_chat {
+  from {
+    -webkit-transform: scale3d(0, 0, 0);
+    transform: scale3d(0, 0, 0);
+  }
+
+  50% {
+    -webkit-transform: scale3d(1.07, 1.07, 1.07);
+    transform: scale3d(1.07, 1.07, 1.07);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.pulse_chat {
+  -webkit-animation-name: pulse_chat;
+  animation-name: pulse_chat;
 }
 
 
@@ -1308,6 +1356,33 @@ Copyright (c) 2015 Daniel Eden
   animation-name: fadeIn;
 }
 
+@-webkit-keyframes fadeInFast {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInFast {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+.fadeInFast {
+  -webkit-animation-name: fadeInFast;
+  animation-name: fadeInFast;
+  animation-duration: 300ms !important;
+  -webkit-animation-duration: 300ms !important;
+}
+
+
 @-webkit-keyframes fadeInDown {
   from {
     opacity: 0;
@@ -1340,6 +1415,75 @@ Copyright (c) 2015 Daniel Eden
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
 }
+
+
+@-webkit-keyframes fadeInDownFast {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -200%, 0);
+    transform: translate3d(0, -200%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInDownFast {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -200%, 0);
+    transform: translate3d(0, -200%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+
+.fadeInDownFast {
+  -webkit-animation-name: fadeInDownFast;
+  animation-name: fadeInDownFast;
+  animation-duration: 300ms !important;
+  -webkit-animation-duration: 300ms !important;
+} 
+
+
+@-webkit-keyframes fadeOutUpFast {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -200%, 0);
+    transform: translate3d(0, -200%, 0);
+  }
+}
+
+@keyframes fadeOutUpFast {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -200%, 0);
+    transform: translate3d(0, -200%, 0);
+  }
+}
+
+.fadeOutUpFast {
+  -webkit-animation-name: fadeOutUpFast;
+  animation-name: fadeOutUpFast;
+  animation-duration: 300ms !important;
+  -webkit-animation-duration: 300ms !important;
+} 
 
 @-webkit-keyframes fadeInDownBig {
   from {
@@ -1983,6 +2127,39 @@ Copyright (c) 2015 Daniel Eden
   -webkit-animation-name: flipInX;
   animation-name: flipInX;
 }
+
+
+
+
+
+
+@keyframes flipX {
+  from {
+    transform: rotateX(0deg);
+    animation-timing-function: ease-in;
+  }
+  
+   
+   71% {
+    transform: rotateX(180deg);
+  }
+
+  to {
+    transform: rotateX(0deg);
+	animation-timing-function: ease-in;
+  }
+}
+
+.flipX {
+  -webkit-backface-visibility: visible !important;
+  backface-visibility: visible !important;
+  -webkit-animation-name: flipX;
+  animation-name: flipX;
+  
+}
+
+
+
 
 @-webkit-keyframes flipInY {
   from {
@@ -2795,6 +2972,38 @@ Copyright (c) 2015 Daniel Eden
   -webkit-animation-name: zoomIn;
   animation-name: zoomIn;
 }
+
+@-webkit-keyframes zoomInFast {
+  from {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  50% {
+    opacity: 1;
+
+  }
+}
+
+@keyframes zoomInFast {
+  from {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.zoomInFast {
+  -webkit-animation-name: zoomIn;
+  animation-name: zoomIn;
+  animation-duration: 400ms !important;
+  -webkit-animation-duration: 400ms !important;
+} 
 
 @-webkit-keyframes zoomInDown {
   from {

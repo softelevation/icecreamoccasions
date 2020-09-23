@@ -1,3 +1,201 @@
 .gform_wrapper .gfield_required {
 	color:#fff;
 }
+.page-id-57402  .wf-container-main {
+    width: 1200px;
+    margin: 0px auto;
+}
+.sucess-message:before {
+    background: #8bc34a none repeat scroll 0 0;
+    position: absolute;
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;
+    content: "\f007";
+    left: -26px;
+    top: -12px;
+    font-family:"icomoon-the7-font";
+    color: #fff;
+    text-align: center;
+    line-height: 70px;
+}
+.page-id-57402 input.form-control {
+    margin: 0px auto;
+    display: table;
+    background: #f2c821 !important;
+    float: none;
+    padding: 0px 20px !important;
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    line-height: 40px !important;
+}
+.sucess-message {
+    margin: 80px 0;
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0 !important;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 12px 64px;
+    font-size: 14px;
+    color: #555;
+    min-width: 200px;
+    font-weight: 500;
+    line-height: 24px;
+    position: relative;
+}
+.asp_all_buttons_container .asp_product_buy_btn_container button {
+    float: right;
+    background: #f2c821 !important;
+    box-shadow: 0 0px 0px #d6d6d6, inset 0 0px 0 #c0ebfa !important;
+    text-shadow: 0 0px 0 #b6e6f9 !important;
+    font-size: 18px;
+    color: #fff !important;
+    padding: 0 20px !important;
+    line-height: 40px !important;
+    height: 40px;
+    font-weight: 400;
+}
+div#modal-body #buttons-container {
+    border-top: 0px solid #e5e5e5;
+    padding-top: 10px;
+}
+div#modal-body .pure-button-primary  {
+    background-color: #f2c821;
+    color: #fff;
+}
+#Aligner-item {
+   background-color: #fff;
+ }
+#modal-close-btn svg {
+    transition: .3s;
+    fill: #fff;
+    opacity: 1;
+}
+.asp_product_name {
+    display: none;
+}
+.asp_product_buy_btn_container button {
+    float: right;
+}
+#modal-header {
+    position: relative;
+    background-color: #f2c821;
+    min-height: 60px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom: 1px solid #d8d8d8;
+}
+#item-name {
+    padding-top: 15px;
+    text-align: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 20px;
+}
+.content td, .content th {
+    border-top: 0px solid transparent;
+  
+}
+.content table {
+    border-bottom: 0px solid transparent;
+    width: 100%;
+    margin: 0 0 10px;
+}
+.ice-cream-list li {
+    float: left;
+    width: 23% !important;
+    text-align: center;
+    list-style-type: none;
+    min-height: 400px;
+    max-height: 400px;
+    margin-bottom: 40px;
+	Padding:0 10px;
+}
+
+h1.vc_custom_heading.ice-menu-heading-1.color-2 {
+    background: #e84d35 !important;
+}
+h1.vc_custom_heading.ice-menu-heading-1.color-3 {
+    background: #30bedb !important;
+}
+.ice-text input.inputNmber {
+    float: left;
+    width: 100%;
+}
+.page-id-57402 #main .wf-wrap {
+    padding: 0 !important;
+    width: 100% !important;
+}
+ .ice-text label {
+    float: right;
+    margin-left: 5px;
+}
+.page-id-57402 #main:not(.sidebar-none) .wf-container-main {
+ display: block;
+   
+}
+h1.vc_custom_heading.ice-menu-heading-1 {
+  width: 100%;
+    float: left;
+}
+.ice-cream-list hr {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #cccccc;
+    background: transparent;
+    border-top: none;
+}
+h1.vc_custom_heading.ice-menu-heading-1 {
+    background: #a88399 !important;
+    padding-top: 35px;
+    padding-bottom: 10px;
+}
+.ice-cream-list {
+    width: 1300px;
+    padding: 20px 50px 10px;
+    margin: 0px auto;
+   display: table;
+}
+.asp_product_buy_btn_container {
+    display: block;
+}
+button#asp_ng_button_05f60e2fe27eb6 {
+    float: right;
+}
+.page-id-57382 input.wpcf7-form-control.wpcf7-submit {
+    text-align: center;
+    display: table;
+    margin: 0px auto;
+    background: #f2c821 none repeat center center;
+    font-size: 22px;
+    padding: 0 20px;
+    font-weight: 400;
+    line-height: 40px;
+}
+.ice-cream-list span.wpcf7-list-item-label {
+    float: left;
+    font-size: 20px;
+    font-weight: 400;
+    font-style: normal;
+    font-family: Oswald;
+    color: #000;
+    margin-right: 10px;
+}
+h1.vc_custom_heading.ice-menu-heading-1.color-1 {
+    background: #420f00 !important;
+}
+.ice-cream-list .ice-text input[type="checkbox"] {
+   
+    margin-top: 10px;
+}
+.ice-img {
+    float: left;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.ice-text span.wpcf7-list-item {
+    margin: 0;
+}
+
+.ice-cream-list ul {
+    width: 100%;
+    float: left;
+}

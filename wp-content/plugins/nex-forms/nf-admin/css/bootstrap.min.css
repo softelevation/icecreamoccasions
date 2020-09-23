@@ -767,11 +767,11 @@ select[multiple].input-group-sm>.form-control,select[multiple].input-group-sm>.i
     background: #fff;
 }
 #nex-forms .ui-nex-forms-container .input-group-addon.postfix {
-    border-right: none;
     left: -1px;
     position: relative;
     z-index: 10;
     background: #fff;
+    border-left: none;
 }
 
 .input-group-addon.input-sm{padding:5px 10px;font-size:12px;border-radius:3px}

@@ -87,7 +87,7 @@ class EditimageView_bwg {
           }
         }
       }
-      jQuery(window).load(function() {
+      jQuery(window).on('load',function(){
       jQuery('#loading_div', window.parent.document).hide();
 	  });
     </script>
@@ -327,7 +327,7 @@ class EditimageView_bwg {
     </div>
 	</div>
 	<script language="javascript">
-	  jQuery(window).load(function () {
+	  jQuery(window).on('load',function(){
         spider_crop_fix("<?php echo $thumb_width * 300 / $thumb_height; ?>", "<?php echo 300; ?>");
       });
       function spider_crop_ratio() {
@@ -953,7 +953,7 @@ class EditimageView_bwg {
         window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "<?php echo isset($updated_image['modified_date']) && $updated_image['modified_date'] ? '?bwg=' . $updated_image['modified_date'] : ''; ?>";
       }
 
-      jQuery(document).ready(function () {
+      jQuery(function() {
         jQuery(".bwg_opt_cont").click(function () {
           if (jQuery('#brightness_contrast').height() == 0) {
             jQuery('#brightness_contrast').animate({

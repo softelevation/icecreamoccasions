@@ -1,32 +1,49 @@
 /* CSS Document */
-
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field label {
+#nex-forms .theme-orange .ui-nex-forms-container.neumorphism .check-icon {
+    color: #ff9800 !important;
+}
+#nex-forms .theme-orange .ui-nex-forms-container   label {
  color: #9e9e9e;
 }
 /* label focus color */
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field input[type=text]:focus + label,
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field textarea:focus + label {
+#nex-forms .theme-orange .ui-nex-forms-container   input[type=text]:focus + label,
+#nex-forms .theme-orange .ui-nex-forms-container   textarea:focus + label {
  color: #ff9800 !important;
 }
 /* label underline focus color */
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field input[type=text],
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field textarea{
+#nex-forms .theme-orange .ui-nex-forms-container   input[type=text],
+#nex-forms .theme-orange .ui-nex-forms-container   textarea{
 	/*border-bottom: 1px solid #9e9e9e !important;*/
 }
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field input[type=text]:focus,
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field textarea:focus {
+#nex-forms .theme-orange .ui-nex-forms-container.m_design  .form_field.is_typing input[type=text],
+#nex-forms .theme-orange .ui-nex-forms-container.m_design  .form_field.is_typing textarea,
+#nex-forms .theme-orange .ui-nex-forms-container.m_design  .form_field.is_typing select,
+#nex-forms .theme-orange .ui-nex-forms-container.m_design .form_field.is_typing .input-group-addon.prefix,
+#nex-forms .theme-orange .ui-nex-forms-container.m_design .form_field.is_typing  .input-group-addon.postfix {
  border-bottom: 1px solid #ff9800 !important;
  box-shadow: 0 1px 0 0 #ff9800 !important;
+ transition:all 0s ease 0s !important;
+}
+#nex-forms .theme-orange .ui-nex-forms-container.m_design  .form_field.is_typing span.the_label{
+	color:#ff9800 !important;
+}
+
+#nex-forms .theme-orange .ui-nex-forms-container.m_design a.checked{
+	border-color:#ff9800 !important;
+}
+
+#nex-forms .theme-orange .ui-nex-forms-container.m_design .check-icon.checked{
+	color:#ff9800 !important;
 }
 
 
 /* ICONS */
 /* icon prefix focus color */
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field .prefix {
+#nex-forms .theme-orange .ui-nex-forms-container   .prefix span {
  color: #ff9800 !important;
  opacity:0.7;
 }
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field .prefix.active {
+#nex-forms .theme-orange .ui-nex-forms-container   .prefix.active span {
  color: #ff9800 !important;
  opacity:1;
 }
@@ -71,20 +88,20 @@
 }
 
 /* PANELS */
-#nex-forms .theme-orange .ui-nex-forms-container  .panel .panel-heading {
+#nex-forms .theme-orange .ui-nex-forms-container.m_design  .panel .panel-heading {
 	background:#ff9800;
 }
 
 /* DO NOT EDIT */
 /* valid color */
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field input[type=text].valid,
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field textarea.valid  {
+#nex-forms .theme-orange .ui-nex-forms-container   input[type=text].valid,
+#nex-forms .theme-orange .ui-nex-forms-container   textarea.valid  {
  border-bottom: 1px solid #ff9800 !important;
  box-shadow: 0 1px 0 0 #ff9800 !important;
 }
 /* invalid color */
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field input[type=text].invalid,
-#nex-forms .theme-orange .ui-nex-forms-container  .input-field textarea.invalid {
+#nex-forms .theme-orange .ui-nex-forms-container   input[type=text].invalid,
+#nex-forms .theme-orange .ui-nex-forms-container   textarea.invalid {
  border-bottom: 1px solid #ff9800 !important;
  box-shadow: 0 1px 0 0 #ff9800 !important;
 }
@@ -92,15 +109,14 @@
 /* SLIDERS */
 #nex-forms .theme-orange .ui-slider-range {
     background: #ff9800 !important;
-    border: none;
-    border-radius: 0 !important;
+    
 }
 
 #nex-forms .theme-orange .noUi-target.noUi-horizontal .noUi-tooltip{
 	background: #ff9800 !important;
 }
 
-#nex-forms .theme-orange .material_field .nex-submit.btn.the_input_element{
+#nex-forms .theme-orange  .m_design .nex-submit.btn.the_input_element{
     background: #ff9800;
     color: #fff;
     border-color: #ff9800;
@@ -108,7 +124,7 @@
 
 
 /* DATEPICKER */
-.dtp.theme-orange div.dtp-date, .dtp div.dtp-time{
+.dtp.theme-orange div.dtp-date, .dtp.theme-orange div.dtp-time{
 	background:#FFCA79 none repeat scroll 0 0 !important;
 }
 .dtp.theme-orange .p10 > a {

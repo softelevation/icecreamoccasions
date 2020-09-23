@@ -5,6 +5,164 @@ add_action( 'wp_ajax_do_upload_image', array('NEXForms_Functions','do_upload_ima
 if(!class_exists('NEXForms_Functions'))
 	{
 	class NEXForms_Functions{
+	
+	public function new_form_setup($args=''){
+		
+		
+		
+		
+		
+		$output = '';
+		$output .= '<div id="new_form_setup" class="modal">';
+			//HEADER 
+			$theme = wp_get_theme();
+			
+			$output .= '<div class="modal-header aa_bg_main">';
+				$output .= '<h4>'.__('Create a new form','nex-forms').'</h4>';
+				$output .= '<i class="modal-action modal-close"><i class="fa fa-close"></i></i>';
+			$output .= '</div>';
+			//CONTENT
+			$output .= '<div class="modal-content">';
+				$output .= '<div class="new-form-sidebar aa_bg_sec aa_menu">';
+					$output .= '<ul>';
+						
+						if($theme->Name=='NEX-Forms Demo')
+							{
+							$output .= '<li class="active">	<a class="" data-panel="panel-1"><span class="fas fa-file"></span> Blank</a></li>';
+							$output .= '<li>				<a class="" data-panel="panel-2"><span class="fas fa-file-invoice"></span> Templates</a></li>';
+							$output .= '<li>				<a class="" data-panel="panel-3"><span class="fas fa-file-upload"></span> Import</a></li>';
+							}
+						else
+							{
+							$output .= '<li class="active">	<a class="" data-panel="panel-1"><span class="fas fa-file"></span> Blank</a></li>';
+							$output .= '<li>				<a class="" data-panel="panel-2"><span class="fas fa-file-invoice"></span> Templates</a></li>';
+							$output .= '<li>				<a class="" data-panel="panel-3"><span class="fas fa-file-upload"></span> Import</a></li>';
+							}
+						
+						
+						if($theme->Name!='NEX-Forms Demo')
+							$output .= '<li>				<a class="" data-panel="panel-4"><span class="fas fa-file-import"></span> Manual Import</a></li>';
+					$output .= '<ul>';
+				$output .= '</div>';
+				
+				//BLANK
+				$output .= '<div class="new-form-panel ajax_loading"><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>';
+				$output .= '<div class="new-form-panel ajax_error_response">';
+				$output .= '<div class="alert alert-danger">'.__('Sorry, something went wrong while reading the import file. Please try MANUAL IMPORT instead.','nex-forms').'</div>';
+				$output .= '</div>';
+				$output .= '<div class="new-form-panel panel-1 active">';
+					$output .= '<div class="row">';
+						$output .= '<div class="col-sm-12">';
+					
+							$output .= '<form class="new_nex_form" name="new_nex_form" id="new_nex_form" method="post" action="'.admin_url('admin-ajax.php').'">';
+						
+								$output .= '<h5><strong>'.__('Create a new Blank Form','nex-forms').'</strong></h5>';
+								
+								$output .= '<input name="title" id="form_title" placeholder="Enter new Form Title" class="form-control" type="text">';		
+						
+								$output .= '<button type="submit" class="form-control submit_new_form btn blue waves-effect waves-light">'.__('Create','nex-forms').'</button>';
+							
+							$output .= '</form>';
+							
+						$output .= '</div>';
+					$output .= '</div>';
+					
+					
+				$output .= '</div>';
+				
+				$output .= '<div class="new-form-panel panel-2">';
+					$output .= '<h5><strong>'.__('Form Templates','nex-forms').'</strong></h5>';
+					$output .= '<p>'.__('Select any of the pre-made form demo templates below to quick start your form. ','nex-forms').'</p>';
+					$output .= '<div class="row">';
+					if(!$args)
+						$output .= '<div class="alert alert-danger" style="width:95%"><strong>'.__('Plugin not registered. Please register the plugin to gain access to pre-made templates as per <a href="http://basixonline.net/nex-forms-wordpress-form-builder-demo/form-examples/" target="_blank">http://basixonline.net/nex-forms-wordpress-form-builder-demo/form-examples/</a>').'</strong></div>';	
+					else
+						{
+						foreach ( glob( plugin_dir_path( dirname(dirname(__FILE__)))  . "templates/*.txt" ) as $file )
+							{
+							$get_file_name = explode('templates/',$file);
+							$get_file_name = $get_file_name[1];
+							$get_file_name = str_replace('.txt','',$get_file_name);
+							$get_file_name = str_replace(' ','%20',$get_file_name);
+							
+							$output .= '<div class="col-sm-3">';
+								$output .= '<a class="template_box new_form_option load_template" data-nex-step="creating_new_form" data-template-name="'.$get_file_name.'">';
+								$output .= '<div class="img"><img src="https://basixonline.net/demo_templates/images/'.$this->format_name($get_file_name).'.jpg"></div>';
+								$output .= '<div class="description">'.str_replace('%20',' ',$get_file_name).'</div></a>';
+							$output .= '</div>';
+							
+						}
+					}	
+						$output .= '</div>';
+						
+				$output .= '</div>';
+				
+				$output .= '<div class="new-form-panel panel-3">';
+				
+					$output .= '<h5><strong>'.__('Import Form','nex-forms').'</strong></h5>';
+					$output .= '<p>'.__('Browse to any form exported by NEX-Forms. Open it to start import.','nex-forms').'</p>';
+					if(!$args)
+						$output .= '<div class="alert alert-danger" style="width:95%"><strong>'.__('Plugin not registered. Please register the plugin to enable form imports.').'</strong></div>';	
+					else
+						{
+						$output .= '<button id="upload_form" class="form-control  btn blue waves-effect waves-light import_form">'.__('Import Form','nex-forms').'</button>';
+						}
+				$output .= '</div>';
+				
+				$output .= '<div class="new-form-panel panel-4">';
+					
+					$output .= '<div class="row">';
+						$output .= '<div class="col-sm-12">';
+							if(!$args)
+								$output .= '<div class="alert alert-danger" style="width:95%"><strong>'.__('Plugin not registered. Please register the plugin to enable form imports.').'</strong></div>';	
+							else
+								{
+								$output .= '<form class="manual_import_form" name="manual_import_form" id="manual_import_form" method="post" action="'.admin_url('admin-ajax.php').'">';
+							
+									$output .= '<h5><strong>'.__('Manual Form Import','nex-forms').'</strong></h5>';
+									
+									$output .= '<p>'.__('1. Open your exported .txt form file in a normal text editor like MS Notepad','nex-forms').'</p>';
+									$output .= '<p>'.__('2. Copy all the content in the file','nex-forms').'</p>';
+									$output .= '<p>'.__('3. Past the copied content here in the Textarea below and hit Import','nex-forms').'</p>';
+									
+									$output .= '<textarea name="form_content" id="form_content" placeholder="Paste exported form data here..." class="form-control"></textarea>';		
+							
+									$output .= '<button type="submit" class="form-control submit_new_form btn blue waves-effect waves-light">'.__('Import','nex-forms').'</button>';
+								
+								$output .= '</form>';
+								}
+							
+						$output .= '</div>';
+					$output .= '</div>';
+					
+				$output .= '</div>';
+				
+			$output .= '</div> ';
+			
+		$output .= '</div>';
+			
+			
+			
+			
+			
+			
+			
+			
+			$output .= '
+					<form name="import_form" class="hidden" id="import_form" action="'.admin_url('admin-ajax.php').'" enctype="multipart/form-data" method="post">	
+						<input type="file" name="form_html">
+						<div class="row">
+							<div class="modal-footer">
+								<button class="btn btn-default">&nbsp;&nbsp;&nbsp;'.__('Save Settings','nex-forms').'&nbsp;&nbsp;&nbsp;</button>
+							</div>
+						</div>
+							
+					</form>
+					';				  
+				
+			return $output;
+		
+	}
 		
 	
 	public function code_to_country( $code, $get_list=false ){
@@ -309,11 +467,13 @@ if(!class_exists('NEXForms_Functions'))
 			
 			$str = trim($str);
 			$str = strtolower($str);		
+			$str = str_replace('’','',$str);
 			$str = str_replace('  ',' ',$str);
 			$str = str_replace(' ','_',$str);
 			$str = str_replace('{{','',$str);
 			$str = str_replace('}}','',$str);
 			$str = str_replace('[]','',$str);
+			$str = str_replace('%20','_',$str);
 			
 			if($str=='name')
 				$str = '_'.$str;
@@ -324,7 +484,8 @@ if(!class_exists('NEXForms_Functions'))
 		public function format_column_name($str){
 			
 			$str = trim($str);
-			$str = strtolower($str);		
+			$str = strtolower($str);	
+			$str = str_replace('’','',$str);	
 			$str = str_replace('  ',' ',$str);
 			$str = str_replace(' ','_',$str);
 			//$str = str_replace(':','',$str);
@@ -362,7 +523,9 @@ if(!class_exists('NEXForms_Functions'))
 		
 		public function unformat_name($str, $chars=false){
 			
-			$str = NEXForms_Functions::format_name($str);
+			$nf_functions 		= new NEXForms_Functions();
+			
+			$str = $nf_functions->format_name($str);
 			
 			$str = str_replace('u2019','\'',$str);
 			$str = str_replace('_',' ',$str);
@@ -398,6 +561,7 @@ if(!class_exists('NEXForms_Functions'))
 			return get_file_data($file,$default_headers,'module');
 		}
 		
+		
 		public function do_upload_image() {
 
 			foreach($_FILES as $key=>$file)
@@ -415,7 +579,10 @@ if(!class_exists('NEXForms_Functions'))
 						$_POST['image_path'] = $movefile['url'];
 						$_POST['image_name'] = $file['name'];
 						$_POST['image_size'] = $file['size'];
-						echo $movefile['url'];
+						
+						$dimention = getimagesize($movefile['file']);
+						
+						echo json_encode(array('image_url'=>$movefile['url'], 'image_size'=>$file, 'dimention'=>$dimention));
 						}
 					} 
 				}
@@ -999,7 +1166,10 @@ if(!class_exists('NEXForms_Functions'))
 								$set_operator = '<';
 							elseif($get_the_condition=='greater_than')
 								$set_operator = '>';
-								
+							elseif($get_the_condition=='less_equal')
+								$set_operator = '<=';
+							elseif($get_the_condition=='greater_equal')
+								$set_operator = '>=';	
 							
 							if($con_field_type=='radio')	
 								$add_string = ':checked';
@@ -1013,7 +1183,7 @@ if(!class_exists('NEXForms_Functions'))
 								$get_the_value = str_replace('{{','',$get_the_value);
 								$get_the_value = str_replace('}}','',$get_the_value);
 								
-								if($set_operator == '<' || $set_operator == '>')
+								if($set_operator == '<' || $set_operator == '>' || $set_operator == '<=' || $set_operator == '>=')
 									{
 									$set_the_value = 'parseInt(jQuery(\'#nf_form_'.$unigue_form_Id.'\').find(\'[name="'.$get_the_value.'"]\').val())';
 								
@@ -1064,10 +1234,10 @@ if(!class_exists('NEXForms_Functions'))
 						if($get_action_to_take=='show' || $get_action_to_take == 'hide')
 							$set_action_to_take = $get_action_to_take.'().removeClass("hidden");';
 						if($get_action_to_take=='disable')
-							$set_action_to_take = 'find("input, textarea").attr("disabled",true);
+							$set_action_to_take = 'find("input, textarea, select, button").attr("disabled",true);
 							';
 						if($get_action_to_take=='enable')
-							$set_action_to_take = 'find("input, textarea").attr("disabled",false);
+							$set_action_to_take = 'find("input, textarea, select, button").attr("disabled",false);
 							';
 						
 						if($action_field_type)
@@ -1121,10 +1291,10 @@ if(!class_exists('NEXForms_Functions'))
 								$set_reverse_action = 'show()';
 							
 							if($get_action_to_take=='disable')
-								$set_reverse_action = 'find("input, textarea").prop("disabled",false);
+								$set_reverse_action = 'find("input, textarea, select, button").prop("disabled",false);
 								';
 							if($get_action_to_take=='enable')
-								$set_reverse_action = 'find("input, textarea").prop("disabled",true);
+								$set_reverse_action = 'find("input, textarea, select, button").prop("disabled",true);
 								';
 								
 							if($reverse_action=='true' || !$reverse_action)
@@ -1133,10 +1303,12 @@ if(!class_exists('NEXForms_Functions'))
 								if($action_field_name=='step')
 									{
 									if($get_action_to_take=='show')
-									$output .= 'jQuery("#nf_form_'.$unigue_form_Id.'  #'.$action_field_id.'").addClass("hidden_by_logic").removeClass("step");
+									$output .= '
+									jQuery("#nf_form_'.$unigue_form_Id.'  #'.$action_field_id.'").addClass("hidden_by_logic").removeClass("step");
 									';	
 								if($get_action_to_take=='hide')
-									$output .= 'jQuery("#nf_form_'.$unigue_form_Id.'  #'.$action_field_id.'").removeClass("hidden_by_logic").addClass("step");
+									$output .= '
+									jQuery("#nf_form_'.$unigue_form_Id.'  #'.$action_field_id.'").removeClass("hidden_by_logic").addClass("step");
 									';
 									}
 								else
@@ -1207,7 +1379,41 @@ if(!class_exists('NEXForms_Functions'))
 	
 	
 	
+	
+	
+	
+	
 	}
 }
 
+function add_nf_wf_notice_dismissible() {
+    global $pagenow;
+   if ($pagenow == 'admin.php' ) {
+	   	if(isset($_REQUEST['page']) && ( $_REQUEST['page']=='nex-forms-builder'))//$_REQUEST['page']=='nex-forms-dashboard' ||
+			{
+			if(class_exists('wordfence'))
+				{
+				 echo '<div class="notice notice-warning dismiss_nf_notice is-dismissible">
+					 <p><strong>NEX-FORMS NOTICE:</strong> <strong>WordFence currently active</strong><br /><br />If you have issues saving a form, i.e: if the SAVE BUTTON KEEPS SPINNING...<br /><strong>WHAT TO DO</strong>? 
+					 <br /><br />
+					 <strong>OPTION 1: </strong><br />Whitelist your own IP address in your WordFence Firewall. <br /><a href="'.get_option('siteurl').'/wp-admin/admin.php?page=WordfenceOptions" target="_blank">See <strong>Advanced Firewall Options</strong> -> Whitelisted IP addresses that bypass all rules</a>.<br /><br />
+					 <strong>OPTION 2: </strong><br />Put WordFence in Learning Mode, save a form, then take it out of learning mode. <br /><a href="'.get_option('siteurl').'/wp-admin/admin.php?page=WordfenceOptions" target="_blank">See Web <strong>Application Firewall Status</strong></a>
+					 <br /><br />After you have done this, go back to your form and HIT SAVE AGAIN, even while the button is still spinning.
+					 <br /><br /><button type="button" class=" button button-primary dismiss_nf_notice">I have read &amp; I\'ve got it</a></p>
+				 </div>';
+				}
+			}
+    }
+}
+
+if( get_option( 'dismiss_nf_notice_wf_02' ) != true ) {
+    add_action( 'admin_notices', 'add_nf_wf_notice_dismissible' );
+}
+
+
+add_action( 'wp_ajax_dismiss_nf_notice', 'dismiss_nf_notice' );
+function dismiss_nf_notice(){
+      update_option( 'dismiss_nf_notice_wf_02', true );
+	  die();
+}
 ?>

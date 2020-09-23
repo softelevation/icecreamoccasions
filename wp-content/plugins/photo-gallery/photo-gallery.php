@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/?utm_source=photo_gallery&utm_medium=free_plugin
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.56
+ * Version: 1.5.62
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/plugins/?utm_source=photo_gallery&utm_medium=free_plugin
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,6 +40,7 @@ final class BWG {
    * Plugin database version.
    */
   public $db_version = '';
+
   /**
    * Plugin prefix.
    */
@@ -105,11 +106,10 @@ final class BWG {
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->front_url = $this->plugin_url;
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.56';
-    $this->db_version = '1.5.56';
+    $this->plugin_version = '1.5.62';
+    $this->db_version = '1.5.62';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
-
     require_once($this->plugin_dir . '/framework/BWGOptions.php');
     $this->options = new WD_BWG_Options();
     require_once($this->plugin_dir . '/framework/WD_BWG_Theme.php');
@@ -124,7 +124,7 @@ final class BWG {
       $this->upload_url = preg_replace('/uploads(.+)photo-gallery/', 'uploads/photo-gallery', $this->upload_url);
     }
 
-    $this->free_msg = __('This option is disabled in free version.', $this->prefix);
+    $this->free_msg = __('This option is available in Premium version', $this->prefix);
   }
 
   /**
@@ -483,7 +483,7 @@ final class BWG {
 
     add_submenu_page($parent_slug, __('Tags', $this->prefix), __('Tags', $this->prefix), $permissions, 'edit-tags.php?taxonomy=bwg_tag');
 
-    add_submenu_page($parent_slug, __('Options', $this->prefix), __('Options', $this->prefix), 'manage_options', 'options_' . $this->prefix, array($this , 'admin_pages'));
+    add_submenu_page($parent_slug, __('Global Settings', $this->prefix), __('Global Settings', $this->prefix), 'manage_options', 'options_' . $this->prefix, array($this , 'admin_pages'));
 
     $themes_page = add_submenu_page($parent_slug, __('Themes', $this->prefix), __('Themes', $this->prefix), 'manage_options', 'themes_' . $this->prefix, array($this , 'admin_pages'));
     add_action('load-' . $themes_page, array($this, 'themes_per_page_option'));
@@ -618,6 +618,7 @@ final class BWG {
       'select_at_least_one_item' => __('You must select at least one item.', $this->prefix),
       'remove_pricelist_confirmation' => __('Do you want to remove pricelist from selected items?', $this->prefix),
       'google_fonts' => WDWLibrary::get_google_fonts(),
+      'bwg_premium_text' => __(' view is<br>available in Premium Version', $this->prefix),
     ));
 
     wp_register_script($this->prefix . '_embed', $this->plugin_url . '/js/bwg_embed.js', array('jquery'), $this->plugin_version);
@@ -667,16 +668,21 @@ final class BWG {
 
     wp_register_style($this->prefix . '_addons', $this->plugin_url . '/addons/style.css');
 
+    // Open Sans
+    wp_register_style($this->prefix . '-opensans', 'https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800&display=swap');
+    wp_enqueue_style($this->prefix . '-opensans');
+
     wp_register_style($this->prefix . '_shortcode', $this->plugin_url . '/css/bwg_shortcode.css', $required_styles, $this->plugin_version);
     wp_register_script($this->prefix . '_shortcode', $this->plugin_url . '/js/bwg_shortcode.js', $required_scripts, $this->plugin_version);
     wp_localize_script($this->prefix . '_shortcode', 'bwg_objectGGF', WDWLibrary::get_google_fonts());
+    wp_localize_script($this->prefix . '_shortcode', 'bwg_premium_text', __(' view is<br>available in Premium Version', $this->prefix));
 
     if ( !$this->is_pro ) {
       wp_register_style($this->prefix . '_licensing', $this->plugin_url . '/css/bwg_licensing.css', $required_styles, $this->plugin_version);
     }
 
     // Roboto font for top bar.
-    wp_register_style($this->prefix . '-roboto', 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
+    wp_register_style($this->prefix . '-roboto', 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
     wp_register_style($this->prefix . '-pricing', $this->plugin_url . '/css/pricing.css', array(), $this->plugin_version);
 
     // For drag and drop on mobiles.
@@ -775,7 +781,7 @@ final class BWG {
     require_once(BWG()->plugin_dir . '/frontend/controllers/controller.php');
     $controller = new BWGControllerSite( ucfirst( $params[ 'gallery_type' ] ) );
     if ( WDWLibrary::get('shortcode_id', 0) || isset($params['ajax']) ) {
-      $controller->execute($params, 1, WDWLibrary::get('bwg', 0));
+      $controller->execute($params, 1, WDWLibrary::get('bwg', 0, 'intval'));
     }
     else {
       $bwg = WDWLibrary::unique_number();
@@ -1157,6 +1163,7 @@ final class BWG {
       BWGInsert::tables();
       update_user_meta(get_current_user_id(),'bwg_photo_gallery', '1');
       add_option("wd_bwg_version", $new_version, '', 'no');
+      add_option("wd_bwg_initial_version", $new_version, '', 'no');
       if ( !$this->is_pro ) {
         add_option("wd_bwg_theme_version", '1.0.0', '', 'no');
       }
@@ -1741,7 +1748,7 @@ final class BWG {
       'publicly_queryable' => TRUE,
       'show_ui' => $show_hide_custom_post,
       'show_in_menu' => TRUE,
-      'show_in_nav_menus' => FALSE,
+      'show_in_nav_menus' => TRUE,
       'permalink_epmask' => TRUE,
       'rewrite' => TRUE,
       'label'  => __('Galleries', $this->prefix),
@@ -1756,7 +1763,7 @@ final class BWG {
       'publicly_queryable' => TRUE,
       'show_ui' => $show_hide_custom_post,
       'show_in_menu' => TRUE,
-      'show_in_nav_menus' => FALSE,
+      'show_in_nav_menus' => TRUE,
       'permalink_epmask' => TRUE,
       'rewrite' => TRUE,
       'label'  => __('Albums', $this->prefix),
@@ -1771,7 +1778,7 @@ final class BWG {
       'publicly_queryable' => TRUE,
       'show_ui' => $show_hide_custom_post,
       'show_in_menu' => TRUE,
-      'show_in_nav_menus' => FALSE,
+      'show_in_nav_menus' => TRUE,
       'permalink_epmask' => TRUE,
       'rewrite' => TRUE,
       'label'  => __('Gallery tags', $this->prefix),
@@ -1864,7 +1871,7 @@ final class BWG {
 	* @param $add_ons_notice
 	*/
 	function addons_compatibility_notice($add_ons_notice) {
-		$addon_names = implode($add_ons_notice, ', ');
+		$addon_names = implode(', ', $add_ons_notice);
 		$count = count($add_ons_notice);
 		$single = __('Please update the %s add-on to start using.', $this->prefix);
 		$plural = __('Please update the %s add-ons to start using.', $this->prefix);

@@ -111,7 +111,7 @@ public function display($params = array(), $bwg = 0) {
     else {
       echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
       echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(document).ready(function () {
+        jQuery(function() {
           bwg_main_ready();
         });
       </script>';
@@ -141,7 +141,7 @@ public function display($params = array(), $bwg = 0) {
       $data[$bwg][$key]["is_embed_video"] = (((preg_match('/EMBED/', $image_row->filetype) == 1) && (preg_match('/_VIDEO/', $image_row->filetype) == 1)) ? TRUE : FALSE);
     }
     ob_start();
-    $trans_dur = (($params['slideshow_interval'] < 4) && ($params['slideshow_interval'] != 0)) ? ($params['slideshow_interval'] * 1000) / 4 : ($params['slideshow_effect_duration'] * 1000);
+    $trans_dur = ((floatval($params['slideshow_interval'] ) < 4) && (floatval($params['slideshow_interval']) != 0)) ? (floatval($params['slideshow_interval']) * 1000) / 4 : (floatval($params['slideshow_effect_duration']) * 1000);
     $bwg_param = array(
       'bwg_source' => 'slider',
       'bwg_current_key' => isset($current_key) ? $current_key : '',

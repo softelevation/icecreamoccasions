@@ -925,7 +925,7 @@ class BWGViewGalleryBox {
                     <?php
                       if (!$is_embed) {
                       ?>
-                      <img class="bwg_popup_image bwg_popup_watermark" src="<?php echo BWG()->upload_url . urldecode($image_row->image_url); ?>" alt="<?php echo $image_row->alt; ?>" />
+                      <img class="bwg_popup_image bwg_popup_watermark" src="<?php echo BWG()->upload_url . $image_row->image_url; ?>" alt="<?php echo $image_row->alt; ?>" />
                       <?php
                       }
                       else { /*$is_embed*/ ?>
@@ -1381,7 +1381,7 @@ class BWGViewGalleryBox {
 		<div class="bwg_comment_body_p">
 		  <span class="bwg_comment_body"><?php echo wpautop($row->comment); ?></span>
 		</div>
-	  </div>
+  </div>
     <?php
     return ob_get_clean();
   }

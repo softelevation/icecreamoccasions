@@ -82,6 +82,9 @@ class FilemanagerView {
       var page_per = "<?php echo $page_per; ?>";
     </script>
     <script src="<?php echo BWG()->plugin_url; ?>/filemanager/js/default.js?ver=<?php echo BWG()->plugin_version; ?>"></script>
+    <?php
+    do_action( 'bwg_filemanager_scripts_after' );
+    ?>
     <link href="<?php echo BWG()->plugin_url; ?>/filemanager/css/default.css?ver=<?php echo BWG()->plugin_version; ?>" type="text/css" rel="stylesheet">
 	<link href="<?php echo BWG()->plugin_url; ?>/filemanager/css/default_view_<?php echo $items_view; ?>.css?ver=<?php echo BWG()->plugin_version; ?>" type="text/css" rel="stylesheet">
 	<form id="adminForm" name="adminForm" action="" method="post" class="wp-core-ui">
@@ -295,7 +298,7 @@ class FilemanagerView {
 			'allowed_upload_types' : '<?php _e('Allowed upload types JPG, JPEG, GIF, PNG, SVG.', BWG()->prefix); ?>'
 		};
     last_uploaded = [];
-		jQuery(document).ready(function () {
+		jQuery(function() {
 			jQuery("#loading_div", window.parent.document).hide();
       if (localStorage.getItem("bwg_selected_images")) {
         var bwg_selected_images = localStorage.getItem("bwg_selected_images").split(",");

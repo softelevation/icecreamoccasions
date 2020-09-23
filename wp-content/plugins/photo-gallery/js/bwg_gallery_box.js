@@ -41,7 +41,7 @@ function gallery_box_ready() {
   startPoint = 0;
   endPoint = key+preloadCount;
 
-  jQuery(document).ready(function () {
+  jQuery(function() {
     bwg_load_visible_images( key, preloadCount, total_thumbnail_count );
     jQuery(".pge_tabs li a").on("click", function(){
       jQuery(".pge_tabs_container > div").hide();

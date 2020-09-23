@@ -1846,12 +1846,16 @@ if (jQuery) {
 ;(function ($) {
   'use strict';
 
-  var _defaults = {
+ var _defaults = {
     opacity: 0.5,
+	backdrop: true,
     inDuration: 250,
     outDuration: 250,
-    ready: undefined,
-    complete: undefined,
+    onOpenStart: null,
+    onOpenEnd: null,
+    onCloseStart: null,
+    onCloseEnd: null,
+    preventScrolling: false,
     dismissible: true,
     startingTop: '4%',
     endingTop: '10%'
@@ -2055,9 +2059,17 @@ if (jQuery) {
           display: 'block',
           opacity: 0
         });
-
+			
+		
         // Animate overlay
-        Vel(this.$overlay[0], { opacity: this.options.opacity }, { duration: this.options.inDuration, queue: false, ease: 'easeOutCubic' });
+        Vel(this.$overlay[0], { opacity: 
+		
+		
+		this.options.opacity 
+		
+		
+		
+		}, { duration: this.options.inDuration, queue: false, ease: 'easeOutCubic' });
 
         // Define modal animation options
         var enterVelocityOptions = {
@@ -2074,13 +2086,13 @@ if (jQuery) {
 
         // Bottom sheet animation
         if (this.$el[0].classList.contains('bottom-sheet')) {
-          Vel(this.$el[0], { bottom: 0, opacity: 1 }, enterVelocityOptions);
+          //Vel(this.$el[0], { bottom: 0, opacity: 1 }, enterVelocityOptions);
 
           // Normal modal animation
         } else {
-          Vel.hook(this.$el[0], 'scaleX', 0.7);
-          this.$el[0].style.top = this.options.startingTop;
-          Vel(this.$el[0], { top: this.options.endingTop, opacity: 1, scaleX: 1 }, enterVelocityOptions);
+          //Vel.hook(this.$el[0], 'scaleX', 0.7);
+          //this.$el[0].style.top = this.options.startingTop;
+         // Vel(this.$el[0], { top: this.options.endingTop, opacity: 1, scaleX: 1 }, enterVelocityOptions);
         }
       }
 
@@ -2118,7 +2130,7 @@ if (jQuery) {
 
           // Normal modal animation
         } else {
-          Vel(this.$el[0], { top: this.options.startingTop, opacity: 0, scaleX: 0.7 }, exitVelocityOptions);
+          Vel(this.$el[0], { top: this.options.startingTop, opacity: 0, scaleX: 1 }, exitVelocityOptions);
         }
       }
 
@@ -2135,11 +2147,46 @@ if (jQuery) {
         }
 
         this.isOpen = true;
+		
+		  // onOpenStart callback
+        if (typeof this.options.onOpenStart === 'function') {
+          this.options.onOpenStart.call(this);
+		  
+		  	
+			
+		  
+			var ele = jQuery('#'+this.id);
+			
+			
+			var get_opacity = ele.attr('data-overlay-opacity');	
+			this.options.opacity = get_opacity;
+			
+			var get_open_animation = ele.attr('data-open-animation'); 
+			ele.addClass(get_open_animation);
+			
+			var get_close_animation = ele.attr('data-close-animation'); 
+			ele.removeClass(get_close_animation);
+			
+			
+			}
+		
         var body = document.body;
-        body.style.overflow = 'hidden';
+		if(this.options.preventScrolling)
+        	body.style.overflow = 'hidden';
+			
         this.$el[0].classList.add('open');
-        body.appendChild(this.$overlay[0]);
-
+		
+		if(ele)
+			{
+			if(ele.attr('data-backdrop')=='true')
+				{
+				body.appendChild(this.$overlay[0]);
+				}
+			else
+				this.options.dismissible = false;
+			}
+		else
+			this.options.dismissible = true;
         // Set opening trigger, undefined indicates modal was opened by javascript
         this.openingTrigger = !!$trigger ? $trigger : undefined;
 
@@ -2163,7 +2210,21 @@ if (jQuery) {
         if (!this.isOpen) {
           return;
         }
-
+		
+		 // Call onCloseStart callback
+        if (typeof this.options.onCloseStart === 'function') {
+          this.options.onCloseStart.call(this);
+		  //console.log(this);
+			var ele = jQuery('#'+this.id);
+			var get_open_animation = ele.attr('data-open-animation'); 
+			ele.removeClass(get_open_animation);
+			
+			var get_close_animation = ele.attr('data-close-animation'); 
+			ele.addClass(get_close_animation);
+			
+		  
+        }
+		
         this.isOpen = false;
         this.$el[0].classList.remove('open');
         document.body.style.overflow = null;
@@ -9213,7 +9274,7 @@ if (jQuery) {
 })();
 ;(function ($) {
 
-  $.fn.characterCounter = function () {
+ /* $.fn.characterCounter = function () {
     return this.each(function () {
       var $input = $(this);
       var $counterElement = $input.parent().find('span[class="character-counter"]');
@@ -9273,7 +9334,7 @@ if (jQuery) {
 
   $(document).ready(function () {
     $('input, textarea').characterCounter();
-  });
+  });*/
 })(jQuery);
 ;(function ($) {
 

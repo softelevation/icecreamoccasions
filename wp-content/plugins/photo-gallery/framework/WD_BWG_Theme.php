@@ -33,6 +33,7 @@ class WD_BWG_Theme {
   public $album_compact_thumb_title_pos = "bottom";
   public $album_compact_thumb_transition = 1;
   public $album_compact_thumb_transparent = 100;
+  public $album_compact_thumb_bg_transparency = 30;
   public $album_compact_thumbs_bg_color = "FFFFFF";
   public $album_compact_title_font_color = "323A45";
   public $album_compact_title_font_color_hover = "FFFFFF";
@@ -405,6 +406,7 @@ class WD_BWG_Theme {
   public $masonry_thumb_title_margin = "2px";
   public $masonry_thumb_transition = "1";
   public $masonry_thumb_transparent = "100";
+  public $masonry_thumb_bg_transparency = "30";
   public $masonry_thumbs_bg_color = "FFFFFF";
 
   public $mosaic_container_margin = "1";
@@ -434,6 +436,7 @@ class WD_BWG_Theme {
   public $mosaic_thumb_title_shadow = "";
   public $mosaic_thumb_transition = "1";
   public $mosaic_thumb_transparent = "100";
+  public $mosaic_thumb_bg_transparency = "30";
   public $mosaic_thumbs_bg_color = "FFFFFF";
 
   public $page_nav_align = "center";
@@ -537,6 +540,7 @@ class WD_BWG_Theme {
   public $thumb_title_shadow = "";
   public $thumb_transition = 1;
   public $thumb_transparent = 100;
+  public $thumb_bg_transparency = 30;
   public $thumbs_bg_color = "FFFFFF";
 
   public function __construct($id = 0, $reset = false, $predefined_version = false) {
@@ -572,6 +576,7 @@ class WD_BWG_Theme {
         $this->album_compact_thumb_title_pos = "bottom";
         $this->album_compact_thumb_transition = 1;
         $this->album_compact_thumb_transparent = 100;
+        $this->album_compact_thumb_bg_transparency = 30;
         $this->album_compact_thumbs_bg_color = "FFFFFF";
         $this->album_compact_title_font_color = "CCCCCC";
         $this->album_compact_title_font_color_hover = "FFFFFF";
@@ -936,6 +941,7 @@ class WD_BWG_Theme {
         $this->masonry_thumb_title_margin = "2px";
         $this->masonry_thumb_transition = 1;
         $this->masonry_thumb_transparent = 80;
+        $this->masonry_thumb_bg_transparency = 30;
         $this->masonry_thumbs_bg_color = "FFFFFF";
         $this->mosaic_container_margin = "1";
         $this->mosaic_thumb_align = "center";
@@ -964,6 +970,7 @@ class WD_BWG_Theme {
         $this->mosaic_thumb_title_shadow = "0px 0px 0px #888888";
         $this->mosaic_thumb_transition = 1;
         $this->mosaic_thumb_transparent = 80;
+        $this->mosaic_thumb_bg_transparency = 30;
         $this->mosaic_thumbs_bg_color = "FFFFFF";
         $this->page_nav_align = "center";
         $this->page_nav_border_color = "E3E3E3";
@@ -1061,6 +1068,7 @@ class WD_BWG_Theme {
         $this->thumb_title_shadow = "";
         $this->thumb_transition = 1;
         $this->thumb_transparent = 100;
+        $this->thumb_bg_transparency = 30;
         $this->thumbs_bg_color = "FFFFFF";
       }
     }
